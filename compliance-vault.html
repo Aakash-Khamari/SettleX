@@ -1,0 +1,1118 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Compliance Vault | SettleX Treasury OS</title>
+    
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    
+    <!-- Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Plus+Jakarta+Sans:wght@500;600;700;800&family=JetBrains+Mono:wght@400;500;700&family=Courier+Prime:wght@400;700&display=swap" rel="stylesheet">
+    
+    <!-- Icons -->
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+    
+    <!-- Chart.js (For potential analytics expansion) -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+    <!-- Config -->
+    <script>
+        tailwind.config = {
+            darkMode: 'class',
+            theme: {
+                extend: {
+                    fontFamily: {
+                        sans: ['Inter', 'sans-serif'],
+                        display: ['Plus Jakarta Sans', 'sans-serif'],
+                        mono: ['JetBrains Mono', 'monospace'],
+                        serif: ['Courier Prime', 'serif'], // For document text
+                    },
+                    colors: {
+                        brand: {
+                            50: '#f0f9ff',
+                            100: '#e0f2fe',
+                            200: '#bae6fd',
+                            300: '#7dd3fc',
+                            400: '#38bdf8',
+                            500: '#0ea5e9',
+                            600: '#0284c7',
+                            700: '#0369a1',
+                            800: '#075985',
+                            900: '#0c4a6e',
+                            950: '#082f49',
+                        },
+                        dark: {
+                            800: '#1e293b',
+                            900: '#0f172a',
+                            950: '#020617',
+                        }
+                    },
+                    animation: {
+                        'pulse-slow': 'pulse 3s cubic-bezier(0.4, 0, 0.6, 1) infinite',
+                        'slide-in': 'slideIn 0.4s ease-out forwards',
+                        'fade-in': 'fadeIn 0.3s ease-out forwards',
+                        'scan': 'scan 2.5s linear infinite',
+                        'staple': 'staple 0.6s ease-in-out',
+                        'stamp': 'stamp 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards',
+                    },
+                    keyframes: {
+                        slideIn: {
+                            '0%': { transform: 'translateY(20px)', opacity: '0' },
+                            '100%': { transform: 'translateY(0)', opacity: '1' }
+                        },
+                        fadeIn: {
+                            '0%': { opacity: '0' },
+                            '100%': { opacity: '1' }
+                        },
+                        scan: {
+                            '0%': { top: '0%', opacity: '0.5' },
+                            '50%': { top: '95%', opacity: '1' },
+                            '100%': { top: '0%', opacity: '0.5' }
+                        },
+                        staple: {
+                            '0%': { transform: 'scale(1) translateY(0)' },
+                            '20%': { transform: 'scale(1.1) translateY(-5px)' },
+                            '50%': { transform: 'scale(0.95) translateY(2px) rotate(-2deg)' },
+                            '100%': { transform: 'scale(1) translateY(0) rotate(0deg)' }
+                        },
+                        stamp: {
+                            '0%': { opacity: '0', transform: 'scale(3) rotate(-15deg)' },
+                            '100%': { opacity: '0.9', transform: 'scale(1) rotate(-15deg)' }
+                        }
+                    },
+                    boxShadow: {
+                        'glass': '0 8px 32px 0 rgba(0, 0, 0, 0.37)',
+                        'neon': '0 0 10px rgba(14, 165, 233, 0.5), 0 0 20px rgba(14, 165, 233, 0.3)',
+                        'paper': '0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06), 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04)',
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        /* Base */
+        body {
+            background-color: #020617; /* dark-950 */
+            color: #cbd5e1; /* slate-300 */
+        }
+
+        /* Glassmorphism */
+        .glass-panel {
+            background: rgba(15, 23, 42, 0.75);
+            backdrop-filter: blur(16px);
+            -webkit-backdrop-filter: blur(16px);
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.2);
+        }
+
+        /* Custom Scrollbar */
+        ::-webkit-scrollbar { width: 6px; height: 6px; }
+        ::-webkit-scrollbar-track { background: #0f172a; }
+        ::-webkit-scrollbar-thumb { background: #334155; border-radius: 4px; }
+        ::-webkit-scrollbar-thumb:hover { background: #475569; }
+
+        /* Grid Background */
+        .bg-grid {
+            background-size: 40px 40px;
+            background-image: 
+                linear-gradient(to right, rgba(255, 255, 255, 0.03) 1px, transparent 1px),
+                linear-gradient(to bottom, rgba(255, 255, 255, 0.03) 1px, transparent 1px);
+        }
+
+        /* Drag Zone Active State */
+        .drag-active {
+            border-color: #0ea5e9 !important;
+            background-color: rgba(14, 165, 233, 0.15) !important;
+            transform: scale(1.02);
+        }
+        
+        /* Scanner Line Effect */
+        .scan-line {
+            position: absolute;
+            left: 0;
+            width: 100%;
+            height: 3px;
+            background: linear-gradient(to right, transparent, #0ea5e9, transparent);
+            box-shadow: 0 0 15px #0ea5e9;
+            z-index: 20;
+            border-radius: 50%;
+        }
+
+        /* Real-World Document CSS */
+        .doc-page {
+            background: #fff;
+            color: #1e293b;
+            min-height: 800px; /* A4 aspect ratio approx */
+            width: 100%;
+            max-width: 650px;
+            margin: 0 auto;
+            position: relative;
+            overflow: hidden;
+            border: 1px solid #e2e8f0;
+            background-image: radial-gradient(#e2e8f0 1px, transparent 1px);
+            background-size: 20px 20px;
+        }
+        
+        .doc-watermark {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%) rotate(-45deg);
+            font-size: 6rem;
+            font-weight: 900;
+            color: rgba(203, 213, 225, 0.15);
+            pointer-events: none;
+            white-space: nowrap;
+            z-index: 0;
+            text-transform: uppercase;
+            font-family: 'Inter', sans-serif;
+        }
+
+        .staple-mark {
+            position: absolute;
+            top: 25px;
+            left: 25px;
+            width: 45px;
+            height: 8px;
+            background: linear-gradient(to bottom, #94a3b8, #64748b, #475569);
+            border-radius: 2px;
+            box-shadow: 2px 2px 4px rgba(0,0,0,0.4);
+            transform: rotate(-35deg);
+            z-index: 50;
+        }
+        
+        /* Verified Stamp Animation */
+        .verified-stamp {
+            position: absolute;
+            bottom: 60px;
+            right: 40px;
+            border: 4px solid #10b981;
+            color: #10b981;
+            padding: 10px 20px;
+            font-weight: 900;
+            font-size: 1.5rem;
+            text-transform: uppercase;
+            opacity: 0; /* Animated via JS */
+            border-radius: 8px;
+            font-family: 'Courier Prime', monospace;
+            z-index: 20;
+            mask-image: url("data:image/svg+xml;utf8,<svg...>...</svg>"); /* Add grit texture in real prod */
+            letter-spacing: 2px;
+        }
+
+        /* Filter Tabs */
+        .filter-tab {
+            @apply px-4 py-2 text-xs font-bold rounded-lg transition-all border;
+        }
+        .filter-tab-active {
+            @apply bg-brand-600 text-white border-brand-500 shadow-lg shadow-brand-500/20;
+        }
+        .filter-tab-inactive {
+            @apply bg-slate-800 text-slate-400 border-slate-700 hover:text-white hover:bg-slate-700;
+        }
+    </style>
+</head>
+<body class="font-sans h-screen flex overflow-hidden selection:bg-brand-500 selection:text-white">
+
+    <!-- 1. SIDEBAR (Consistent Navigation) -->
+    <aside class="w-20 lg:w-72 bg-dark-900 border-r border-slate-800 flex flex-col flex-shrink-0 transition-all duration-300 z-50">
+        <!-- Logo -->
+        <div class="h-20 flex items-center px-0 lg:px-6 justify-center lg:justify-start border-b border-slate-800 cursor-pointer group" onclick="window.location.href='client-dashboard.html'">
+            <div class="w-10 h-10 bg-gradient-to-br from-brand-500 to-brand-700 rounded-xl flex items-center justify-center text-white font-bold text-xl shadow-lg shadow-brand-500/20 flex-shrink-0 transition-transform group-hover:scale-105">S</div>
+            <div class="hidden lg:block ml-3">
+                <h1 class="text-xl font-display font-bold text-white tracking-tight">Settle<span class="text-brand-400">X</span></h1>
+                <p class="text-[10px] text-slate-500 font-mono uppercase tracking-wider group-hover:text-brand-400 transition-colors">Treasury OS v2.4</p>
+            </div>
+        </div>
+
+        <!-- Nav -->
+        <nav class="flex-1 overflow-y-auto py-6 px-3 space-y-1">
+            <a href="client-dashboard.html" class="flex items-center gap-3 px-3 py-3 text-slate-400 hover:text-white hover:bg-slate-800 rounded-xl transition-all group">
+                <i class="fa-solid fa-border-all w-6 text-center group-hover:text-brand-400 transition-colors"></i>
+                <span class="hidden lg:block font-medium">Command Center</span>
+            </a>
+
+            <div class="hidden lg:block px-3 mt-6 mb-2 flex items-center justify-between">
+                <p class="text-[10px] font-bold text-slate-500 uppercase tracking-widest">Global Money</p>
+                <i class="fa-solid fa-globe text-[10px] text-slate-600"></i>
+            </div>
+
+            <a href="inflow-decision-gate.html" class="flex items-center gap-3 px-3 py-3 text-slate-400 hover:text-white hover:bg-slate-800 rounded-xl transition-all group">
+                <i class="fa-solid fa-inbox w-6 text-center group-hover:text-green-400 transition-colors"></i>
+                <span class="hidden lg:block font-medium">Inflow (Collections)</span>
+                <span class="hidden lg:flex ml-auto bg-brand-500 text-white text-[10px] font-bold px-2 py-0.5 rounded-full shadow-lg shadow-brand-500/40 animate-pulse-slow">3</span>
+            </a>
+
+            <a href="outflow-transfer.html" class="flex items-center gap-3 px-3 py-3 text-slate-400 hover:text-white hover:bg-slate-800 rounded-xl transition-all group">
+                <i class="fa-solid fa-paper-plane w-6 text-center group-hover:text-red-400 transition-colors"></i>
+                <span class="hidden lg:block font-medium">Outflow (Payments)</span>
+            </a>
+
+            <a href="virtual-accounts.html" class="flex items-center gap-3 px-3 py-3 text-slate-400 hover:text-white hover:bg-slate-800 rounded-xl transition-all group">
+                <i class="fa-solid fa-wallet w-6 text-center group-hover:text-purple-400 transition-colors"></i>
+                <span class="hidden lg:block font-medium">Virtual Accounts</span>
+            </a>
+
+            <div class="hidden lg:block px-3 mt-6 mb-2 flex items-center justify-between">
+                <p class="text-[10px] font-bold text-slate-500 uppercase tracking-widest">Compliance</p>
+                <i class="fa-solid fa-shield-halved text-[10px] text-slate-600"></i>
+            </div>
+
+            <a href="transaction-history.html" class="flex items-center gap-3 px-3 py-3 text-slate-400 hover:text-white hover:bg-slate-800 rounded-xl transition-all group">
+                <i class="fa-solid fa-book-open w-6 text-center group-hover:text-amber-400 transition-colors"></i>
+                <span class="hidden lg:block font-medium">Digital Ledger</span>
+            </a>
+
+            <!-- Active: Docs Vault -->
+            <a href="#" class="flex items-center gap-3 px-3 py-3 bg-brand-900/30 text-white rounded-xl border border-brand-500/30 shadow-sm group relative overflow-hidden">
+                <div class="absolute inset-0 bg-brand-500/10 rounded-xl blur opacity-0 group-hover:opacity-100 transition-opacity"></div>
+                <div class="absolute left-0 top-0 bottom-0 w-1 bg-brand-500 rounded-l-xl"></div>
+                <i class="fa-solid fa-file-shield w-6 text-center text-blue-400 text-lg group-hover:scale-110 transition-transform"></i>
+                <span class="hidden lg:block font-medium tracking-wide">BoE & e-FIRA Vault</span>
+            </a>
+        </nav>
+        
+        <!-- Profile -->
+        <div class="p-4 border-t border-slate-800 bg-dark-900/50">
+            <div class="flex items-center gap-3 cursor-pointer hover:bg-slate-800 p-2 rounded-xl transition-colors group">
+                <div class="relative">
+                    <div class="w-10 h-10 rounded-full bg-slate-700 flex items-center justify-center border border-slate-600 group-hover:border-brand-500 transition-colors">
+                        <span class="font-bold text-white group-hover:text-brand-200">TE</span>
+                    </div>
+                    <div class="absolute -bottom-1 -right-1 w-3 h-3 bg-green-500 border-2 border-dark-900 rounded-full animate-pulse"></div>
+                </div>
+                <div class="hidden lg:block min-w-0">
+                    <p class="text-sm font-bold text-white truncate group-hover:text-brand-400 transition-colors">Tex Exports Pvt Ltd</p>
+                    <p class="text-[10px] text-slate-500 font-mono truncate">ID: IND-TN-8821</p>
+                </div>
+            </div>
+        </div>
+    </aside>
+
+    <!-- 2. MAIN WORKSPACE -->
+    <main class="flex-1 flex flex-col h-screen relative overflow-hidden bg-grid">
+        
+        <!-- HEADER -->
+        <header class="h-16 bg-dark-900/80 backdrop-blur-md border-b border-slate-800 flex items-center justify-between px-6 z-40 sticky top-0">
+            <div class="flex items-center gap-4">
+                <h2 class="text-lg font-bold text-white flex items-center gap-2">
+                    <i class="fa-solid fa-file-shield text-blue-500"></i> Compliance Vault
+                </h2>
+                <div class="h-4 w-px bg-slate-700 hidden md:block"></div>
+                <div class="hidden md:flex items-center gap-2 px-3 py-1.5 bg-blue-900/20 rounded-lg border border-blue-500/20">
+                    <span class="w-2 h-2 rounded-full bg-blue-500 animate-pulse"></span>
+                    <span class="text-xs font-mono text-blue-300">EDPMS SYNC: ACTIVE</span>
+                </div>
+            </div>
+            
+            <div class="flex items-center gap-4" id="header-actions">
+                <div class="text-right hidden md:block" id="pending-counter">
+                    <p class="text-[10px] text-slate-500 uppercase tracking-wider">Pending BoE</p>
+                    <p class="text-sm font-bold text-white font-mono text-amber-400">2 Actions Required</p>
+                </div>
+                <div class="h-6 w-px bg-slate-700 hidden md:block"></div>
+                <button class="relative p-2 text-slate-400 hover:text-white transition-colors hover:bg-slate-800 rounded-lg" onclick="toggleAtlas()" title="Ask Atlas AI">
+                    <i class="fa-solid fa-headset"></i>
+                </button>
+            </div>
+        </header>
+
+        <!-- DYNAMIC CONTENT AREA -->
+        <div class="flex-1 overflow-hidden relative">
+            
+            <!-- VIEW 1: UPLOAD DASHBOARD (Default) -->
+            <div id="view-dashboard" class="absolute inset-0 overflow-y-auto p-6 scroll-smooth transition-all duration-300">
+                
+                <!-- Intro Banner -->
+                <div class="mb-8 flex justify-between items-end">
+                    <div>
+                        <h3 class="text-2xl font-display font-bold text-white mb-2">The Digital Staple</h3>
+                        <p class="text-slate-400 text-sm max-w-2xl leading-relaxed">
+                            Upload Invoices or Bills of Entry. Our system automatically "staples" them to the underlying financial transaction, generates the e-FIRA within T+1 days, and closes the loop with the RBI EDPMS/IDPMS portal.
+                        </p>
+                    </div>
+                    <div class="flex gap-2">
+                        <button class="text-xs bg-slate-800 border border-slate-700 text-slate-300 px-3 py-1.5 rounded hover:bg-slate-700 transition" onclick="simulateSync()">
+                            <i class="fa-solid fa-rotate mr-1"></i> Sync EDPMS
+                        </button>
+                    </div>
+                </div>
+
+                <div class="grid lg:grid-cols-3 gap-8">
+                    
+                    <!-- Left Column: Actions & Ledger (Col 2) -->
+                    <div class="lg:col-span-2 space-y-6">
+                        
+                        <!-- 1. DRAG & DROP ZONE -->
+                        <div class="glass-panel p-8 rounded-2xl border-2 border-dashed border-slate-700 hover:border-brand-500 transition-all duration-300 relative group cursor-pointer" id="drop-area" ondragover="handleDragOver(event)" ondragleave="handleDragLeave(event)" ondrop="handleDrop(event)">
+                            <input type="file" id="file-input" class="absolute inset-0 w-full h-full opacity-0 cursor-pointer z-20" onchange="handleFileSelect(this)">
+                            
+                            <!-- Initial State -->
+                            <div class="text-center relative z-10 pointer-events-none transition-opacity duration-300" id="upload-instruction">
+                                <div class="w-16 h-16 bg-slate-800 rounded-full flex items-center justify-center mx-auto mb-4 group-hover:bg-brand-900/50 transition-colors shadow-lg border border-slate-700 group-hover:border-brand-500/30">
+                                    <i class="fa-solid fa-cloud-arrow-up text-3xl text-slate-400 group-hover:text-brand-400 transition-colors"></i>
+                                </div>
+                                <h4 class="text-lg font-bold text-white mb-1 group-hover:text-brand-200">Drag & Drop Invoice / BoE</h4>
+                                <p class="text-sm text-slate-400">or click to browse local files (PDF/JPG)</p>
+                                <div class="mt-4 flex gap-2 justify-center opacity-60">
+                                    <span class="px-2 py-1 bg-slate-800 rounded text-[10px] text-slate-500 font-mono border border-slate-700">MAX 5MB</span>
+                                    <span class="px-2 py-1 bg-slate-800 rounded text-[10px] text-slate-500 font-mono border border-slate-700">ENCRYPTED</span>
+                                </div>
+                            </div>
+
+                            <!-- Processing State (Scanning) -->
+                            <div id="processing-view" class="hidden text-center relative z-10">
+                                <div class="w-48 h-64 bg-white rounded-lg mx-auto mb-6 relative overflow-hidden shadow-2xl border-4 border-slate-800">
+                                    <div class="p-6 space-y-3 opacity-40 blur-[1px]">
+                                        <div class="h-4 bg-slate-400 w-3/4 rounded"></div>
+                                        <div class="h-2 bg-slate-300 w-1/2 rounded"></div>
+                                        <div class="h-2 bg-slate-300 w-full rounded"></div>
+                                        <div class="h-2 bg-slate-300 w-full rounded"></div>
+                                        <div class="h-24 bg-slate-200 w-full rounded mt-6 border border-slate-300"></div>
+                                    </div>
+                                    <!-- Animated Scanner -->
+                                    <div class="scan-line animate-scan"></div>
+                                </div>
+                                <h4 class="text-white font-bold animate-pulse text-lg">AI OCR in Progress...</h4>
+                                <p class="text-xs text-slate-400 mt-2 font-mono">Extracting: Invoice No, Date, HS Code</p>
+                            </div>
+
+                            <!-- Success State -->
+                            <div id="success-view" class="hidden text-center relative z-10 animate-slide-in">
+                                <div class="w-20 h-20 bg-green-500/10 rounded-full flex items-center justify-center mx-auto mb-4 border border-green-500/30 shadow-neon">
+                                    <i class="fa-solid fa-check text-4xl text-green-500"></i>
+                                </div>
+                                <h4 class="text-xl font-bold text-white mb-1">Document Stapled!</h4>
+                                <p class="text-sm text-slate-400 mb-6">Invoice <strong class="text-white">#INV-2024-001</strong> successfully linked to <strong class="text-white">#TXN-8821</strong></p>
+                                <div class="flex gap-3 justify-center">
+                                    <button onclick="resetUpload()" class="px-4 py-2 bg-slate-800 hover:bg-slate-700 text-white text-xs font-bold rounded-lg border border-slate-700 transition">Upload Another</button>
+                                    <button onclick="switchView('staple', 'TXN-8821')" class="px-4 py-2 bg-brand-600 hover:bg-brand-500 text-white text-xs font-bold rounded-lg shadow-lg transition">View Staple</button>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- 2. COMPLIANCE LEDGER -->
+                        <div class="glass-panel rounded-2xl overflow-hidden flex flex-col min-h-[500px]">
+                            <div class="px-6 py-4 border-b border-slate-800 flex justify-between items-center bg-dark-900/50 sticky top-0 z-10 backdrop-blur-md">
+                                <h4 class="font-bold text-white text-sm flex items-center gap-2">
+                                    <i class="fa-solid fa-list-check text-brand-500"></i> Compliance Queue
+                                </h4>
+                                <div class="flex gap-2">
+                                    <button class="filter-tab filter-tab-active" onclick="filterTable('all', this)">All</button>
+                                    <button class="filter-tab filter-tab-inactive" onclick="filterTable('pending', this)">Pending Action</button>
+                                    <button class="filter-tab filter-tab-inactive" onclick="filterTable('completed', this)">Completed</button>
+                                </div>
+                            </div>
+                            
+                            <div class="overflow-x-auto flex-1 custom-scrollbar">
+                                <table class="w-full text-sm text-left border-collapse">
+                                    <thead class="text-xs text-slate-500 uppercase bg-slate-800/30 border-b border-slate-800">
+                                        <tr>
+                                            <th class="px-6 py-3 font-semibold">Date</th>
+                                            <th class="px-6 py-3 font-semibold">Transaction</th>
+                                            <th class="px-6 py-3 font-semibold">Type</th>
+                                            <th class="px-6 py-3 font-semibold">Status</th>
+                                            <th class="px-6 py-3 font-semibold text-right">Action</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody class="divide-y divide-slate-800/50" id="ledger-body">
+                                        <!-- Data Populated by JS -->
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Right Column: Stats & Activity (Col 1) -->
+                    <div class="lg:col-span-1 space-y-6">
+                        
+                        <!-- Health Score Widget -->
+                        <div class="glass-panel p-6 rounded-2xl relative overflow-hidden group">
+                            <div class="absolute top-0 right-0 p-4 opacity-10 group-hover:opacity-20 transition-opacity">
+                                <i class="fa-solid fa-shield-heart text-6xl text-green-500"></i>
+                            </div>
+                            <div class="flex justify-between items-center mb-4 relative z-10">
+                                <h4 class="text-xs font-bold text-slate-500 uppercase tracking-wider">Health Score</h4>
+                                <span class="w-2 h-2 rounded-full bg-green-500 animate-pulse"></span>
+                            </div>
+                            <div class="flex items-end gap-2 mb-2 relative z-10">
+                                <h3 class="text-5xl font-display font-bold text-white tracking-tighter">98</h3>
+                                <p class="text-sm text-slate-400 mb-2">/ 100</p>
+                            </div>
+                            <p class="text-xs text-green-400 font-bold mb-6 flex items-center gap-1 relative z-10">
+                                <i class="fa-solid fa-check-circle"></i> Fully Compliant
+                            </p>
+                            
+                            <div class="space-y-3 pt-4 border-t border-slate-700 relative z-10">
+                                <div class="flex justify-between text-xs">
+                                    <span class="text-slate-400">EDPMS Lag</span>
+                                    <span class="text-white font-mono font-bold">0 Days</span>
+                                </div>
+                                <div class="flex justify-between text-xs">
+                                    <span class="text-slate-400">Pending e-FIRAs</span>
+                                    <span class="text-white font-mono font-bold">0</span>
+                                </div>
+                                <div class="flex justify-between text-xs">
+                                    <span class="text-slate-400">Next Audit</span>
+                                    <span class="text-brand-400 font-mono font-bold">Mar 31</span>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <!-- Recent Activity Log -->
+                        <div class="glass-panel p-6 rounded-2xl">
+                            <h4 class="text-xs font-bold text-slate-500 uppercase tracking-wider mb-4">Live Audit Trail</h4>
+                            <div class="space-y-5 relative">
+                                <div class="absolute left-2.5 top-2 bottom-2 w-0.5 bg-slate-800"></div>
+                                
+                                <!-- Item 1 -->
+                                <div class="flex gap-4 relative">
+                                    <div class="w-6 h-6 rounded-full bg-green-500/20 border border-green-500 flex items-center justify-center flex-shrink-0 z-10 mt-0.5">
+                                        <i class="fa-solid fa-file-signature text-green-500 text-[10px]"></i>
+                                    </div>
+                                    <div>
+                                        <p class="text-xs text-white font-bold">e-FIRA Generated</p>
+                                        <p class="text-[10px] text-slate-500">Auto-generated for Zara Intl ($12,500)</p>
+                                        <p class="text-[10px] text-slate-600 mt-0.5 font-mono">14:02 IST</p>
+                                    </div>
+                                </div>
+                                
+                                <!-- Item 2 -->
+                                <div class="flex gap-4 relative">
+                                    <div class="w-6 h-6 rounded-full bg-blue-500/20 border border-blue-500 flex items-center justify-center flex-shrink-0 z-10 mt-0.5">
+                                        <i class="fa-solid fa-link text-blue-500 text-[10px]"></i>
+                                    </div>
+                                    <div>
+                                        <p class="text-xs text-white font-bold">BoE Matched</p>
+                                        <p class="text-[10px] text-slate-500">IDPMS Sync for H&M Sourcing</p>
+                                        <p class="text-[10px] text-slate-600 mt-0.5 font-mono">11:45 IST</p>
+                                    </div>
+                                </div>
+
+                                <!-- Item 3 -->
+                                <div class="flex gap-4 relative">
+                                    <div class="w-6 h-6 rounded-full bg-amber-500/20 border border-amber-500 flex items-center justify-center flex-shrink-0 z-10 mt-0.5">
+                                        <i class="fa-solid fa-upload text-amber-500 text-[10px]"></i>
+                                    </div>
+                                    <div>
+                                        <p class="text-xs text-white font-bold">Upload Required</p>
+                                        <p class="text-[10px] text-slate-500">Maersk Logistics Outflow pending BoE</p>
+                                        <p class="text-[10px] text-slate-600 mt-0.5 font-mono">09:30 IST</p>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Quick Guide -->
+                        <div class="p-4 bg-brand-900/20 rounded-xl border border-brand-500/20 flex gap-3 items-start">
+                            <i class="fa-solid fa-lightbulb text-brand-400 mt-1"></i>
+                            <div>
+                                <p class="text-xs font-bold text-brand-200 mb-1">Did you know?</p>
+                                <p class="text-[10px] text-slate-400 leading-relaxed">
+                                    Transactions under $10,000 equivalent are eligible for <strong>Auto-Closure</strong> without manual BoE submission.
+                                </p>
+                            </div>
+                        </div>
+
+                    </div>
+                </div>
+            </div>
+
+            <!-- VIEW 2: STAPLE VIEWER (Initially Hidden) -->
+            <div id="view-staple" class="absolute inset-0 bg-dark-900 z-20 translate-x-full transition-transform duration-500 overflow-hidden flex flex-col">
+                <!-- Inner Header -->
+                <div class="h-16 border-b border-slate-800 flex items-center justify-between px-6 bg-dark-900/95 backdrop-blur shadow-lg z-30">
+                    <div class="flex items-center gap-4">
+                        <button class="text-slate-400 hover:text-white transition p-2 hover:bg-slate-800 rounded-full" onclick="switchView('dashboard')">
+                            <i class="fa-solid fa-arrow-left text-lg"></i>
+                        </button>
+                        <div class="h-8 w-px bg-slate-700"></div>
+                        <div>
+                            <h3 class="font-bold text-white text-lg flex items-center gap-2">
+                                Digital Staple Viewer 
+                                <span class="px-2 py-0.5 bg-green-900/30 text-green-400 text-[10px] rounded border border-green-500/20 uppercase font-bold">Verified</span>
+                            </h3>
+                            <p class="text-[10px] text-slate-500 font-mono" id="staple-id">TXN-8821</p>
+                        </div>
+                    </div>
+                    <div class="flex gap-3">
+                        <button class="px-4 py-2 bg-slate-800 hover:bg-slate-700 text-white text-xs font-bold rounded-lg border border-slate-700 transition flex items-center gap-2" onclick="alert('Sent to Registered Email')">
+                            <i class="fa-regular fa-envelope"></i> Email
+                        </button>
+                        <button class="px-4 py-2 bg-brand-600 hover:bg-brand-500 text-white text-xs font-bold rounded-lg shadow-lg flex items-center gap-2" onclick="downloadBundle()">
+                            <i class="fa-solid fa-download"></i> Download Bundle
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Viewer Content -->
+                <div class="flex-1 overflow-y-auto p-6 bg-grid">
+                    <div class="grid lg:grid-cols-12 gap-8 h-full min-h-[800px]">
+                        
+                        <!-- Left: Document List & Metadata (Col 3) -->
+                        <div class="lg:col-span-3 space-y-6">
+                            
+                            <!-- Metadata Card -->
+                            <div class="glass-panel p-5 rounded-xl border-l-4 border-brand-500">
+                                <h4 class="text-xs font-bold text-slate-500 uppercase tracking-wider mb-4">Transaction Meta</h4>
+                                <div class="space-y-3 text-sm font-mono text-slate-300">
+                                    <div class="flex justify-between border-b border-slate-800 pb-2">
+                                        <span class="text-slate-500">Date</span>
+                                        <span class="text-white">14-JAN-2026</span>
+                                    </div>
+                                    <div class="flex justify-between border-b border-slate-800 pb-2">
+                                        <span class="text-slate-500">Amount</span>
+                                        <span class="text-green-400 font-bold">$12,500.00</span>
+                                    </div>
+                                    <div class="flex justify-between border-b border-slate-800 pb-2">
+                                        <span class="text-slate-500">Rate</span>
+                                        <span class="text-white">83.6050</span>
+                                    </div>
+                                    <div class="flex justify-between pt-1">
+                                        <span class="text-slate-500">Party</span>
+                                        <span class="text-white truncate max-w-[120px]" title="Zara Intl Ltd">Zara Intl Ltd</span>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <!-- Stapled Docs List -->
+                            <div class="glass-panel p-5 rounded-xl">
+                                <h4 class="text-xs font-bold text-slate-500 uppercase tracking-wider mb-4 flex items-center gap-2">
+                                    <i class="fa-solid fa-paperclip text-slate-400"></i> Stapled Docs
+                                </h4>
+                                <div class="space-y-2">
+                                    <!-- Doc 1: Invoice (Active) -->
+                                    <div class="p-3 bg-brand-900/20 border border-brand-500/50 rounded-lg cursor-pointer flex items-center gap-3 group transition-all doc-item active-doc" onclick="viewDoc('invoice', this)">
+                                        <div class="w-8 h-8 rounded bg-brand-500/20 text-brand-400 flex items-center justify-center border border-brand-500/30">
+                                            <i class="fa-solid fa-file-invoice"></i>
+                                        </div>
+                                        <div class="flex-1 min-w-0">
+                                            <p class="text-sm font-bold text-white group-hover:text-brand-300 transition-colors">Invoice</p>
+                                            <p class="text-[10px] text-slate-400">INV-9921.pdf</p>
+                                        </div>
+                                        <i class="fa-solid fa-eye text-brand-400 text-xs"></i>
+                                    </div>
+
+                                    <!-- Doc 2: Bank Advice -->
+                                    <div class="p-3 bg-slate-800/50 border border-slate-700 rounded-lg cursor-pointer flex items-center gap-3 group hover:bg-slate-800 transition-all doc-item" onclick="viewDoc('advice', this)">
+                                        <div class="w-8 h-8 rounded bg-slate-700 text-slate-400 flex items-center justify-center">
+                                            <i class="fa-solid fa-file-lines"></i>
+                                        </div>
+                                        <div class="flex-1 min-w-0">
+                                            <p class="text-sm font-bold text-slate-300 group-hover:text-white transition-colors">Bank Advice</p>
+                                            <p class="text-[10px] text-slate-500">DBS-CA.pdf</p>
+                                        </div>
+                                    </div>
+
+                                    <!-- Doc 3: e-FIRA -->
+                                    <div class="p-3 bg-slate-800/50 border border-slate-700 rounded-lg cursor-pointer flex items-center gap-3 group hover:bg-slate-800 transition-all doc-item" onclick="viewDoc('efira', this)">
+                                        <div class="w-8 h-8 rounded bg-slate-700 text-slate-400 flex items-center justify-center">
+                                            <i class="fa-solid fa-file-certificate"></i>
+                                        </div>
+                                        <div class="flex-1 min-w-0">
+                                            <p class="text-sm font-bold text-slate-300 group-hover:text-white transition-colors">e-FIRA</p>
+                                            <p class="text-[10px] text-slate-500">IRN-9921.pdf</p>
+                                        </div>
+                                        <span class="bg-green-900/20 text-green-400 text-[9px] px-1.5 py-0.5 rounded border border-green-500/20 font-bold">New</span>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- AI Insights -->
+                            <div class="glass-panel p-5 rounded-xl bg-blue-900/10 border-blue-500/20">
+                                <div class="flex items-start gap-3">
+                                    <i class="fa-solid fa-robot text-blue-400 mt-1"></i>
+                                    <div>
+                                        <p class="text-xs font-bold text-blue-200 mb-1">AI Validation Match</p>
+                                        <p class="text-[10px] text-slate-400 leading-relaxed">
+                                            Invoice amount ($12,500) matches Bank Credit Advice perfectly. 
+                                            <strong class="text-green-400">No discrepancies found.</strong>
+                                        </p>
+                                    </div>
+                                </div>
+                            </div>
+
+                        </div>
+
+                        <!-- Right: Document Viewer (Col 9) -->
+                        <div class="lg:col-span-9 bg-slate-900/50 rounded-2xl border border-slate-800 p-8 relative flex justify-center items-start min-h-[800px] overflow-hidden" id="doc-viewer-container">
+                            
+                            <!-- Staple Animation Element -->
+                            <div class="staple-mark absolute top-8 left-8 z-50"></div>
+
+                            <!-- Document Canvas (Simulated PDF) -->
+                            <div class="doc-page w-full max-w-[800px] p-12 relative shadow-2xl animate-fade-in transform transition-all duration-300" id="doc-content">
+                                <!-- Content Injected via JS -->
+                                <div class="flex flex-col items-center justify-center h-full text-slate-400 gap-4">
+                                    <i class="fa-solid fa-circle-notch fa-spin text-4xl"></i>
+                                    <p>Decrypting Secure Document...</p>
+                                </div>
+                            </div>
+
+                        </div>
+
+                    </div>
+                </div>
+            </div>
+
+        </div>
+    </main>
+
+    <!-- ATLAS CHATBOT WIDGET -->
+    <div id="atlas-widget-container"></div>
+
+    <!-- SCRIPTS -->
+    <script src="backend.js"></script>
+    <script src="chatbot.js"></script>
+    <script>
+        // --- Mock Data: Compliance Ledger ---
+        const LedgerData = [
+            { id: 'TXN-8821', date: 'Jan 14, 2026', desc: 'Zara Intl Ltd', type: 'Inflow', amount: 12500, currency: 'USD', status: 'completed' },
+            { id: 'TXN-8822', date: 'Jan 14, 2026', desc: 'Maersk Logistics', type: 'Outflow', amount: 2100, currency: 'USD', status: 'pending' },
+            { id: 'TXN-8818', date: 'Jan 12, 2026', desc: 'H&M Sourcing', type: 'Inflow', amount: 18200, currency: 'EUR', status: 'completed' },
+            { id: 'TXN-8815', date: 'Jan 10, 2026', desc: 'FedEx Global', type: 'Outflow', amount: 450, currency: 'USD', status: 'pending' },
+            { id: 'TXN-8810', date: 'Jan 08, 2026', desc: 'AWS Cloud', type: 'Outflow', amount: 120, currency: 'USD', status: 'completed' },
+            { id: 'TXN-8805', date: 'Jan 05, 2026', desc: 'Uniqlo Japan', type: 'Inflow', amount: 45000, currency: 'JPY', status: 'completed' },
+        ];
+
+        // --- Core Logic ---
+        document.addEventListener('DOMContentLoaded', () => {
+            renderLedger('all');
+            initChatbotWidget();
+        });
+
+        function renderLedger(filter) {
+            const tbody = document.getElementById('ledger-body');
+            tbody.innerHTML = '';
+
+            const filteredData = LedgerData.filter(item => {
+                if (filter === 'all') return true;
+                return item.status === filter;
+            });
+
+            filteredData.forEach(item => {
+                const isPending = item.status === 'pending';
+                const statusHtml = isPending 
+                    ? `<span class="text-[10px] font-bold text-amber-400 bg-amber-900/20 px-2 py-1 rounded border border-amber-500/20 uppercase tracking-wider flex w-fit items-center gap-1"><i class="fa-solid fa-clock"></i> Pending BoE</span>`
+                    : `<span class="text-[10px] font-bold text-green-400 bg-green-900/20 px-2 py-1 rounded border border-green-500/20 uppercase tracking-wider flex w-fit items-center gap-1"><i class="fa-solid fa-paperclip"></i> Stapled</span>`;
+                
+                const actionHtml = isPending
+                    ? `<button class="text-xs bg-brand-600 hover:bg-brand-500 text-white px-3 py-1.5 rounded font-bold transition shadow-sm flex items-center gap-1 ml-auto" onclick="event.stopPropagation(); triggerUploadForTxn()">
+                         <i class="fa-solid fa-upload"></i> Upload
+                       </button>`
+                    : `<button class="text-xs text-slate-400 group-hover:text-brand-400 font-bold transition flex items-center gap-1 ml-auto">
+                         <i class="fa-solid fa-eye"></i> View Staple
+                       </button>`;
+
+                const amountClass = item.type === 'Inflow' ? 'text-green-400' : 'text-slate-300';
+                const amountPrefix = item.type === 'Inflow' ? '+' : '-';
+
+                const row = document.createElement('tr');
+                row.className = 'hover:bg-white/5 transition-colors group cursor-pointer border-b border-slate-800/50';
+                if (!isPending) row.onclick = () => switchView('staple', item.id);
+
+                row.innerHTML = `
+                    <td class="px-6 py-4 text-slate-400 text-xs font-mono">${item.date}</td>
+                    <td class="px-6 py-4">
+                        <p class="font-bold text-white text-sm">${item.desc}</p>
+                        <p class="text-[10px] text-slate-500 uppercase">${item.type} • ${item.currency}</p>
+                    </td>
+                    <td class="px-6 py-4 font-mono font-bold text-sm ${amountClass}">${amountPrefix} ${item.amount.toLocaleString()}</td>
+                    <td class="px-6 py-4">${statusHtml}</td>
+                    <td class="px-6 py-4 text-right">${actionHtml}</td>
+                `;
+                tbody.appendChild(row);
+            });
+        }
+
+        function filterTable(filter, btn) {
+            // Update tabs
+            document.querySelectorAll('.filter-tab').forEach(b => {
+                b.classList.remove('filter-tab-active');
+                b.classList.add('filter-tab-inactive');
+            });
+            btn.classList.remove('filter-tab-inactive');
+            btn.classList.add('filter-tab-active');
+            
+            renderLedger(filter);
+        }
+
+        // --- View Switching Logic ---
+        function switchView(viewName, txnId) {
+            const dashboard = document.getElementById('view-dashboard');
+            const staple = document.getElementById('view-staple');
+            const headerActions = document.getElementById('header-actions');
+
+            if (viewName === 'staple') {
+                // Update ID
+                if(txnId) document.getElementById('staple-id').innerText = txnId;
+                
+                dashboard.classList.add('-translate-x-full'); 
+                staple.classList.remove('translate-x-full'); 
+                headerActions.classList.add('opacity-0'); 
+                
+                // Initialize Doc View
+                viewDoc('invoice', document.querySelector('.doc-item')); // Default select first
+            } else {
+                dashboard.classList.remove('-translate-x-full');
+                staple.classList.add('translate-x-full');
+                headerActions.classList.remove('opacity-0');
+            }
+        }
+
+        // --- Drag & Drop Logic ---
+        const dropArea = document.getElementById('drop-area');
+        
+        function handleDragOver(e) {
+            e.preventDefault();
+            dropArea.classList.add('drag-active');
+        }
+        function handleDragLeave(e) {
+            e.preventDefault();
+            dropArea.classList.remove('drag-active');
+        }
+        function handleDrop(e) {
+            e.preventDefault();
+            dropArea.classList.remove('drag-active');
+            const files = e.dataTransfer.files;
+            if(files.length) processFile(files[0]);
+        }
+        function handleFileSelect(input) {
+            if(input.files.length) processFile(input.files[0]);
+        }
+        function processFile(file) {
+            document.getElementById('upload-instruction').classList.add('hidden');
+            document.getElementById('processing-view').classList.remove('hidden');
+            // Simulate processing delay
+            setTimeout(() => {
+                document.getElementById('processing-view').classList.add('hidden');
+                document.getElementById('success-view').classList.remove('hidden');
+            }, 3000);
+        }
+        function resetUpload() {
+            document.getElementById('success-view').classList.add('hidden');
+            document.getElementById('upload-instruction').classList.remove('hidden');
+            document.getElementById('file-input').value = '';
+        }
+        function triggerUploadForTxn() {
+            document.getElementById('view-dashboard').scrollTo({ top: 0, behavior: 'smooth' });
+            dropArea.classList.add('border-brand-500', 'bg-brand-900/10');
+            setTimeout(() => dropArea.classList.remove('border-brand-500', 'bg-brand-900/10'), 1000);
+        }
+
+        // --- Realistic Document Templates ---
+        const Documents = {
+            'invoice': `
+                <div class="flex justify-between items-start mb-10 border-b-2 border-gray-800 pb-6">
+                    <div>
+                        <h1 class="text-4xl font-serif font-bold text-gray-900 mb-2">INVOICE</h1>
+                        <p class="text-sm font-mono text-gray-500">#INV-9921 / EXP-08</p>
+                        <p class="text-sm text-gray-500">Date: Jan 14, 2026</p>
+                    </div>
+                    <div class="text-right">
+                        <h2 class="text-xl font-bold text-gray-900 uppercase">Tex Exports Pvt Ltd</h2>
+                        <p class="text-xs text-gray-600">12, Industrial Estate, Tiruppur</p>
+                        <p class="text-xs text-gray-600">Tamil Nadu, India - 641602</p>
+                        <p class="text-xs text-gray-600 font-mono mt-1">IEC: 0988776655 | GST: 33ABCDE1234F1Z5</p>
+                    </div>
+                </div>
+                
+                <div class="flex justify-between mb-12">
+                    <div class="w-1/2">
+                        <p class="text-xs font-bold text-gray-400 uppercase mb-2 tracking-wider">Bill To</p>
+                        <p class="font-bold text-gray-900 text-lg">Zara International Ltd</p>
+                        <p class="text-sm text-gray-600">80 Robinson Road</p>
+                        <p class="text-sm text-gray-600">#12-00 Singapore 068898</p>
+                    </div>
+                    <div class="w-1/3 text-right">
+                        <p class="text-xs font-bold text-gray-400 uppercase mb-2 tracking-wider">Banking Details</p>
+                        <p class="text-sm font-bold text-gray-800">DBS Bank Ltd</p>
+                        <p class="text-sm text-gray-600 font-mono">Acct: 8821 9923 1102</p>
+                        <p class="text-sm text-gray-600 font-mono">SWIFT: DBSSSGSG</p>
+                        <p class="text-xs text-gray-500 mt-1">Intermediary: None (Direct)</p>
+                    </div>
+                </div>
+
+                <table class="w-full text-left mb-10 border-collapse">
+                    <thead>
+                        <tr class="border-b-2 border-gray-900">
+                            <th class="py-3 text-xs font-bold text-gray-900 uppercase tracking-wider">Item Description</th>
+                            <th class="py-3 text-xs font-bold text-gray-900 uppercase text-right tracking-wider">HS Code</th>
+                            <th class="py-3 text-xs font-bold text-gray-900 uppercase text-right tracking-wider">Qty</th>
+                            <th class="py-3 text-xs font-bold text-gray-900 uppercase text-right tracking-wider">Rate</th>
+                            <th class="py-3 text-xs font-bold text-gray-900 uppercase text-right tracking-wider">Amount</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr class="border-b border-gray-200">
+                            <td class="py-4 text-sm text-gray-800 font-serif">100% Cotton Knitted T-Shirts (Mens) - Batch A</td>
+                            <td class="py-4 text-sm text-gray-600 text-right font-mono">6109.10</td>
+                            <td class="py-4 text-sm text-gray-600 text-right">2,000</td>
+                            <td class="py-4 text-sm text-gray-600 text-right">$5.00</td>
+                            <td class="py-4 text-sm text-gray-900 text-right font-bold">$10,000.00</td>
+                        </tr>
+                        <tr class="border-b border-gray-200">
+                            <td class="py-4 text-sm text-gray-800 font-serif">100% Cotton Knitted T-Shirts (Womens) - Batch B</td>
+                            <td class="py-4 text-sm text-gray-600 text-right font-mono">6109.10</td>
+                            <td class="py-4 text-sm text-gray-600 text-right">500</td>
+                            <td class="py-4 text-sm text-gray-600 text-right">$5.00</td>
+                            <td class="py-4 text-sm text-gray-900 text-right font-bold">$2,500.00</td>
+                        </tr>
+                    </tbody>
+                </table>
+
+                <div class="flex justify-end mb-16">
+                    <div class="w-64">
+                        <div class="flex justify-between mb-2">
+                            <span class="text-sm text-gray-500">Subtotal</span>
+                            <span class="text-sm font-bold text-gray-900">$12,500.00</span>
+                        </div>
+                        <div class="flex justify-between mb-3 pb-3 border-b border-gray-200">
+                            <span class="text-sm text-gray-500">Tax (Export Exempt)</span>
+                            <span class="text-sm font-bold text-gray-900">$0.00</span>
+                        </div>
+                        <div class="flex justify-between items-center">
+                            <span class="text-lg font-bold text-gray-900 uppercase">Total Due</span>
+                            <span class="text-2xl font-bold text-blue-600 font-mono">$12,500.00</span>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="flex justify-between items-end border-t border-gray-300 pt-8">
+                    <div class="text-xs text-gray-400 w-1/2">
+                        <p>Declaration: We declare that this invoice shows the actual price of the goods described and that all particulars are true and correct.</p>
+                    </div>
+                    <div class="text-center">
+                        <p class="font-serif italic text-lg text-blue-900 mb-2">Ramesh Kumar</p>
+                        <p class="text-[10px] text-gray-500 uppercase tracking-widest border-t border-gray-300 pt-1">Authorized Signatory</p>
+                    </div>
+                </div>
+                
+                <div class="verified-stamp" style="color: #475569; border-color: #475569; opacity: 0.15; transform: rotate(-25deg);">ORIGINAL FOR BUYER</div>
+            `,
+            'advice': `
+                <div class="text-center mb-10 border-b-4 border-red-600 pb-6">
+                    <h1 class="text-3xl font-bold text-red-600 tracking-tight">DBS BANK LTD</h1>
+                    <p class="text-xs text-gray-500 font-bold uppercase tracking-widest mt-1">Institutional Banking Group • Singapore</p>
+                </div>
+                
+                <h2 class="text-xl font-bold text-center mb-8 bg-gray-100 py-2 border-y border-gray-300 uppercase tracking-wider">Foreign Inward Remittance Advice</h2>
+                
+                <div class="flex justify-between mb-8 text-sm">
+                    <div class="w-1/2">
+                        <p class="text-[10px] font-bold text-gray-400 uppercase mb-1">Beneficiary Details</p>
+                        <p class="font-bold text-gray-900 text-lg">TEX EXPORTS PVT LTD</p>
+                        <p class="text-gray-600">A/C: 882199231102</p>
+                    </div>
+                    <div class="text-right">
+                        <p class="text-[10px] font-bold text-gray-400 uppercase mb-1">Advice Reference</p>
+                        <p class="font-mono font-bold text-gray-900">DBS/ADV/2026/01/14/001</p>
+                        <p class="text-gray-600">Date: 14-JAN-2026</p>
+                    </div>
+                </div>
+
+                <div class="bg-gray-50 p-8 rounded-lg border border-gray-200 mb-8 shadow-sm">
+                    <div class="grid grid-cols-2 gap-y-6 gap-x-8 text-sm">
+                        <div>
+                            <div class="text-[10px] font-bold text-gray-400 uppercase">Remitter Name</div>
+                            <div class="font-bold text-gray-900 mt-1">ZARA INTERNATIONAL LTD</div>
+                        </div>
+                        <div>
+                            <div class="text-[10px] font-bold text-gray-400 uppercase">Remitting Bank</div>
+                            <div class="font-bold text-gray-900 mt-1">DBS SINGAPORE (INTERNAL)</div>
+                        </div>
+                        <div>
+                            <div class="text-[10px] font-bold text-gray-400 uppercase">Currency / Amount</div>
+                            <div class="font-bold text-gray-900 mt-1 text-lg">USD 12,500.00</div>
+                        </div>
+                        <div>
+                            <div class="text-[10px] font-bold text-gray-400 uppercase">Value Date</div>
+                            <div class="font-bold text-gray-900 mt-1">14-JAN-2026</div>
+                        </div>
+                        <div class="col-span-2 border-t border-gray-200 pt-4">
+                            <div class="text-[10px] font-bold text-gray-400 uppercase">Purpose of Remittance</div>
+                            <div class="font-bold text-gray-900 mt-1 font-mono">P0103 - ADVANCE RECEIPT FOR EXPORTS</div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="mb-12">
+                    <p class="text-xs font-bold text-gray-500 uppercase mb-3 tracking-widest">Settlement Details</p>
+                    <table class="w-full text-xs text-left border border-gray-300">
+                        <tr class="bg-gray-100">
+                            <th class="p-3 border-r border-gray-300 font-bold text-gray-700">Description</th>
+                            <th class="p-3 border-r border-gray-300 font-bold text-gray-700 text-right">Rate</th>
+                            <th class="p-3 font-bold text-gray-700 text-right">Amount (INR)</th>
+                        </tr>
+                        <tr>
+                            <td class="p-3 border-r border-gray-300">Gross Amount Converted</td>
+                            <td class="p-3 border-r border-gray-300 text-right font-mono">83.6050</td>
+                            <td class="p-3 text-right font-mono">1,045,062.50</td>
+                        </tr>
+                        <tr class="text-red-500">
+                            <td class="p-3 border-r border-gray-300">Less: Bank Charges</td>
+                            <td class="p-3 border-r border-gray-300 text-right">--</td>
+                            <td class="p-3 text-right font-mono">0.00</td>
+                        </tr>
+                        <tr class="bg-blue-50 font-bold">
+                            <td class="p-3 border-r border-gray-300">Net Credit to Account</td>
+                            <td class="p-3 border-r border-gray-300 text-right"></td>
+                            <td class="p-3 text-right font-mono text-sm">1,045,062.50</td>
+                        </tr>
+                    </table>
+                </div>
+
+                <div class="verified-stamp">CREDITED</div>
+                <div class="text-center text-[10px] text-gray-400 mt-8">This is a computer generated advice. No signature required.</div>
+            `,
+            'efira': `
+                <div class="border-4 border-double border-gray-800 p-10 h-full relative bg-white">
+                    <div class="flex justify-between items-center mb-8">
+                        <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/c/cf/DBS_Bank_logo.svg/2560px-DBS_Bank_logo.svg.png" class="h-6">
+                        <p class="text-[10px] font-bold text-gray-500 uppercase">Form IRM-1</p>
+                    </div>
+
+                    <div class="text-center mb-10">
+                        <h1 class="text-xl font-bold uppercase tracking-widest underline decoration-2 underline-offset-4">Foreign Inward Remittance Certificate</h1>
+                        <p class="text-[10px] text-gray-500 mt-2 font-bold">(TO BE USED FOR REGULATORY PURPOSES ONLY)</p>
+                    </div>
+
+                    <div class="flex justify-between text-xs mb-8 border-y-2 border-gray-800 py-3">
+                        <span><strong>IRN:</strong> 20260114992123</span>
+                        <span><strong>Issue Date:</strong> 14-JAN-2026</span>
+                        <span><strong>AD Code:</strong> 0892211 (DBS)</span>
+                    </div>
+
+                    <p class="text-xs text-justify mb-8 leading-relaxed font-serif">
+                        We certify that we have received the following remittance and the proceeds have been credited to the beneficiary's account as per details below:
+                    </p>
+
+                    <table class="w-full text-xs border border-gray-800 mb-8">
+                        <tr>
+                            <td class="p-3 border-b border-r border-gray-800 bg-gray-100 font-bold w-1/3">1. Name & Address of Beneficiary</td>
+                            <td class="p-3 border-b border-gray-800 font-mono">TEX EXPORTS PVT LTD<br>12 IND ESTATE, TIRUPPUR, TN</td>
+                        </tr>
+                        <tr>
+                            <td class="p-3 border-b border-r border-gray-800 bg-gray-100 font-bold">2. Name & Address of Remitter</td>
+                            <td class="p-3 border-b border-gray-800 font-mono">ZARA INTERNATIONAL LTD<br>SINGAPORE</td>
+                        </tr>
+                        <tr>
+                            <td class="p-3 border-b border-r border-gray-800 bg-gray-100 font-bold">3. Amount in Foreign Currency</td>
+                            <td class="p-3 border-b border-gray-800 font-bold">USD 12,500.00</td>
+                        </tr>
+                        <tr>
+                            <td class="p-3 border-b border-r border-gray-800 bg-gray-100 font-bold">4. Rupee Equivalent</td>
+                            <td class="p-3 border-b border-gray-800">INR 1,045,062.50</td>
+                        </tr>
+                        <tr>
+                            <td class="p-3 border-r border-gray-800 bg-gray-100 font-bold">5. Purpose of Remittance</td>
+                            <td class="p-3 border-gray-800">P0103 - ADVANCE RECEIPT FOR EXPORTS</td>
+                        </tr>
+                    </table>
+
+                    <div class="text-xs text-gray-700 mb-12 border border-gray-300 p-4 rounded bg-gray-50">
+                        <p class="mb-1"><strong>Remarks:</strong></p>
+                        <p class="font-mono">Adjusted against Export Invoice No. INV-9921 dated 14-JAN-2026. This certificate is electronically generated based on the credit received in the account.</p>
+                    </div>
+
+                    <div class="flex justify-between items-end mt-auto">
+                        <div class="text-center">
+                            <div class="h-16 w-16 border-4 border-blue-700 rounded-full flex items-center justify-center text-[10px] text-blue-700 font-bold transform -rotate-12 mx-auto mb-2 opacity-80">
+                                DIGITALLY<br>SIGNED<br>DBS BANK
+                            </div>
+                            <p class="text-[10px] font-bold uppercase">Authorized Signatory</p>
+                        </div>
+                        <div class="text-right text-[9px] text-gray-400">
+                            <p>System Generated via SettleX Treasury OS</p>
+                            <p>Ref: SettleX/EDPMS/8821/V4</p>
+                            <p>Hash: 8a7b6c5d4e3f2g1h</p>
+                        </div>
+                    </div>
+                    
+                    <div class="doc-watermark">e-FIRA</div>
+                </div>
+            `
+        };
+
+        function viewDoc(type, el) {
+            // UI Toggle
+            if(el) {
+                document.querySelectorAll('.doc-item').forEach(d => {
+                    d.classList.remove('bg-brand-900/20', 'border-brand-500/50', 'active-doc');
+                    d.classList.add('bg-slate-800/50', 'border-slate-700');
+                    d.querySelector('i:last-child')?.remove();
+                });
+                el.classList.remove('bg-slate-800/50', 'border-slate-700');
+                el.classList.add('bg-brand-900/20', 'border-brand-500/50', 'active-doc');
+                // Re-add eye icon
+                const eye = document.createElement('i');
+                eye.className = 'fa-solid fa-eye text-brand-400 text-xs ml-auto';
+                el.appendChild(eye);
+            }
+
+            const viewer = document.getElementById('doc-content');
+            viewer.classList.add('opacity-0', 'scale-95');
+            
+            setTimeout(() => {
+                viewer.innerHTML = Documents[type];
+                viewer.classList.remove('opacity-0', 'scale-95');
+                
+                // Trigger Staple Animation
+                const staple = document.querySelector('.staple-mark');
+                staple.style.animation = 'none';
+                staple.offsetHeight; /* trigger reflow */
+                staple.style.animation = 'staple 0.6s ease-in-out';
+                
+                // Trigger Stamp Animation if advice/efira
+                const stamp = document.querySelector('.verified-stamp');
+                if(stamp) {
+                    stamp.style.animation = 'none';
+                    stamp.offsetHeight;
+                    setTimeout(() => stamp.style.animation = 'stamp 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards', 300);
+                }
+            }, 200);
+        }
+
+        function downloadBundle() {
+            const btn = event.currentTarget;
+            const originalContent = btn.innerHTML;
+            btn.innerHTML = '<i class="fa-solid fa-circle-notch fa-spin mr-2"></i> Zipping...';
+            btn.classList.add('opacity-75', 'cursor-not-allowed');
+            
+            setTimeout(() => {
+                btn.innerHTML = '<i class="fa-solid fa-check mr-2"></i> Downloaded';
+                btn.classList.replace('bg-brand-600', 'bg-green-600');
+                btn.classList.replace('hover:bg-brand-500', 'hover:bg-green-500');
+                
+                // Mock Download Action
+                const link = document.createElement('a');
+                link.href = '#';
+                link.download = 'SettleX_Compliance_Bundle_TXN8821.zip';
+                link.click();
+
+                setTimeout(() => {
+                    btn.innerHTML = originalContent;
+                    btn.classList.replace('bg-green-600', 'bg-brand-600');
+                    btn.classList.replace('hover:bg-green-500', 'hover:bg-brand-500');
+                    btn.classList.remove('opacity-75', 'cursor-not-allowed');
+                }, 3000);
+            }, 1500);
+        }
+        
+        function simulateSync() {
+            const btn = event.currentTarget;
+            btn.innerHTML = '<i class="fa-solid fa-rotate fa-spin mr-1"></i> Syncing...';
+            setTimeout(() => {
+                btn.innerHTML = '<i class="fa-solid fa-check mr-1"></i> Synced';
+                btn.classList.add('text-green-400', 'border-green-500/50');
+                setTimeout(() => {
+                    btn.innerHTML = '<i class="fa-solid fa-rotate mr-1"></i> Sync EDPMS';
+                    btn.classList.remove('text-green-400', 'border-green-500/50');
+                }, 2000);
+            }, 1500);
+        }
+    </script>
+</body>
+</html>

@@ -1,0 +1,676 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Open Account | SettleX Regulatory Onboarding</title>
+    
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    
+    <!-- Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600&family=Plus+Jakarta+Sans:wght@500;600;700&display=swap" rel="stylesheet">
+    
+    <!-- Icons -->
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+
+    <!-- Config -->
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    fontFamily: {
+                        sans: ['Inter', 'sans-serif'],
+                        display: ['Plus Jakarta Sans', 'sans-serif'],
+                    },
+                    colors: {
+                        brand: {
+                            50: '#f0f9ff',
+                            100: '#e0f2fe',
+                            500: '#0ea5e9',
+                            600: '#0284c7', // Primary
+                            700: '#0369a1',
+                            900: '#0c4a6e', // Deep
+                        }
+                    },
+                    animation: {
+                        'fade-in': 'fadeIn 0.5s ease-out',
+                        'slide-up': 'slideUp 0.4s ease-out',
+                        'spin-slow': 'spin 2s linear infinite',
+                    },
+                    keyframes: {
+                        fadeIn: {
+                            '0%': { opacity: '0' },
+                            '100%': { opacity: '1' }
+                        },
+                        slideUp: {
+                            '0%': { transform: 'translateY(10px)', opacity: '0' },
+                            '100%': { transform: 'translateY(0)', opacity: '1' }
+                        }
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        /* Custom Stepper Styles */
+        .step-active { @apply bg-brand-600 text-white border-brand-600 shadow-lg shadow-brand-500/30; }
+        .step-completed { @apply bg-green-500 text-white border-green-500; }
+        .step-inactive { @apply bg-white text-slate-400 border-slate-200; }
+        
+        /* Drag Drop Zone */
+        .drop-zone {
+            transition: all 0.3s ease;
+            background-image: url("data:image/svg+xml,%3csvg width='100%25' height='100%25' xmlns='http://www.w3.org/2000/svg'%3e%3crect width='100%25' height='100%25' fill='none' rx='16' ry='16' stroke='%23CBD5E1FF' stroke-width='2' stroke-dasharray='12%2c 12' stroke-dashoffset='0' stroke-linecap='square'/%3e%3c/svg%3e");
+        }
+        .drop-zone:hover, .drop-zone.dragover {
+            background-color: #f0f9ff;
+            background-image: url("data:image/svg+xml,%3csvg width='100%25' height='100%25' xmlns='http://www.w3.org/2000/svg'%3e%3crect width='100%25' height='100%25' fill='none' rx='16' ry='16' stroke='%230EA5E9FF' stroke-width='2' stroke-dasharray='12%2c 12' stroke-dashoffset='0' stroke-linecap='square'/%3e%3c/svg%3e");
+        }
+    </style>
+</head>
+<body class="bg-slate-50 text-slate-900 min-h-screen flex flex-col font-sans">
+
+    <!-- 1. HEADER (Secure Context) -->
+    <nav class="bg-white border-b border-slate-200 sticky top-0 z-50 shadow-sm">
+        <div class="container mx-auto px-6 h-18 flex items-center justify-between">
+            <div class="flex items-center gap-3">
+                <a href="index.html" class="flex items-center gap-2 group">
+                    <div class="w-9 h-9 bg-brand-600 rounded-lg flex items-center justify-center text-white font-bold shadow-md group-hover:scale-105 transition-transform">S</div>
+                    <span class="text-xl font-display font-bold text-slate-900 tracking-tight">SettleX</span>
+                </a>
+                <div class="hidden md:flex h-6 w-px bg-slate-200 mx-2"></div>
+                <div class="hidden md:flex items-center gap-2 text-xs font-semibold text-slate-500 bg-slate-100 px-2 py-1 rounded">
+                    <i class="fa-solid fa-lock text-brand-600"></i> Secure Enrollment
+                </div>
+            </div>
+            
+            <div class="flex items-center gap-6 text-sm">
+                <div class="hidden md:block text-right">
+                    <p class="text-slate-900 font-bold">Need Help?</p>
+                    <p class="text-slate-500 text-xs">compliance@settlex.com</p>
+                </div>
+                <a href="login.html" class="font-bold text-slate-500 hover:text-brand-600 transition">Log In</a>
+            </div>
+        </div>
+    </nav>
+
+    <!-- 2. MAIN APPLICATION CONTAINER -->
+    <main class="flex-grow container mx-auto px-4 py-12 max-w-6xl">
+        
+        <!-- Header Section -->
+        <div class="text-center mb-12 animate-fade-in">
+            <h1 class="text-3xl md:text-4xl font-display font-bold text-slate-900 mb-4">Activate your Cross-Border Treasury</h1>
+            <p class="text-slate-500 max-w-2xl mx-auto text-lg">Complete your regulatory KYC to unlock wholesale exchange rates (0.20%) and automated e-FIRAs. This process is mandatory under RBI PA-CB guidelines.</p>
+        </div>
+
+        <div class="grid lg:grid-cols-12 gap-8 items-start relative">
+            
+            <!-- LEFT: PROGRESS TRACKER (Sticky) -->
+            <div class="hidden lg:block lg:col-span-3 sticky top-24 space-y-6 animate-slide-up">
+                <!-- Vertical Stepper -->
+                <nav aria-label="Progress">
+                    <ol role="list" class="overflow-hidden">
+                        <!-- Step 1: Pre-Check -->
+                        <li class="relative pb-10">
+                            <div class="absolute top-4 left-4 -ml-px h-full w-0.5 bg-brand-600" aria-hidden="true"></div>
+                            <a href="#" class="relative flex items-start group" id="nav-step-1">
+                                <span class="h-9 w-9 items-center justify-center rounded-full bg-brand-600 hover:bg-brand-800 ring-4 ring-white flex text-white font-bold text-sm transition-all shadow-lg shadow-brand-500/30">
+                                    1
+                                </span>
+                                <span class="ml-4 min-w-0 flex flex-col">
+                                    <span class="text-sm font-bold text-brand-700 tracking-wide">Verification</span>
+                                    <span class="text-xs text-slate-500">Email & Mobile OTP</span>
+                                </span>
+                            </a>
+                        </li>
+
+                        <!-- Step 2: Entity Details -->
+                        <li class="relative pb-10">
+                            <div class="absolute top-4 left-4 -ml-px h-full w-0.5 bg-slate-200" id="line-2" aria-hidden="true"></div>
+                            <a href="#" class="relative flex items-start group" id="nav-step-2">
+                                <span class="h-9 w-9 items-center justify-center rounded-full bg-white border-2 border-slate-200 flex text-slate-400 font-bold text-sm transition-all" id="icon-step-2">
+                                    2
+                                </span>
+                                <span class="ml-4 min-w-0 flex flex-col">
+                                    <span class="text-sm font-bold text-slate-500" id="text-step-2">Company Profile</span>
+                                    <span class="text-xs text-slate-400">PAN, GSTIN & IEC</span>
+                                </span>
+                            </a>
+                        </li>
+
+                        <!-- Step 3: Bank Verification -->
+                        <li class="relative pb-10">
+                            <div class="absolute top-4 left-4 -ml-px h-full w-0.5 bg-slate-200" id="line-3" aria-hidden="true"></div>
+                            <a href="#" class="relative flex items-start group" id="nav-step-3">
+                                <span class="h-9 w-9 items-center justify-center rounded-full bg-white border-2 border-slate-200 flex text-slate-400 font-bold text-sm transition-all" id="icon-step-3">
+                                    3
+                                </span>
+                                <span class="ml-4 min-w-0 flex flex-col">
+                                    <span class="text-sm font-bold text-slate-500" id="text-step-3">Bank Validation</span>
+                                    <span class="text-xs text-slate-400">Penny Drop Check</span>
+                                </span>
+                            </a>
+                        </li>
+
+                        <!-- Step 4: Documents -->
+                        <li class="relative">
+                            <a href="#" class="relative flex items-start group" id="nav-step-4">
+                                <span class="h-9 w-9 items-center justify-center rounded-full bg-white border-2 border-slate-200 flex text-slate-400 font-bold text-sm transition-all" id="icon-step-4">
+                                    4
+                                </span>
+                                <span class="ml-4 min-w-0 flex flex-col">
+                                    <span class="text-sm font-bold text-slate-500" id="text-step-4">Documentation</span>
+                                    <span class="text-xs text-slate-400">Digital KYC Upload</span>
+                                </span>
+                            </a>
+                        </li>
+                    </ol>
+                </nav>
+
+                <!-- Help Widget -->
+                <div class="bg-brand-50 rounded-xl p-5 border border-brand-100">
+                    <h4 class="text-sm font-bold text-brand-900 mb-2 flex items-center gap-2"><i class="fa-solid fa-circle-question"></i> Need Assistance?</h4>
+                    <p class="text-xs text-brand-700/80 mb-3 leading-relaxed">
+                        Stuck on a step? Our AI Assistant 'Atlas' can help verify your documents instantly.
+                    </p>
+                    <button onclick="toggleAtlas()" class="text-xs font-bold text-white bg-brand-600 px-4 py-2 rounded-lg hover:bg-brand-700 w-full transition shadow-sm">
+                        Ask Atlas
+                    </button>
+                </div>
+            </div>
+
+            <!-- RIGHT: DYNAMIC FORM AREA (Col 9) -->
+            <div class="lg:col-span-9 bg-white rounded-2xl shadow-xl shadow-slate-200/50 border border-slate-100 overflow-hidden relative min-h-[600px]">
+                
+                <!-- Loading Overlay (Hidden by default) -->
+                <div id="global-loader" class="hidden absolute inset-0 bg-white/90 z-50 flex flex-col items-center justify-center">
+                    <div class="w-12 h-12 border-4 border-brand-200 border-t-brand-600 rounded-full animate-spin mb-4"></div>
+                    <p class="text-slate-600 font-bold animate-pulse">Verifying with Government Registry...</p>
+                </div>
+
+                <form id="kyc-form" onsubmit="return false;" class="p-8 md:p-10">
+                    
+                    <!-- --- STEP 1: CONTACT VERIFICATION --- -->
+                    <div id="step-1-content" class="animate-fade-in">
+                        <div class="flex justify-between items-center mb-8">
+                            <h2 class="text-2xl font-bold text-slate-900">Let's verify your contact</h2>
+                            <span class="text-xs font-mono bg-slate-100 px-3 py-1 rounded-full text-slate-500">Step 1 of 4</span>
+                        </div>
+
+                        <div class="grid md:grid-cols-2 gap-8">
+                            <!-- Email -->
+                            <div class="space-y-4">
+                                <label class="block text-sm font-bold text-slate-700">Official Work Email</label>
+                                <div class="relative">
+                                    <i class="fa-solid fa-envelope absolute left-4 top-3.5 text-slate-400"></i>
+                                    <input type="email" id="email" class="w-full pl-11 pr-4 py-3 bg-slate-50 border border-slate-200 rounded-xl focus:outline-none focus:border-brand-500 focus:ring-1 focus:ring-brand-500 transition-all" placeholder="finance@company.com">
+                                </div>
+                                <button type="button" onclick="simulateOTP('email')" class="text-sm font-bold text-brand-600 hover:text-brand-800">Send Verification Code</button>
+                                
+                                <!-- OTP Input (Hidden) -->
+                                <div id="email-otp-group" class="hidden space-y-2 pt-2">
+                                    <label class="text-xs font-semibold text-slate-500">Enter Email OTP</label>
+                                    <div class="flex gap-2">
+                                        <input type="text" class="w-full px-4 py-2 bg-white border border-slate-300 rounded-lg text-center tracking-widest font-mono font-bold" placeholder="123456" maxlength="6">
+                                        <button type="button" onclick="verifyOTP('email')" class="px-4 py-2 bg-slate-900 text-white rounded-lg hover:bg-slate-800 text-xs font-bold">Verify</button>
+                                    </div>
+                                </div>
+                                <div id="email-verified" class="hidden flex items-center gap-2 text-green-600 text-sm font-bold bg-green-50 p-2 rounded-lg border border-green-100">
+                                    <i class="fa-solid fa-circle-check"></i> Verified
+                                </div>
+                            </div>
+
+                            <!-- Mobile -->
+                            <div class="space-y-4">
+                                <label class="block text-sm font-bold text-slate-700">Mobile Number (Authorized)</label>
+                                <div class="flex relative">
+                                    <span class="inline-flex items-center px-4 rounded-l-xl border border-r-0 border-slate-200 bg-slate-100 text-slate-500 font-mono text-sm">+91</span>
+                                    <input type="tel" id="mobile" class="w-full px-4 py-3 bg-slate-50 border border-slate-200 rounded-r-xl focus:outline-none focus:border-brand-500 focus:ring-1 focus:ring-brand-500 transition-all" placeholder="98765 43210">
+                                </div>
+                                <button type="button" onclick="simulateOTP('mobile')" class="text-sm font-bold text-brand-600 hover:text-brand-800">Send Verification Code</button>
+
+                                <!-- OTP Input (Hidden) -->
+                                <div id="mobile-otp-group" class="hidden space-y-2 pt-2">
+                                    <label class="text-xs font-semibold text-slate-500">Enter Mobile OTP</label>
+                                    <div class="flex gap-2">
+                                        <input type="text" class="w-full px-4 py-2 bg-white border border-slate-300 rounded-lg text-center tracking-widest font-mono font-bold" placeholder="123456" maxlength="6">
+                                        <button type="button" onclick="verifyOTP('mobile')" class="px-4 py-2 bg-slate-900 text-white rounded-lg hover:bg-slate-800 text-xs font-bold">Verify</button>
+                                    </div>
+                                </div>
+                                <div id="mobile-verified" class="hidden flex items-center gap-2 text-green-600 text-sm font-bold bg-green-50 p-2 rounded-lg border border-green-100">
+                                    <i class="fa-solid fa-circle-check"></i> Verified
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="mt-10 flex justify-end pt-6 border-t border-slate-100">
+                            <button type="button" onclick="nextStep(2)" id="btn-step-1" class="bg-slate-300 text-white px-8 py-3 rounded-xl font-bold transition-all cursor-not-allowed flex items-center gap-2" disabled>
+                                Continue <i class="fa-solid fa-arrow-right"></i>
+                            </button>
+                        </div>
+                    </div>
+
+                    <!-- --- STEP 2: COMPANY PROFILE --- -->
+                    <div id="step-2-content" class="hidden animate-fade-in">
+                        <div class="flex justify-between items-center mb-8">
+                            <div>
+                                <h2 class="text-2xl font-bold text-slate-900">Entity Details</h2>
+                                <p class="text-sm text-slate-500">We fetch details from MCA & GSTN in real-time.</p>
+                            </div>
+                            <span class="text-xs font-mono bg-slate-100 px-3 py-1 rounded-full text-slate-500">Step 2 of 4</span>
+                        </div>
+
+                        <div class="space-y-6">
+                            <!-- PAN Input with Validation -->
+                            <div>
+                                <label class="block text-sm font-bold text-slate-700 mb-2">Company PAN *</label>
+                                <div class="relative">
+                                    <input type="text" id="pan-input" class="w-full px-4 py-3 bg-slate-50 border border-slate-200 rounded-xl focus:outline-none focus:border-brand-500 focus:ring-1 focus:ring-brand-500 uppercase font-mono tracking-wide" placeholder="ABCDE1234F" maxlength="10" onblur="validatePAN()">
+                                    <div id="pan-loader" class="hidden absolute right-4 top-3.5 text-slate-400">
+                                        <i class="fa-solid fa-circle-notch fa-spin"></i>
+                                    </div>
+                                    <div id="pan-success" class="hidden absolute right-4 top-3.5 text-green-500">
+                                        <i class="fa-solid fa-check-circle"></i>
+                                    </div>
+                                </div>
+                                <p id="pan-error" class="hidden text-xs text-red-500 mt-1 font-semibold"><i class="fa-solid fa-circle-exclamation"></i> Invalid PAN format.</p>
+                            </div>
+
+                            <!-- Auto-Populated Name -->
+                            <div id="entity-name-group" class="hidden opacity-0 transition-opacity duration-500">
+                                <label class="block text-sm font-bold text-slate-700 mb-2">Registered Entity Name</label>
+                                <div class="flex items-center gap-3 bg-blue-50 border border-blue-100 p-4 rounded-xl">
+                                    <div class="w-10 h-10 bg-white rounded-full flex items-center justify-center text-blue-600 shadow-sm">
+                                        <i class="fa-solid fa-building"></i>
+                                    </div>
+                                    <input type="text" id="entity-name" class="bg-transparent border-none text-slate-900 font-bold w-full focus:ring-0" value="TEX EXPORTS PRIVATE LIMITED" readonly>
+                                    <span class="text-xs bg-blue-200 text-blue-800 px-2 py-1 rounded font-bold">Verified</span>
+                                </div>
+                            </div>
+
+                            <div class="grid md:grid-cols-2 gap-6">
+                                <div>
+                                    <label class="block text-sm font-bold text-slate-700 mb-2">GSTIN *</label>
+                                    <input type="text" id="gstin-input" class="w-full px-4 py-3 bg-slate-50 border border-slate-200 rounded-xl focus:outline-none focus:border-brand-500 uppercase font-mono" placeholder="22ABCDE1234F1Z5" onblur="validateFieldGeneric(this)">
+                                </div>
+                                <div>
+                                    <label class="block text-sm font-bold text-slate-700 mb-2">IEC Code *</label>
+                                    <input type="text" id="iec-input" class="w-full px-4 py-3 bg-slate-50 border border-slate-200 rounded-xl focus:outline-none focus:border-brand-500 font-mono" placeholder="10-digit DGFT Code" onblur="validateFieldGeneric(this)">
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="mt-10 flex justify-between pt-6 border-t border-slate-100">
+                            <button type="button" onclick="prevStep(1)" class="text-slate-500 hover:text-slate-800 font-bold px-4">Back</button>
+                            <button type="button" onclick="nextStep(3)" class="bg-brand-600 hover:bg-brand-700 text-white px-8 py-3 rounded-xl font-bold shadow-lg shadow-brand-500/30 transition-all flex items-center gap-2">
+                                Verify & Continue <i class="fa-solid fa-arrow-right"></i>
+                            </button>
+                        </div>
+                    </div>
+
+                    <!-- --- STEP 3: BANK VALIDATION --- -->
+                    <div id="step-3-content" class="hidden animate-fade-in">
+                        <div class="flex justify-between items-center mb-8">
+                            <div>
+                                <h2 class="text-2xl font-bold text-slate-900">Bank Verification</h2>
+                                <p class="text-sm text-slate-500">We'll deposit ₹1.00 to verify account ownership.</p>
+                            </div>
+                            <span class="text-xs font-mono bg-slate-100 px-3 py-1 rounded-full text-slate-500">Step 3 of 4</span>
+                        </div>
+
+                        <div class="bg-slate-50 p-6 rounded-2xl border border-slate-200 mb-6">
+                            <div class="grid md:grid-cols-2 gap-6">
+                                <div>
+                                    <label class="block text-sm font-bold text-slate-700 mb-2">Account Number</label>
+                                    <input type="password" id="account-num" class="w-full px-4 py-3 bg-white border border-slate-200 rounded-xl focus:outline-none focus:border-brand-500 font-mono tracking-widest" placeholder="●●●● ●●●● ●●●●">
+                                </div>
+                                <div>
+                                    <label class="block text-sm font-bold text-slate-700 mb-2">Confirm Account Number</label>
+                                    <input type="text" id="account-num-confirm" class="w-full px-4 py-3 bg-white border border-slate-200 rounded-xl focus:outline-none focus:border-brand-500 font-mono" placeholder="1234567890">
+                                </div>
+                            </div>
+                            <div class="mt-4">
+                                <label class="block text-sm font-bold text-slate-700 mb-2">IFSC Code</label>
+                                <div class="relative">
+                                    <input type="text" id="ifsc" class="w-full md:w-1/2 px-4 py-3 bg-white border border-slate-200 rounded-xl focus:outline-none focus:border-brand-500 font-mono uppercase" placeholder="HDFC0001234" onblur="fetchBankDetails()">
+                                    <p id="bank-name-display" class="hidden text-xs font-bold text-brand-600 mt-2"><i class="fa-solid fa-building-columns"></i> HDFC BANK, MUMBAI BRANCH</p>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="flex items-center gap-3 p-4 bg-yellow-50 border border-yellow-100 rounded-xl text-sm text-yellow-800">
+                            <i class="fa-solid fa-triangle-exclamation text-yellow-600"></i>
+                            <p><strong>Note:</strong> The bank account name must strictly match "TEX EXPORTS PRIVATE LIMITED". Third-party accounts will be rejected.</p>
+                        </div>
+
+                        <div class="mt-10 flex justify-between pt-6 border-t border-slate-100">
+                            <button type="button" onclick="prevStep(2)" class="text-slate-500 hover:text-slate-800 font-bold px-4">Back</button>
+                            <button type="button" onclick="initiatePennyDrop()" id="penny-drop-btn" class="bg-brand-600 hover:bg-brand-700 text-white px-8 py-3 rounded-xl font-bold shadow-lg shadow-brand-500/30 transition-all flex items-center gap-2">
+                                Verify Account <i class="fa-solid fa-check-to-slot"></i>
+                            </button>
+                        </div>
+                    </div>
+
+                    <!-- --- STEP 4: DOCUMENT UPLOAD --- -->
+                    <div id="step-4-content" class="hidden animate-fade-in">
+                        <div class="flex justify-between items-center mb-8">
+                            <div>
+                                <h2 class="text-2xl font-bold text-slate-900">Document Vault</h2>
+                                <p class="text-sm text-slate-500">Upload clear copies. Max 5MB per file.</p>
+                            </div>
+                            <span class="text-xs font-mono bg-slate-100 px-3 py-1 rounded-full text-slate-500">Step 4 of 4</span>
+                        </div>
+
+                        <div class="space-y-4">
+                            <!-- IEC Upload -->
+                            <div class="drop-zone relative border-2 border-dashed border-slate-300 rounded-xl p-6 text-center group cursor-pointer hover:border-brand-500 transition-colors">
+                                <input type="file" class="absolute inset-0 w-full h-full opacity-0 cursor-pointer" onchange="handleFileSelect(this, 'iec-status')">
+                                <div class="flex items-center justify-between pointer-events-none">
+                                    <div class="flex items-center gap-4 text-left">
+                                        <div class="w-12 h-12 bg-slate-100 rounded-lg flex items-center justify-center text-slate-400 group-hover:bg-brand-100 group-hover:text-brand-600 transition-colors">
+                                            <i class="fa-solid fa-file-invoice text-xl"></i>
+                                        </div>
+                                        <div>
+                                            <h4 class="font-bold text-slate-700 group-hover:text-brand-700">IEC Certificate</h4>
+                                            <p class="text-xs text-slate-400">PDF or JPG</p>
+                                        </div>
+                                    </div>
+                                    <span id="iec-status" class="text-xs font-bold bg-slate-100 text-slate-500 px-3 py-1.5 rounded-lg group-hover:bg-brand-100 group-hover:text-brand-700">Browse</span>
+                                </div>
+                            </div>
+
+                            <!-- Cancelled Cheque -->
+                            <div class="drop-zone relative border-2 border-dashed border-slate-300 rounded-xl p-6 text-center group cursor-pointer hover:border-brand-500 transition-colors">
+                                <input type="file" class="absolute inset-0 w-full h-full opacity-0 cursor-pointer" onchange="handleFileSelect(this, 'cheque-status')">
+                                <div class="flex items-center justify-between pointer-events-none">
+                                    <div class="flex items-center gap-4 text-left">
+                                        <div class="w-12 h-12 bg-slate-100 rounded-lg flex items-center justify-center text-slate-400 group-hover:bg-brand-100 group-hover:text-brand-600 transition-colors">
+                                            <i class="fa-solid fa-money-check text-xl"></i>
+                                        </div>
+                                        <div>
+                                            <h4 class="font-bold text-slate-700 group-hover:text-brand-700">Cancelled Cheque</h4>
+                                            <p class="text-xs text-slate-400">For account number match</p>
+                                        </div>
+                                    </div>
+                                    <span id="cheque-status" class="text-xs font-bold bg-slate-100 text-slate-500 px-3 py-1.5 rounded-lg group-hover:bg-brand-100 group-hover:text-brand-700">Browse</span>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="mt-8 pt-6 border-t border-slate-100">
+                            <label class="flex items-start gap-3 cursor-pointer">
+                                <input type="checkbox" id="terms-check" class="w-5 h-5 mt-0.5 rounded border-slate-300 text-brand-600 focus:ring-brand-500">
+                                <span class="text-sm text-slate-600">I confirm that I am an authorized signatory and agree to the <a href="#" class="text-brand-600 underline font-bold">Platform Agreement</a> and <a href="#" class="text-brand-600 underline font-bold">Privacy Policy</a>.</span>
+                            </label>
+                        </div>
+
+                        <div class="mt-10 flex justify-between pt-6">
+                            <button type="button" onclick="prevStep(3)" class="text-slate-500 hover:text-slate-800 font-bold px-4">Back</button>
+                            <button type="button" onclick="finalSubmit()" class="bg-green-600 hover:bg-green-700 text-white px-8 py-3 rounded-xl font-bold shadow-lg shadow-green-500/30 transition-all flex items-center gap-2 transform hover:scale-105 active:scale-95">
+                                Submit Application <i class="fa-solid fa-paper-plane"></i>
+                            </button>
+                        </div>
+                    </div>
+
+                    <!-- --- SUCCESS SCREEN --- -->
+                    <div id="success-screen" class="hidden text-center py-12">
+                        <div class="inline-flex relative mb-8">
+                            <div class="w-24 h-24 bg-green-100 rounded-full flex items-center justify-center animate-bounce">
+                                <i class="fa-solid fa-check text-5xl text-green-600"></i>
+                            </div>
+                            <div class="absolute -right-2 -bottom-2 bg-white p-2 rounded-full shadow-lg">
+                                <i class="fa-solid fa-shield-halved text-brand-600 text-xl"></i>
+                            </div>
+                        </div>
+                        
+                        <h2 class="text-3xl font-display font-bold text-slate-900 mb-4">Application Submitted Successfully!</h2>
+                        <p class="text-slate-500 max-w-md mx-auto mb-8 text-lg">Your application ID is <span class="font-mono font-bold text-slate-900">#KYC-2024-8821</span>. Our compliance team is reviewing your documents.</p>
+                        
+                        <div class="bg-slate-50 p-6 rounded-2xl max-w-md mx-auto text-left border border-slate-200 mb-8 shadow-inner">
+                            <h4 class="font-bold text-slate-700 mb-4 text-xs uppercase tracking-wider border-b border-slate-200 pb-2">Status Tracker</h4>
+                            <ul class="space-y-4 text-sm">
+                                <li class="flex items-center gap-3 text-green-700 font-medium">
+                                    <i class="fa-solid fa-circle-check"></i> 
+                                    <span class="flex-1">Identity Verification</span>
+                                    <span class="text-xs bg-green-100 px-2 py-0.5 rounded">Passed</span>
+                                </li>
+                                <li class="flex items-center gap-3 text-green-700 font-medium">
+                                    <i class="fa-solid fa-circle-check"></i> 
+                                    <span class="flex-1">Bank Account Check</span>
+                                    <span class="text-xs bg-green-100 px-2 py-0.5 rounded">Passed</span>
+                                </li>
+                                <li class="flex items-center gap-3 text-slate-500">
+                                    <div class="w-4 h-4 rounded-full border-2 border-slate-300 border-t-brand-600 animate-spin"></div>
+                                    <span class="flex-1">Manual Document Review</span>
+                                    <span class="text-xs bg-slate-200 px-2 py-0.5 rounded">In Progress</span>
+                                </li>
+                            </ul>
+                        </div>
+
+                        <a href="login.html" class="inline-flex px-10 py-4 bg-slate-900 text-white font-bold rounded-xl hover:bg-brand-600 transition-all shadow-lg hover:shadow-brand-500/30">
+                            Proceed to Login
+                        </a>
+                    </div>
+
+                </form>
+            </div>
+        </div>
+    </main>
+
+    <!-- ATLAS CHATBOT WIDGET (Embedded) -->
+    <div id="atlas-widget-container"></div>
+
+    <!-- LOGIC SCRIPT -->
+    <script src="chatbot.js"></script>
+    <script>
+        // --- State Management ---
+        const state = {
+            emailVerified: false,
+            mobileVerified: false,
+            currentStep: 1
+        };
+
+        // --- Step Navigation Logic ---
+        function nextStep(step) {
+            // Validate current step before moving
+            if(step === 3 && !validateStep2()) return; // Example guard
+
+            // UI Transitions
+            const currentContent = document.getElementById(`step-${step-1}-content`);
+            const nextContent = document.getElementById(`step-${step}-content`);
+            
+            currentContent.classList.add('hidden');
+            nextContent.classList.remove('hidden');
+            
+            // Update Sidebar
+            updateSidebar(step);
+            
+            // Scroll to top
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+        }
+
+        function prevStep(step) {
+            const currentContent = document.getElementById(`step-${step+1}-content`);
+            const prevContent = document.getElementById(`step-${step}-content`);
+            currentContent.classList.add('hidden');
+            prevContent.classList.remove('hidden');
+            updateSidebar(step);
+        }
+
+        function updateSidebar(step) {
+            // Reset all
+            for(let i=1; i<=4; i++) {
+                const icon = document.getElementById(`icon-step-${i}`);
+                const text = document.getElementById(`text-step-${i}`);
+                const line = document.getElementById(`line-${i}`);
+                
+                // Logic for styling active/completed/future steps
+                if(i < step) {
+                    // Completed
+                    if(icon) icon.className = "h-9 w-9 items-center justify-center rounded-full bg-green-500 text-white border-2 border-green-500 flex font-bold text-sm transition-all";
+                    if(icon) icon.innerHTML = '<i class="fa-solid fa-check"></i>';
+                    if(text) text.classList.replace('text-slate-500', 'text-green-700');
+                    if(line) line.classList.replace('bg-slate-200', 'bg-green-500');
+                } else if(i === step) {
+                    // Active
+                    if(icon) icon.className = "h-9 w-9 items-center justify-center rounded-full bg-brand-600 text-white border-2 border-brand-600 flex font-bold text-sm transition-all shadow-lg shadow-brand-500/30";
+                    if(icon) icon.innerHTML = i;
+                    if(text) {
+                        text.classList.replace('text-slate-500', 'text-brand-700');
+                        text.classList.add('text-brand-700'); // Ensure color
+                    }
+                } else {
+                    // Inactive
+                    if(icon) icon.className = "h-9 w-9 items-center justify-center rounded-full bg-white border-2 border-slate-200 flex text-slate-400 font-bold text-sm transition-all";
+                    if(icon) icon.innerHTML = i;
+                    if(text) text.className = "text-sm font-bold text-slate-500";
+                }
+            }
+        }
+
+        // --- Step 1: Verification Logic ---
+        function simulateOTP(type) {
+            const btn = event.target;
+            const input = document.getElementById(type);
+            if(!input.value) { alert("Please enter value"); return; }
+            
+            btn.innerHTML = '<i class="fa-solid fa-circle-notch fa-spin"></i> Sending...';
+            setTimeout(() => {
+                btn.classList.add('hidden');
+                document.getElementById(`${type}-otp-group`).classList.remove('hidden');
+                // Mock Toast
+                alert(`OTP sent to ${input.value}: 123456`); 
+            }, 1000);
+        }
+
+        function verifyOTP(type) {
+            const group = document.getElementById(`${type}-otp-group`);
+            const badge = document.getElementById(`${type}-verified`);
+            
+            group.classList.add('hidden');
+            badge.classList.remove('hidden');
+            
+            if(type === 'email') state.emailVerified = true;
+            if(type === 'mobile') state.mobileVerified = true;
+            
+            checkStep1Completion();
+        }
+
+        function checkStep1Completion() {
+            if(state.emailVerified && state.mobileVerified) {
+                const btn = document.getElementById('btn-step-1');
+                btn.disabled = false;
+                btn.classList.remove('bg-slate-300', 'cursor-not-allowed');
+                btn.classList.add('bg-brand-600', 'hover:bg-brand-700', 'shadow-lg');
+            }
+        }
+
+        // --- Step 2: Entity Logic ---
+        function validatePAN() {
+            const pan = document.getElementById('pan-input');
+            const loader = document.getElementById('pan-loader');
+            const success = document.getElementById('pan-success');
+            const error = document.getElementById('pan-error');
+            const nameGroup = document.getElementById('entity-name-group');
+            
+            // Regex for Indian PAN
+            const regex = /[A-Z]{5}[0-9]{4}[A-Z]{1}/;
+            
+            if(regex.test(pan.value.toUpperCase())) {
+                loader.classList.remove('hidden');
+                error.classList.add('hidden');
+                
+                // Simulate API call
+                setTimeout(() => {
+                    loader.classList.add('hidden');
+                    success.classList.remove('hidden');
+                    pan.classList.add('border-green-500', 'text-green-700');
+                    
+                    // Reveal Name
+                    nameGroup.classList.remove('hidden', 'opacity-0');
+                    nameGroup.classList.add('opacity-100');
+                }, 1500);
+            } else {
+                error.classList.remove('hidden');
+                pan.classList.add('border-red-500');
+            }
+        }
+
+        function validateFieldGeneric(el) {
+            if(el.value.length > 5) {
+                el.classList.add('border-green-500', 'ring-1', 'ring-green-500');
+            }
+        }
+
+        function validateStep2() {
+            // Simple check for demo
+            return document.getElementById('pan-input').value !== "";
+        }
+
+        // --- Step 3: Penny Drop Logic ---
+        function fetchBankDetails() {
+            const ifsc = document.getElementById('ifsc').value;
+            if(ifsc.length === 11) {
+                document.getElementById('bank-name-display').classList.remove('hidden');
+            }
+        }
+
+        function initiatePennyDrop() {
+            const btn = document.getElementById('penny-drop-btn');
+            const originalContent = btn.innerHTML;
+            
+            btn.innerHTML = '<i class="fa-solid fa-circle-notch fa-spin"></i> Verifying...';
+            btn.classList.add('cursor-not-allowed', 'opacity-80');
+            
+            setTimeout(() => {
+                btn.innerHTML = 'Account Verified <i class="fa-solid fa-check"></i>';
+                btn.classList.replace('bg-brand-600', 'bg-green-600');
+                
+                setTimeout(() => {
+                    nextStep(4);
+                }, 1000);
+            }, 2000);
+        }
+
+        // --- Step 4: File Handling ---
+        function handleFileSelect(input, statusId) {
+            if(input.files && input.files[0]) {
+                const status = document.getElementById(statusId);
+                status.innerHTML = `<i class="fa-solid fa-file-pdf"></i> ${input.files[0].name.substring(0, 15)}...`;
+                status.className = "text-xs font-bold bg-blue-100 text-blue-700 px-3 py-1.5 rounded-lg";
+            }
+        }
+
+        function finalSubmit() {
+            if(!document.getElementById('terms-check').checked) {
+                alert("Please accept the Terms & Conditions.");
+                return;
+            }
+            
+            // Show global loader
+            document.getElementById('global-loader').classList.remove('hidden');
+            
+            setTimeout(() => {
+                document.getElementById('global-loader').classList.add('hidden');
+                document.getElementById('step-4-content').classList.add('hidden');
+                document.getElementById('success-screen').classList.remove('hidden');
+                
+                // Complete Sidebar
+                updateSidebar(5); // Hack to mark all complete
+            }, 2500);
+        }
+
+        // Chatbot Toggle (Simple wrapper for demo)
+        function toggleAtlas() {
+            const container = document.getElementById('atlas-widget-container');
+            // Check if widget exists, if not inject it (referencing previous implementation)
+            if(!container.innerHTML) {
+               // In a real scenario, this would load the chat widget code.
+               // For this file, we assume the user knows it's available.
+               alert("Atlas AI Assistant: How can I help you with your KYC documents?");
+            }
+        }
+    </script>
+</body>
+</html>

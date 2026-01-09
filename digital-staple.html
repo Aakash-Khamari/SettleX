@@ -1,0 +1,722 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Digital Staple View | SettleX Compliance</title>
+    
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    
+    <!-- Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Plus+Jakarta+Sans:wght@500;600;700;800&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet">
+    
+    <!-- Icons -->
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+    
+    <!-- PDF.js (Optional for real PDF rendering, but we will simulate for demo) -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/2.10.377/pdf.min.js"></script>
+
+    <!-- Config -->
+    <script>
+        tailwind.config = {
+            darkMode: 'class',
+            theme: {
+                extend: {
+                    fontFamily: {
+                        sans: ['Inter', 'sans-serif'],
+                        display: ['Plus Jakarta Sans', 'sans-serif'],
+                        mono: ['JetBrains Mono', 'monospace'],
+                    },
+                    colors: {
+                        brand: {
+                            50: '#f0f9ff',
+                            100: '#e0f2fe',
+                            200: '#bae6fd',
+                            300: '#7dd3fc',
+                            400: '#38bdf8',
+                            500: '#0ea5e9',
+                            600: '#0284c7',
+                            700: '#0369a1',
+                            800: '#075985',
+                            900: '#0c4a6e',
+                            950: '#082f49',
+                        },
+                        dark: {
+                            800: '#1e293b',
+                            900: '#0f172a',
+                            950: '#020617',
+                        }
+                    },
+                    animation: {
+                        'pulse-slow': 'pulse 3s cubic-bezier(0.4, 0, 0.6, 1) infinite',
+                        'slide-in': 'slideIn 0.4s ease-out forwards',
+                        'fade-in': 'fadeIn 0.3s ease-out forwards',
+                        'staple': 'staple 0.5s ease-in-out',
+                    },
+                    keyframes: {
+                        slideIn: {
+                            '0%': { transform: 'translateY(20px)', opacity: '0' },
+                            '100%': { transform: 'translateY(0)', opacity: '1' }
+                        },
+                        fadeIn: {
+                            '0%': { opacity: '0' },
+                            '100%': { opacity: '1' }
+                        },
+                        staple: {
+                            '0%': { transform: 'scale(1)' },
+                            '50%': { transform: 'scale(0.9) rotate(-2deg)' },
+                            '100%': { transform: 'scale(1) rotate(0deg)' }
+                        }
+                    },
+                    boxShadow: {
+                        'glass': '0 8px 32px 0 rgba(0, 0, 0, 0.37)',
+                        'neon': '0 0 10px rgba(14, 165, 233, 0.5), 0 0 20px rgba(14, 165, 233, 0.3)',
+                        'paper': '0 1px 3px rgba(0,0,0,0.12), 0 1px 2px rgba(0,0,0,0.24)',
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        /* Base */
+        body {
+            background-color: #020617;
+            color: #cbd5e1;
+        }
+
+        /* Glassmorphism */
+        .glass-panel {
+            background: rgba(15, 23, 42, 0.6);
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+        }
+
+        /* Custom Scrollbar */
+        ::-webkit-scrollbar { width: 6px; height: 6px; }
+        ::-webkit-scrollbar-track { background: #0f172a; }
+        ::-webkit-scrollbar-thumb { background: #334155; border-radius: 4px; }
+        ::-webkit-scrollbar-thumb:hover { background: #475569; }
+
+        /* Grid */
+        .bg-grid {
+            background-size: 40px 40px;
+            background-image: 
+                linear-gradient(to right, rgba(255, 255, 255, 0.03) 1px, transparent 1px),
+                linear-gradient(to bottom, rgba(255, 255, 255, 0.03) 1px, transparent 1px);
+        }
+
+        /* Utilities */
+        .no-scrollbar::-webkit-scrollbar { display: none; }
+        .no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
+        
+        /* Document Styles */
+        .doc-page {
+            background: white;
+            color: #1e293b;
+            min-height: 600px;
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+            font-family: 'Times New Roman', serif;
+            position: relative;
+            overflow: hidden;
+        }
+        .doc-watermark {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%) rotate(-45deg);
+            font-size: 4rem;
+            font-weight: bold;
+            color: rgba(0, 0, 0, 0.05);
+            pointer-events: none;
+            white-space: nowrap;
+        }
+        .staple-mark {
+            position: absolute;
+            top: 20px;
+            left: 20px;
+            width: 40px;
+            height: 10px;
+            background: linear-gradient(to bottom, #94a3b8, #64748b);
+            border-radius: 2px;
+            box-shadow: 1px 1px 2px rgba(0,0,0,0.3);
+            transform: rotate(-5deg);
+            z-index: 20;
+        }
+        
+        /* Verified Badge */
+        .verified-stamp {
+            position: absolute;
+            bottom: 40px;
+            right: 40px;
+            border: 3px solid #10b981;
+            color: #10b981;
+            padding: 10px 20px;
+            font-weight: bold;
+            font-size: 1.2rem;
+            text-transform: uppercase;
+            transform: rotate(-15deg);
+            opacity: 0.8;
+            border-radius: 8px;
+            font-family: 'Courier New', monospace;
+        }
+    </style>
+</head>
+<body class="font-sans h-screen flex overflow-hidden selection:bg-brand-500 selection:text-white">
+
+    <!-- 1. SIDEBAR (Consistent Navigation) -->
+    <aside class="w-20 lg:w-72 bg-dark-900 border-r border-slate-800 flex flex-col flex-shrink-0 transition-all duration-300 z-50">
+        <!-- Logo -->
+        <div class="h-20 flex items-center px-0 lg:px-6 justify-center lg:justify-start border-b border-slate-800 cursor-pointer group" onclick="window.location.href='client-dashboard.html'">
+            <div class="w-10 h-10 bg-gradient-to-br from-brand-500 to-brand-700 rounded-xl flex items-center justify-center text-white font-bold text-xl shadow-lg shadow-brand-500/20 flex-shrink-0 transition-transform group-hover:scale-105">S</div>
+            <div class="hidden lg:block ml-3">
+                <h1 class="text-xl font-display font-bold text-white tracking-tight">Settle<span class="text-brand-400">X</span></h1>
+                <p class="text-[10px] text-slate-500 font-mono uppercase tracking-wider group-hover:text-brand-400 transition-colors">Treasury OS v2.4</p>
+            </div>
+        </div>
+
+        <!-- Nav -->
+        <nav class="flex-1 overflow-y-auto py-6 px-3 space-y-1">
+            <a href="client-dashboard.html" class="flex items-center gap-3 px-3 py-3 text-slate-400 hover:text-white hover:bg-slate-800 rounded-xl transition-all group">
+                <i class="fa-solid fa-border-all w-6 text-center group-hover:text-brand-400 transition-colors"></i>
+                <span class="hidden lg:block font-medium">Command Center</span>
+            </a>
+
+            <div class="hidden lg:block px-3 mt-6 mb-2 flex items-center justify-between">
+                <p class="text-[10px] font-bold text-slate-500 uppercase tracking-widest">Global Money</p>
+                <i class="fa-solid fa-globe text-[10px] text-slate-600"></i>
+            </div>
+
+            <a href="inflow-decision-gate.html" class="flex items-center gap-3 px-3 py-3 text-slate-400 hover:text-white hover:bg-slate-800 rounded-xl transition-all group">
+                <i class="fa-solid fa-inbox w-6 text-center group-hover:text-green-400 transition-colors"></i>
+                <span class="hidden lg:block font-medium">Inflow (Collections)</span>
+                <span class="hidden lg:flex ml-auto bg-brand-500 text-white text-[10px] font-bold px-2 py-0.5 rounded-full shadow-lg shadow-brand-500/40 animate-pulse-slow">3</span>
+            </a>
+
+            <a href="outflow-transfer.html" class="flex items-center gap-3 px-3 py-3 text-slate-400 hover:text-white hover:bg-slate-800 rounded-xl transition-all group">
+                <i class="fa-solid fa-paper-plane w-6 text-center group-hover:text-red-400 transition-colors"></i>
+                <span class="hidden lg:block font-medium">Outflow (Payments)</span>
+            </a>
+
+            <a href="virtual-accounts.html" class="flex items-center gap-3 px-3 py-3 text-slate-400 hover:text-white hover:bg-slate-800 rounded-xl transition-all group">
+                <i class="fa-solid fa-wallet w-6 text-center group-hover:text-purple-400 transition-colors"></i>
+                <span class="hidden lg:block font-medium">Virtual Accounts</span>
+            </a>
+
+            <div class="hidden lg:block px-3 mt-6 mb-2 flex items-center justify-between">
+                <p class="text-[10px] font-bold text-slate-500 uppercase tracking-widest">Compliance</p>
+                <i class="fa-solid fa-shield-halved text-[10px] text-slate-600"></i>
+            </div>
+
+            <a href="transaction-history.html" class="flex items-center gap-3 px-3 py-3 text-slate-400 hover:text-white hover:bg-slate-800 rounded-xl transition-all group">
+                <i class="fa-solid fa-book-open w-6 text-center group-hover:text-amber-400 transition-colors"></i>
+                <span class="hidden lg:block font-medium">Digital Ledger</span>
+            </a>
+
+            <a href="#" class="flex items-center gap-3 px-3 py-3 bg-brand-900/30 text-white rounded-xl border border-brand-500/30 shadow-sm group relative overflow-hidden">
+                <div class="absolute inset-0 bg-brand-500/10 rounded-xl blur opacity-0 group-hover:opacity-100 transition-opacity"></div>
+                <div class="absolute left-0 top-0 bottom-0 w-1 bg-brand-500 rounded-l-xl"></div>
+                <i class="fa-solid fa-file-shield w-6 text-center text-blue-400 text-lg group-hover:scale-110 transition-transform"></i>
+                <span class="hidden lg:block font-medium tracking-wide">BoE & e-FIRA Vault</span>
+            </a>
+        </nav>
+        
+        <!-- Profile -->
+        <div class="p-4 border-t border-slate-800 bg-dark-900/50">
+            <div class="flex items-center gap-3 cursor-pointer hover:bg-slate-800 p-2 rounded-xl transition-colors group">
+                <div class="relative">
+                    <div class="w-10 h-10 rounded-full bg-slate-700 flex items-center justify-center border border-slate-600 group-hover:border-brand-500 transition-colors">
+                        <span class="font-bold text-white group-hover:text-brand-200">TE</span>
+                    </div>
+                    <div class="absolute -bottom-1 -right-1 w-3 h-3 bg-green-500 border-2 border-dark-900 rounded-full animate-pulse"></div>
+                </div>
+                <div class="hidden lg:block min-w-0">
+                    <p class="text-sm font-bold text-white truncate group-hover:text-brand-400 transition-colors">Tex Exports Pvt Ltd</p>
+                    <p class="text-[10px] text-slate-500 font-mono truncate">ID: IND-TN-8821</p>
+                </div>
+            </div>
+        </div>
+    </aside>
+
+    <!-- 2. MAIN WORKSPACE -->
+    <main class="flex-1 flex flex-col h-screen relative overflow-hidden bg-grid">
+        
+        <!-- Header -->
+        <header class="h-16 bg-dark-900/80 backdrop-blur-md border-b border-slate-800 flex items-center justify-between px-6 z-40 sticky top-0">
+            <div class="flex items-center gap-4">
+                <h2 class="text-lg font-bold text-white flex items-center gap-2">
+                    <i class="fa-solid fa-staple text-blue-500"></i> The Digital Staple
+                </h2>
+                <div class="h-4 w-px bg-slate-700 hidden md:block"></div>
+                <div class="hidden md:flex items-center gap-2 px-3 py-1.5 bg-blue-900/20 rounded-lg border border-blue-500/20 shadow-sm">
+                    <span class="w-2 h-2 rounded-full bg-blue-500 animate-pulse"></span>
+                    <span class="text-xs font-mono text-blue-300">TXN-8821-SG • COMPLETED</span>
+                </div>
+            </div>
+            
+            <div class="flex items-center gap-4">
+                <button class="px-4 py-2 bg-slate-800 hover:bg-slate-700 text-white text-xs font-bold rounded-lg transition border border-slate-700 flex items-center gap-2" onclick="window.history.back()">
+                    <i class="fa-solid fa-arrow-left"></i> Back
+                </button>
+                <button class="px-4 py-2 bg-brand-600 hover:bg-brand-500 text-white text-xs font-bold rounded-lg shadow-lg shadow-brand-500/20 transition flex items-center gap-2" onclick="downloadBundle()">
+                    <i class="fa-solid fa-download"></i> Download Bundle
+                </button>
+            </div>
+        </header>
+
+        <!-- Content -->
+        <div class="flex-1 overflow-y-auto p-6 scroll-smooth">
+            
+            <!-- Document Viewport -->
+            <div class="grid lg:grid-cols-12 gap-8 h-full min-h-[800px]">
+                
+                <!-- Left: Document List & Metadata (Col 3) -->
+                <div class="lg:col-span-3 space-y-6">
+                    
+                    <!-- Metadata Card -->
+                    <div class="glass-panel p-5 rounded-xl border-l-4 border-brand-500">
+                        <h4 class="text-xs font-bold text-slate-500 uppercase tracking-wider mb-4">Transaction Meta</h4>
+                        <div class="space-y-3 text-sm">
+                            <div class="flex justify-between">
+                                <span class="text-slate-400">ID</span>
+                                <span class="text-white font-mono">TXN-8821</span>
+                            </div>
+                            <div class="flex justify-between">
+                                <span class="text-slate-400">Date</span>
+                                <span class="text-white">Jan 14, 2026</span>
+                            </div>
+                            <div class="flex justify-between">
+                                <span class="text-slate-400">Amount</span>
+                                <span class="text-green-400 font-bold font-mono">$12,500.00</span>
+                            </div>
+                            <div class="flex justify-between">
+                                <span class="text-slate-400">Counterparty</span>
+                                <span class="text-white truncate max-w-[100px]" title="Zara Intl Ltd">Zara Intl Ltd</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Stapled Docs List -->
+                    <div class="glass-panel p-5 rounded-xl">
+                        <h4 class="text-xs font-bold text-slate-500 uppercase tracking-wider mb-4 flex items-center gap-2">
+                            <i class="fa-solid fa-paperclip"></i> Stapled Docs
+                        </h4>
+                        <div class="space-y-2">
+                            <!-- Doc 1: Invoice (Active) -->
+                            <div class="p-3 bg-brand-900/30 border border-brand-500/50 rounded-lg cursor-pointer flex items-center gap-3 group transition-all" onclick="viewDoc('invoice')">
+                                <div class="w-8 h-8 rounded bg-brand-500/20 text-brand-400 flex items-center justify-center border border-brand-500/30">
+                                    <i class="fa-solid fa-file-invoice"></i>
+                                </div>
+                                <div class="flex-1 min-w-0">
+                                    <p class="text-sm font-bold text-white group-hover:text-brand-300 transition-colors">Commercial Invoice</p>
+                                    <p class="text-[10px] text-slate-400">INV-9921.pdf</p>
+                                </div>
+                                <i class="fa-solid fa-eye text-brand-400 text-xs"></i>
+                            </div>
+
+                            <!-- Doc 2: Bank Advice -->
+                            <div class="p-3 bg-slate-800/50 border border-slate-700 rounded-lg cursor-pointer flex items-center gap-3 group hover:bg-slate-800 transition-all" onclick="viewDoc('advice')">
+                                <div class="w-8 h-8 rounded bg-slate-700 text-slate-400 flex items-center justify-center">
+                                    <i class="fa-solid fa-file-lines"></i>
+                                </div>
+                                <div class="flex-1 min-w-0">
+                                    <p class="text-sm font-bold text-slate-300 group-hover:text-white transition-colors">Credit Advice</p>
+                                    <p class="text-[10px] text-slate-500">DBS-CA-8821.pdf</p>
+                                </div>
+                            </div>
+
+                            <!-- Doc 3: e-FIRA -->
+                            <div class="p-3 bg-slate-800/50 border border-slate-700 rounded-lg cursor-pointer flex items-center gap-3 group hover:bg-slate-800 transition-all" onclick="viewDoc('efira')">
+                                <div class="w-8 h-8 rounded bg-slate-700 text-slate-400 flex items-center justify-center">
+                                    <i class="fa-solid fa-file-certificate"></i>
+                                </div>
+                                <div class="flex-1 min-w-0">
+                                    <p class="text-sm font-bold text-slate-300 group-hover:text-white transition-colors">e-FIRA Certificate</p>
+                                    <p class="text-[10px] text-slate-500">IRN-992123.pdf</p>
+                                </div>
+                                <span class="bg-green-900/20 text-green-400 text-[9px] px-1.5 py-0.5 rounded border border-green-500/20">New</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- AI Insights -->
+                    <div class="glass-panel p-5 rounded-xl bg-blue-900/10 border-blue-500/20">
+                        <div class="flex items-start gap-3">
+                            <i class="fa-solid fa-robot text-blue-400 mt-1"></i>
+                            <div>
+                                <p class="text-xs font-bold text-blue-200 mb-1">AI Validation Match</p>
+                                <p class="text-[10px] text-slate-400 leading-relaxed">
+                                    Invoice amount ($12,500) matches Bank Credit Advice perfectly. 
+                                    <strong>No discrepancies found.</strong>
+                                </p>
+                            </div>
+                        </div>
+                    </div>
+
+                </div>
+
+                <!-- Right: Document Viewer (Col 9) -->
+                <div class="lg:col-span-9 bg-slate-900/50 rounded-2xl border border-slate-800 p-8 relative overflow-y-auto custom-scrollbar flex justify-center items-start min-h-[800px]" id="doc-viewer-container">
+                    
+                    <!-- Staple Animation Element -->
+                    <div class="staple-mark absolute top-8 left-8 z-50"></div>
+
+                    <!-- Document Canvas (Simulated PDF) -->
+                    <div class="doc-page w-full max-w-[800px] p-12 relative shadow-2xl animate-fade-in" id="doc-content">
+                        <!-- Content Injected via JS -->
+                        <div class="text-center mt-20 text-slate-300">Loading Document...</div>
+                    </div>
+
+                </div>
+
+            </div>
+
+        </div>
+    </main>
+
+    <!-- ATLAS CHATBOT WIDGET -->
+    <div id="atlas-widget-container"></div>
+
+    <!-- SCRIPTS -->
+    <script src="backend.js"></script>
+    <script src="chatbot.js"></script>
+    <script>
+        // --- Document Templates (Mocking PDF Content) ---
+        const Documents = {
+            'invoice': `
+                <div class="flex justify-between items-start mb-10 border-b pb-8 border-gray-200">
+                    <div>
+                        <h1 class="text-4xl font-bold text-gray-800 mb-2">INVOICE</h1>
+                        <p class="text-sm text-gray-500">#INV-9921</p>
+                        <p class="text-sm text-gray-500">Date: Jan 14, 2026</p>
+                    </div>
+                    <div class="text-right">
+                        <h2 class="text-xl font-bold text-gray-700">Tex Exports Pvt Ltd</h2>
+                        <p class="text-xs text-gray-500">12, Industrial Estate</p>
+                        <p class="text-xs text-gray-500">Tiruppur, India</p>
+                    </div>
+                </div>
+                
+                <div class="flex justify-between mb-10">
+                    <div>
+                        <p class="text-xs font-bold text-gray-400 uppercase mb-1">Bill To</p>
+                        <p class="font-bold text-gray-800">Zara International Ltd</p>
+                        <p class="text-sm text-gray-600">80 Robinson Road</p>
+                        <p class="text-sm text-gray-600">Singapore</p>
+                    </div>
+                    <div class="text-right">
+                        <p class="text-xs font-bold text-gray-400 uppercase mb-1">Payment Details</p>
+                        <p class="text-sm text-gray-600">DBS Bank Ltd</p>
+                        <p class="text-sm text-gray-600">Acct: 8821 9923 1102</p>
+                        <p class="text-sm text-gray-600">SWIFT: DBSSSGSG</p>
+                    </div>
+                </div>
+
+                <table class="w-full text-left mb-10 border-collapse">
+                    <thead>
+                        <tr class="border-b-2 border-gray-100">
+                            <th class="py-3 text-xs font-bold text-gray-400 uppercase">Item</th>
+                            <th class="py-3 text-xs font-bold text-gray-400 uppercase text-right">Qty</th>
+                            <th class="py-3 text-xs font-bold text-gray-400 uppercase text-right">Rate</th>
+                            <th class="py-3 text-xs font-bold text-gray-400 uppercase text-right">Amount</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr class="border-b border-gray-50">
+                            <td class="py-4 text-sm text-gray-700">Cotton T-Shirts (Mens) - Batch A</td>
+                            <td class="py-4 text-sm text-gray-700 text-right">2,000</td>
+                            <td class="py-4 text-sm text-gray-700 text-right">$5.00</td>
+                            <td class="py-4 text-sm text-gray-700 text-right">$10,000.00</td>
+                        </tr>
+                        <tr class="border-b border-gray-50">
+                            <td class="py-4 text-sm text-gray-700">Cotton T-Shirts (Womens) - Batch B</td>
+                            <td class="py-4 text-sm text-gray-700 text-right">500</td>
+                            <td class="py-4 text-sm text-gray-700 text-right">$5.00</td>
+                            <td class="py-4 text-sm text-gray-700 text-right">$2,500.00</td>
+                        </tr>
+                    </tbody>
+                </table>
+
+                <div class="flex justify-end mb-10">
+                    <div class="w-64">
+                        <div class="flex justify-between mb-2">
+                            <span class="text-sm text-gray-500">Subtotal</span>
+                            <span class="text-sm font-bold text-gray-800">$12,500.00</span>
+                        </div>
+                        <div class="flex justify-between mb-2 pb-2 border-b border-gray-100">
+                            <span class="text-sm text-gray-500">Tax (0%)</span>
+                            <span class="text-sm font-bold text-gray-800">$0.00</span>
+                        </div>
+                        <div class="flex justify-between">
+                            <span class="text-lg font-bold text-gray-800">Total</span>
+                            <span class="text-lg font-bold text-blue-600">$12,500.00</span>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="border-t border-gray-200 pt-8 text-center text-xs text-gray-400">
+                    <p>Authorized Signature: _______________________</p>
+                    <p class="mt-2">Thank you for your business.</p>
+                </div>
+                
+                <div class="verified-stamp" style="color: #64748b; border-color: #64748b; opacity: 0.2; transform: rotate(-20deg);">ORIGINAL</div>
+            `,
+            'advice': `
+                <div class="text-center mb-8 border-b-2 border-red-600 pb-4">
+                    <h1 class="text-2xl font-bold text-red-600">DBS BANK LTD</h1>
+                    <p class="text-xs text-gray-500">Marina Bay Financial Centre, Singapore</p>
+                </div>
+                
+                <h2 class="text-xl font-bold text-center mb-8 underline">FOREIGN INWARD REMITTANCE ADVICE</h2>
+                
+                <div class="grid grid-cols-2 gap-8 mb-8 text-sm">
+                    <div>
+                        <p class="text-gray-500 mb-1">Beneficiary:</p>
+                        <p class="font-bold text-gray-800">TEX EXPORTS PVT LTD</p>
+                    </div>
+                    <div class="text-right">
+                        <p class="text-gray-500 mb-1">Date:</p>
+                        <p class="font-bold text-gray-800">14-JAN-2026</p>
+                    </div>
+                </div>
+
+                <div class="bg-gray-50 p-6 rounded border border-gray-200 mb-8">
+                    <div class="grid grid-cols-2 gap-4 text-sm">
+                        <div class="text-gray-500">Remitter Name:</div>
+                        <div class="font-bold text-gray-800">ZARA INTERNATIONAL LTD</div>
+                        
+                        <div class="text-gray-500">Remitting Bank:</div>
+                        <div class="font-bold text-gray-800">DBS SINGAPORE</div>
+                        
+                        <div class="text-gray-500">Currency / Amount:</div>
+                        <div class="font-bold text-gray-800">USD 12,500.00</div>
+                        
+                        <div class="text-gray-500">Purpose Code:</div>
+                        <div class="font-bold text-gray-800">P0103 (Advance for Exports)</div>
+                    </div>
+                </div>
+
+                <div class="mb-8">
+                    <p class="text-xs font-bold text-gray-500 uppercase mb-2">Transaction Details</p>
+                    <table class="w-full text-xs text-left border border-gray-200">
+                        <tr class="bg-gray-100">
+                            <th class="p-2 border border-gray-200">Value Date</th>
+                            <th class="p-2 border border-gray-200">Exchange Rate</th>
+                            <th class="p-2 border border-gray-200">INR Equivalent</th>
+                        </tr>
+                        <tr>
+                            <td class="p-2 border border-gray-200">14-JAN-2026</td>
+                            <td class="p-2 border border-gray-200">83.6050</td>
+                            <td class="p-2 border border-gray-200">1,045,062.50</td>
+                        </tr>
+                    </table>
+                </div>
+
+                <div class="verified-stamp">CREDITED</div>
+            `,
+            'efira': `
+                <div class="border-4 border-double border-gray-800 p-8 h-full relative">
+                    <div class="text-center mb-6">
+                        <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/c/cf/DBS_Bank_logo.svg/2560px-DBS_Bank_logo.svg.png" class="h-8 mx-auto mb-2">
+                        <h1 class="text-lg font-bold">ELECTRONIC FOREIGN INWARD REMITTANCE CERTIFICATE (e-FIRA)</h1>
+                        <p class="text-[10px] text-gray-500">As per FEDAI Guidelines</p>
+                    </div>
+
+                    <div class="flex justify-between text-xs mb-6 border-b border-gray-300 pb-2">
+                        <span><strong>IRN:</strong> 20260114992123</span>
+                        <span><strong>Date:</strong> 14-JAN-2026</span>
+                    </div>
+
+                    <p class="text-xs text-justify mb-6 leading-relaxed">
+                        We certify that we have received the following remittance and the proceeds have been credited to the beneficiary's account as per details below:
+                    </p>
+
+                    <table class="w-full text-xs border-collapse border border-gray-300 mb-6">
+                        <tr>
+                            <td class="p-2 border border-gray-300 bg-gray-50 font-bold">1. Name of Beneficiary</td>
+                            <td class="p-2 border border-gray-300">TEX EXPORTS PVT LTD</td>
+                        </tr>
+                        <tr>
+                            <td class="p-2 border border-gray-300 bg-gray-50 font-bold">2. Name of Remitter</td>
+                            <td class="p-2 border border-gray-300">ZARA INTERNATIONAL LTD</td>
+                        </tr>
+                        <tr>
+                            <td class="p-2 border border-gray-300 bg-gray-50 font-bold">3. Amount in Foreign Currency</td>
+                            <td class="p-2 border border-gray-300">USD 12,500.00</td>
+                        </tr>
+                        <tr>
+                            <td class="p-2 border border-gray-300 bg-gray-50 font-bold">4. Rupee Equivalent</td>
+                            <td class="p-2 border border-gray-300">INR 1,045,062.50</td>
+                        </tr>
+                        <tr>
+                            <td class="p-2 border border-gray-300 bg-gray-50 font-bold">5. Purpose of Remittance</td>
+                            <td class="p-2 border border-gray-300">P0103 - ADVANCE RECEIPT FOR EXPORTS</td>
+                        </tr>
+                    </table>
+
+                    <div class="text-xs text-gray-600 mb-8">
+                        <p><strong>Remarks:</strong> Adjusted against Export Invoice No. INV-9921 dated 14-JAN-2026.</p>
+                    </div>
+
+                    <div class="flex justify-between items-end mt-20">
+                        <div class="text-center">
+                            <div class="h-12 w-12 border-2 border-blue-600 rounded-full flex items-center justify-center text-[8px] text-blue-600 font-bold transform -rotate-12 mx-auto mb-1">
+                                DIGITALLY<br>SIGNED
+                            </div>
+                            <p class="text-[10px]">Authorized Signatory</p>
+                        </div>
+                        <div class="text-right text-[10px]">
+                            <p>System Generated via SettleX</p>
+                            <p>Ref: SettleX/EDPMS/8821</p>
+                        </div>
+                    </div>
+                    
+                    <div class="doc-watermark">e-FIRA</div>
+                </div>
+            `
+        };
+
+        // --- Logic ---
+        function viewDoc(type) {
+            const viewer = document.getElementById('doc-content');
+            const container = document.getElementById('doc-viewer-container');
+            
+            // Fade Out
+            viewer.classList.add('opacity-0', 'scale-95');
+            
+            setTimeout(() => {
+                // Update Content
+                viewer.innerHTML = Documents[type];
+                
+                // Active State for Sidebar
+                // (Simplified: In real app, toggle classes on sidebar items)
+                
+                // Fade In
+                viewer.classList.remove('opacity-0', 'scale-95');
+                
+                // Staple Animation Trigger
+                const staple = document.querySelector('.staple-mark');
+                staple.style.animation = 'none';
+                staple.offsetHeight; /* trigger reflow */
+                staple.style.animation = 'staple 0.5s ease-in-out';
+                
+            }, 200);
+        }
+
+        function downloadBundle() {
+            const btn = event.currentTarget;
+            btn.innerHTML = '<i class="fa-solid fa-circle-notch fa-spin mr-2"></i> Zipping...';
+            
+            setTimeout(() => {
+                btn.innerHTML = '<i class="fa-solid fa-check mr-2"></i> Downloaded';
+                btn.classList.add('bg-green-600', 'hover:bg-green-500');
+                
+                // Mock Download
+                setTimeout(() => {
+                    btn.innerHTML = '<i class="fa-solid fa-download mr-2"></i> Download Bundle';
+                    btn.classList.remove('bg-green-600', 'hover:bg-green-500');
+                }, 2000);
+            }, 1500);
+        }
+
+        // --- Init ---
+        document.addEventListener('DOMContentLoaded', () => {
+            viewDoc('invoice'); // Default
+            initChatbotWidget();
+        });
+
+        // --- ATLAS CHATBOT (Embedded) ---
+        function initChatbotWidget() {
+            const container = document.getElementById('atlas-widget-container');
+            container.innerHTML = `
+                <div id="atlas-window" class="fixed bottom-20 right-6 w-[350px] bg-dark-900 border border-slate-700 rounded-2xl shadow-2xl hidden flex-col z-50 overflow-hidden transform transition-all duration-300 origin-bottom-right scale-95 opacity-0" style="height: 500px;">
+                     <div class="bg-slate-800 p-4 flex justify-between items-center border-b border-slate-700">
+                        <div class="flex items-center gap-2">
+                             <div class="w-8 h-8 rounded-full bg-brand-600 flex items-center justify-center text-white text-xs"><i class="fa-solid fa-robot"></i></div>
+                             <div>
+                                 <span class="font-bold text-white text-sm block">Atlas AI</span>
+                                 <span class="text-[10px] text-green-400 flex items-center gap-1"><span class="w-1.5 h-1.5 bg-green-500 rounded-full animate-pulse"></span> Online</span>
+                             </div>
+                        </div>
+                        <button onclick="toggleAtlas()" class="text-slate-400 hover:text-white"><i class="fa-solid fa-xmark"></i></button>
+                     </div>
+                     <div id="atlas-messages" class="flex-1 p-4 overflow-y-auto space-y-4 bg-dark-950 scroll-smooth">
+                        <div class="flex gap-3">
+                            <div class="w-8 h-8 rounded-full bg-slate-800 flex items-center justify-center shrink-0 text-slate-400 text-xs border border-slate-700"><i class="fa-solid fa-robot"></i></div>
+                            <div class="bg-slate-800 border border-slate-700 p-3 rounded-2xl rounded-tl-none text-sm text-slate-300 shadow-sm leading-relaxed">
+                                This e-FIRA is valid for 180 days. Would you like me to email a copy to your CA?
+                            </div>
+                        </div>
+                     </div>
+                     <div class="p-3 bg-slate-800 border-t border-slate-700 flex gap-2">
+                        <input type="text" id="atlas-input" class="flex-1 bg-dark-950 border border-slate-700 rounded-lg px-3 py-2 text-sm text-white focus:border-brand-500 focus:outline-none placeholder-slate-600" placeholder="Type query..." onkeypress="handleAtlasEnter(event)">
+                        <button onclick="handleAtlasSubmit()" class="w-10 h-10 bg-brand-600 text-white rounded-lg hover:bg-brand-500 flex items-center justify-center transition active:scale-95"><i class="fa-solid fa-paper-plane"></i></button>
+                     </div>
+                </div>
+            `;
+        }
+
+        function toggleAtlas() {
+            const win = document.getElementById('atlas-window');
+            if (win.classList.contains('hidden')) {
+                win.classList.remove('hidden');
+                setTimeout(() => {
+                    win.classList.remove('scale-95', 'opacity-0');
+                    win.classList.add('scale-100', 'opacity-100');
+                    document.getElementById('atlas-input').focus();
+                }, 10);
+            } else {
+                win.classList.remove('scale-100', 'opacity-100');
+                win.classList.add('scale-95', 'opacity-0');
+                setTimeout(() => win.classList.add('hidden'), 300);
+            }
+        }
+
+        function handleAtlasEnter(e) { if(e.key==='Enter') handleAtlasSubmit(); }
+
+        async function handleAtlasSubmit() {
+            const inp = document.getElementById('atlas-input');
+            const msg = inp.value;
+            if(!msg) return;
+
+            addMsg(msg, 'user');
+            inp.value = '';
+
+            const loadingId = 'loading-' + Date.now();
+            const msgBox = document.getElementById('atlas-messages');
+            const loadingDiv = document.createElement('div');
+            loadingDiv.id = loadingId;
+            loadingDiv.className = 'flex gap-3';
+            loadingDiv.innerHTML = `<div class="w-8 h-8 rounded-full bg-slate-800 flex items-center justify-center shrink-0 text-slate-400 text-xs border border-slate-700"><i class="fa-solid fa-robot"></i></div><div class="bg-slate-800 border border-slate-700 p-3 rounded-2xl rounded-tl-none text-sm text-slate-400 shadow-sm"><i class="fa-solid fa-ellipsis fa-fade"></i></div>`;
+            msgBox.appendChild(loadingDiv);
+            msgBox.scrollTop = msgBox.scrollHeight;
+
+            setTimeout(() => {
+                document.getElementById(loadingId).remove();
+                if(typeof AtlasBackend !== 'undefined') {
+                    const reply = AtlasBackend.process(msg);
+                    addMsg(reply, 'bot');
+                } else {
+                    addMsg("I am currently offline. Please check connection.", 'bot');
+                }
+            }, 800);
+        }
+
+        function addMsg(text, type) {
+            const box = document.getElementById('atlas-messages');
+            const div = document.createElement('div');
+            div.className = type === 'bot' ? 'flex gap-3 animate-fade-in' : 'flex gap-3 justify-end animate-fade-in';
+            
+            const formatted = text.replace(/\*\*(.*?)\*\*/g, '<strong class="text-white">$1</strong>');
+
+            div.innerHTML = type === 'bot' 
+                ? `<div class="w-8 h-8 rounded-full bg-slate-800 flex items-center justify-center shrink-0 text-slate-400 text-xs border border-slate-700"><i class="fa-solid fa-robot"></i></div><div class="bg-slate-800 border border-slate-700 p-3 rounded-2xl rounded-tl-none text-sm text-slate-300 shadow-sm max-w-[85%] leading-relaxed">${formatted}</div>`
+                : `<div class="bg-brand-600 text-white p-3 rounded-2xl rounded-tr-none text-sm shadow-sm max-w-[85%] leading-relaxed">${formatted}</div>`;
+            box.appendChild(div);
+            box.scrollTop = box.scrollHeight;
+        }
+    </script>
+</body>
+</html>

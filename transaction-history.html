@@ -1,0 +1,916 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Transaction Ledger | SettleX Treasury OS</title>
+    
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    
+    <!-- Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Plus+Jakarta+Sans:wght@500;600;700;800&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet">
+    
+    <!-- Icons -->
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+    
+    <!-- Chart.js (Optional for future analytics expansion) -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+    <!-- Config -->
+    <script>
+        tailwind.config = {
+            darkMode: 'class',
+            theme: {
+                extend: {
+                    fontFamily: {
+                        sans: ['Inter', 'sans-serif'],
+                        display: ['Plus Jakarta Sans', 'sans-serif'],
+                        mono: ['JetBrains Mono', 'monospace'],
+                    },
+                    colors: {
+                        brand: {
+                            50: '#f0f9ff',
+                            100: '#e0f2fe',
+                            200: '#bae6fd',
+                            300: '#7dd3fc',
+                            400: '#38bdf8',
+                            500: '#0ea5e9',
+                            600: '#0284c7',
+                            700: '#0369a1',
+                            800: '#075985',
+                            900: '#0c4a6e',
+                            950: '#082f49',
+                        },
+                        dark: {
+                            800: '#1e293b',
+                            900: '#0f172a',
+                            950: '#020617',
+                        }
+                    },
+                    animation: {
+                        'pulse-slow': 'pulse 3s cubic-bezier(0.4, 0, 0.6, 1) infinite',
+                        'slide-in': 'slideIn 0.4s ease-out forwards',
+                        'fade-in': 'fadeIn 0.3s ease-out forwards',
+                        'spin-slow': 'spin 3s linear infinite',
+                    },
+                    keyframes: {
+                        slideIn: {
+                            '0%': { transform: 'translateY(20px)', opacity: '0' },
+                            '100%': { transform: 'translateY(0)', opacity: '1' }
+                        },
+                        fadeIn: {
+                            '0%': { opacity: '0' },
+                            '100%': { opacity: '1' }
+                        }
+                    },
+                    boxShadow: {
+                        'glass': '0 8px 32px 0 rgba(0, 0, 0, 0.37)',
+                        'neon': '0 0 10px rgba(14, 165, 233, 0.5), 0 0 20px rgba(14, 165, 233, 0.3)',
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        /* Base */
+        body {
+            background-color: #020617;
+            color: #cbd5e1;
+        }
+
+        /* Glassmorphism */
+        .glass-panel {
+            background: rgba(15, 23, 42, 0.6);
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+        }
+
+        /* Custom Scrollbar */
+        ::-webkit-scrollbar { width: 6px; height: 6px; }
+        ::-webkit-scrollbar-track { background: #0f172a; }
+        ::-webkit-scrollbar-thumb { background: #334155; border-radius: 4px; }
+        ::-webkit-scrollbar-thumb:hover { background: #475569; }
+
+        /* Grid */
+        .bg-grid {
+            background-size: 40px 40px;
+            background-image: 
+                linear-gradient(to right, rgba(255, 255, 255, 0.03) 1px, transparent 1px),
+                linear-gradient(to bottom, rgba(255, 255, 255, 0.03) 1px, transparent 1px);
+        }
+
+        /* Utilities */
+        .no-scrollbar::-webkit-scrollbar { display: none; }
+        .no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
+        
+        /* Table Styles */
+        .txn-row:hover td {
+            background-color: rgba(255, 255, 255, 0.03);
+        }
+        
+        /* Filter Badge */
+        .filter-badge {
+            display: inline-flex;
+            align-items: center;
+            padding: 4px 12px;
+            border-radius: 6px;
+            background-color: #1e293b;
+            color: #94a3b8;
+            font-size: 0.75rem;
+            font-weight: 600;
+            margin-right: 6px;
+            cursor: pointer;
+            border: 1px solid #334155;
+            transition: all 0.2s;
+        }
+        .filter-badge:hover {
+            border-color: #64748b;
+            color: #cbd5e1;
+        }
+        .filter-badge.active {
+            background-color: #0ea5e9;
+            color: white;
+            border-color: #0ea5e9;
+            box-shadow: 0 0 10px rgba(14, 165, 233, 0.3);
+        }
+
+        /* Status Indicators */
+        .status-dot {
+            width: 6px;
+            height: 6px;
+            border-radius: 50%;
+            display: inline-block;
+            margin-right: 6px;
+        }
+    </style>
+</head>
+<body class="font-sans h-screen flex overflow-hidden selection:bg-brand-500 selection:text-white">
+
+    <!-- 1. SIDEBAR (Consistent Navigation) -->
+    <aside class="w-20 lg:w-72 bg-dark-900 border-r border-slate-800 flex flex-col flex-shrink-0 transition-all duration-300 z-50">
+        <!-- Logo -->
+        <div class="h-20 flex items-center px-0 lg:px-6 justify-center lg:justify-start border-b border-slate-800 cursor-pointer group" onclick="window.location.href='client-dashboard.html'">
+            <div class="w-10 h-10 bg-gradient-to-br from-brand-500 to-brand-700 rounded-xl flex items-center justify-center text-white font-bold text-xl shadow-lg shadow-brand-500/20 flex-shrink-0 transition-transform group-hover:scale-105">S</div>
+            <div class="hidden lg:block ml-3">
+                <h1 class="text-xl font-display font-bold text-white tracking-tight">Settle<span class="text-brand-400">X</span></h1>
+                <p class="text-[10px] text-slate-500 font-mono uppercase tracking-wider group-hover:text-brand-400 transition-colors">Treasury OS v2.4</p>
+            </div>
+        </div>
+
+        <!-- Nav -->
+        <nav class="flex-1 overflow-y-auto py-6 px-3 space-y-1">
+            <a href="client-dashboard.html" class="flex items-center gap-3 px-3 py-3 text-slate-400 hover:text-white hover:bg-slate-800 rounded-xl transition-all group">
+                <i class="fa-solid fa-border-all w-6 text-center group-hover:text-brand-400 transition-colors"></i>
+                <span class="hidden lg:block font-medium">Command Center</span>
+            </a>
+
+            <div class="hidden lg:block px-3 mt-6 mb-2 flex items-center justify-between">
+                <p class="text-[10px] font-bold text-slate-500 uppercase tracking-widest">Global Money</p>
+                <i class="fa-solid fa-globe text-[10px] text-slate-600"></i>
+            </div>
+
+            <a href="inflow-decision-gate.html" class="flex items-center gap-3 px-3 py-3 text-slate-400 hover:text-white hover:bg-slate-800 rounded-xl transition-all group">
+                <i class="fa-solid fa-inbox w-6 text-center group-hover:text-green-400 transition-colors"></i>
+                <span class="hidden lg:block font-medium">Inflow (Collections)</span>
+                <span class="hidden lg:flex ml-auto bg-brand-500 text-white text-[10px] font-bold px-2 py-0.5 rounded-full shadow-lg shadow-brand-500/40 animate-pulse-slow">3</span>
+            </a>
+
+            <a href="outflow-transfer.html" class="flex items-center gap-3 px-3 py-3 text-slate-400 hover:text-white hover:bg-slate-800 rounded-xl transition-all group">
+                <i class="fa-solid fa-paper-plane w-6 text-center group-hover:text-red-400 transition-colors"></i>
+                <span class="hidden lg:block font-medium">Outflow (Payments)</span>
+            </a>
+
+            <a href="virtual-accounts.html" class="flex items-center gap-3 px-3 py-3 text-slate-400 hover:text-white hover:bg-slate-800 rounded-xl transition-all group">
+                <i class="fa-solid fa-wallet w-6 text-center group-hover:text-purple-400 transition-colors"></i>
+                <span class="hidden lg:block font-medium">Virtual Accounts</span>
+            </a>
+
+            <div class="hidden lg:block px-3 mt-6 mb-2 flex items-center justify-between">
+                <p class="text-[10px] font-bold text-slate-500 uppercase tracking-widest">Compliance</p>
+                <i class="fa-solid fa-shield-halved text-[10px] text-slate-600"></i>
+            </div>
+
+            <!-- Active: Ledger -->
+            <a href="#" class="flex items-center gap-3 px-3 py-3 bg-brand-900/30 text-white rounded-xl border border-brand-500/30 shadow-sm group relative overflow-hidden">
+                <div class="absolute inset-0 bg-brand-500/10 rounded-xl blur opacity-0 group-hover:opacity-100 transition-opacity"></div>
+                <div class="absolute left-0 top-0 bottom-0 w-1 bg-brand-500 rounded-l-xl"></div>
+                <i class="fa-solid fa-book-open w-6 text-center text-amber-400 text-lg group-hover:scale-110 transition-transform"></i>
+                <span class="hidden lg:block font-medium tracking-wide">Digital Ledger</span>
+            </a>
+
+            <a href="compliance-vault.html" class="flex items-center gap-3 px-3 py-3 text-slate-400 hover:text-white hover:bg-slate-800 rounded-xl transition-all group">
+                <i class="fa-solid fa-file-shield w-6 text-center group-hover:text-blue-400 transition-colors"></i>
+                <span class="hidden lg:block font-medium">BoE & e-FIRA Vault</span>
+            </a>
+        </nav>
+        
+        <!-- Profile -->
+        <div class="p-4 border-t border-slate-800 bg-dark-900/50">
+            <div class="flex items-center gap-3 cursor-pointer hover:bg-slate-800 p-2 rounded-xl transition-colors group">
+                <div class="relative">
+                    <div class="w-10 h-10 rounded-full bg-slate-700 flex items-center justify-center border border-slate-600 group-hover:border-brand-500 transition-colors">
+                        <span class="font-bold text-white group-hover:text-brand-200">TE</span>
+                    </div>
+                    <div class="absolute -bottom-1 -right-1 w-3 h-3 bg-green-500 border-2 border-dark-900 rounded-full animate-pulse"></div>
+                </div>
+                <div class="hidden lg:block min-w-0">
+                    <p class="text-sm font-bold text-white truncate group-hover:text-brand-400 transition-colors">Tex Exports Pvt Ltd</p>
+                    <p class="text-[10px] text-slate-500 font-mono truncate">ID: IND-TN-8821</p>
+                </div>
+            </div>
+        </div>
+    </aside>
+
+    <!-- 2. MAIN WORKSPACE -->
+    <main class="flex-1 flex flex-col h-screen relative overflow-hidden bg-grid">
+        
+        <!-- Header -->
+        <header class="h-16 bg-dark-900/80 backdrop-blur-md border-b border-slate-800 flex items-center justify-between px-6 z-40 sticky top-0">
+            <div class="flex items-center gap-4">
+                <h2 class="text-lg font-bold text-white flex items-center gap-2">
+                    <i class="fa-solid fa-list-ul text-amber-500"></i> Transaction Ledger
+                </h2>
+                <div class="h-4 w-px bg-slate-700 hidden md:block"></div>
+                <div class="hidden md:flex items-center gap-2 px-3 py-1.5 bg-amber-900/20 rounded-lg border border-amber-500/20 shadow-sm">
+                    <span class="w-2 h-2 rounded-full bg-green-500 animate-pulse"></span>
+                    <span class="text-xs font-mono text-amber-300">RBI EDPMS: SYNCED (T+0)</span>
+                </div>
+            </div>
+            
+            <div class="flex items-center gap-4">
+                <div class="relative hidden md:block w-72 group">
+                    <i class="fa-solid fa-search absolute left-3 top-2.5 text-slate-500 text-xs group-hover:text-brand-400 transition-colors"></i>
+                    <input type="text" id="ledger-search" class="w-full bg-dark-800 border border-slate-700 rounded-lg pl-9 pr-4 py-2 text-sm text-white placeholder-slate-500 focus:outline-none focus:border-brand-500 transition-all shadow-sm focus:shadow-md" placeholder="Search ID, Party, Amount..." onkeyup="filterTable()">
+                    <div class="absolute right-2 top-2 text-[10px] text-slate-600 border border-slate-700 rounded px-1 font-mono">/</div>
+                </div>
+                <div class="h-6 w-px bg-slate-700 hidden md:block"></div>
+                <button class="relative p-2 text-slate-400 hover:text-white transition-colors hover:bg-slate-800 rounded-lg" onclick="toggleAtlas()" title="Ask Atlas AI">
+                    <i class="fa-solid fa-headset"></i>
+                </button>
+            </div>
+        </header>
+
+        <!-- Content -->
+        <div class="flex-1 overflow-y-auto p-6 scroll-smooth">
+            
+            <!-- Filters & Stats -->
+            <div class="flex flex-col md:flex-row justify-between items-start md:items-center gap-4 mb-6">
+                <!-- Filter Tabs -->
+                <div class="flex gap-2 flex-wrap" id="filter-tabs">
+                    <span class="filter-badge active" onclick="setFilter('all', this)">All Transactions</span>
+                    <span class="filter-badge" onclick="setFilter('inflow', this)">Inflow (Export)</span>
+                    <span class="filter-badge" onclick="setFilter('outflow', this)">Outflow (Import)</span>
+                    <span class="filter-badge" onclick="setFilter('pending', this)">Pending Actions</span>
+                    <span class="filter-badge" onclick="setFilter('failed', this)">Failed / Rejected</span>
+                </div>
+                
+                <!-- Tools -->
+                <div class="flex gap-3">
+                    <button class="flex items-center gap-2 bg-slate-800 border border-slate-700 rounded-lg px-3 py-1.5 cursor-pointer hover:border-slate-500 hover:text-white text-slate-400 transition text-xs font-bold" onclick="simulateExport()">
+                        <i class="fa-solid fa-download"></i> Export CSV
+                    </button>
+                    <div class="flex items-center gap-2 bg-slate-800 border border-slate-700 rounded-lg px-3 py-1.5 cursor-pointer hover:border-slate-500 transition text-slate-400 hover:text-white">
+                        <i class="fa-regular fa-calendar text-xs"></i>
+                        <span class="text-xs font-bold">This Month</span>
+                        <i class="fa-solid fa-chevron-down text-[10px]"></i>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Ledger Table -->
+            <div class="glass-panel rounded-2xl overflow-hidden min-h-[600px] flex flex-col border border-slate-700 shadow-xl">
+                <div class="overflow-x-auto flex-1 custom-scrollbar">
+                    <table class="w-full text-sm text-left border-collapse">
+                        <thead class="text-xs text-slate-500 uppercase bg-dark-900/80 border-b border-slate-800 sticky top-0 z-10 backdrop-blur-md">
+                            <tr>
+                                <th class="px-6 py-4 font-semibold w-32 cursor-pointer hover:text-white transition-colors" onclick="sortTable('date')">Date <i class="fa-solid fa-sort ml-1 text-[10px]"></i></th>
+                                <th class="px-6 py-4 font-semibold cursor-pointer hover:text-white transition-colors">Transaction ID</th>
+                                <th class="px-6 py-4 font-semibold cursor-pointer hover:text-white transition-colors">Counterparty</th>
+                                <th class="px-6 py-4 font-semibold cursor-pointer hover:text-white transition-colors">Type</th>
+                                <th class="px-6 py-4 font-semibold text-right cursor-pointer hover:text-white transition-colors">Amount</th>
+                                <th class="px-6 py-4 font-semibold text-center cursor-pointer hover:text-white transition-colors">Status</th>
+                                <th class="px-6 py-4 font-semibold text-center">Docs</th>
+                                <th class="px-6 py-4 font-semibold text-right">Action</th>
+                            </tr>
+                        </thead>
+                        <tbody class="divide-y divide-slate-800/50" id="ledger-body">
+                            <!-- Populated via JS -->
+                            <tr>
+                                <td colspan="8" class="px-6 py-12 text-center text-slate-500">
+                                    <div class="flex justify-center items-center gap-3">
+                                        <i class="fa-solid fa-circle-notch fa-spin"></i> Loading Ledger...
+                                    </div>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+                
+                <!-- Pagination -->
+                <div class="p-4 border-t border-slate-800 flex justify-between items-center bg-dark-900/50 backdrop-blur-md">
+                    <p class="text-xs text-slate-500">Showing <span class="text-white font-bold" id="page-start">1</span>-<span class="text-white font-bold" id="page-end">15</span> of <span class="text-white font-bold" id="total-count">54</span> transactions</p>
+                    <div class="flex gap-2">
+                        <button class="px-3 py-1.5 text-xs font-bold text-slate-400 bg-slate-800 rounded hover:text-white hover:bg-slate-700 transition disabled:opacity-50 disabled:cursor-not-allowed" id="prev-btn" onclick="prevPage()">Previous</button>
+                        <button class="px-3 py-1.5 text-xs font-bold text-slate-400 bg-slate-800 rounded hover:text-white hover:bg-slate-700 transition disabled:opacity-50 disabled:cursor-not-allowed" id="next-btn" onclick="nextPage()">Next</button>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+    </main>
+
+    <!-- DRAWER: TRANSACTION DETAILS -->
+    <div id="txn-drawer" class="fixed inset-y-0 right-0 w-[500px] bg-dark-900 border-l border-slate-700 shadow-2xl transform translate-x-full transition-transform duration-300 z-50 flex flex-col backdrop-blur-xl bg-opacity-95">
+        <!-- Header -->
+        <div class="p-6 border-b border-slate-800 bg-dark-950/80 flex justify-between items-start sticky top-0 z-10">
+            <div>
+                <h3 class="text-lg font-bold text-white mb-1 flex items-center gap-2">
+                    Transaction Details
+                    <span class="text-[10px] px-2 py-0.5 rounded bg-slate-800 text-slate-400 border border-slate-700">Read Only</span>
+                </h3>
+                <p class="text-xs text-slate-500 font-mono flex items-center gap-2">
+                    <span id="drawer-id">#TXN-8821-SG</span>
+                    <i class="fa-regular fa-copy cursor-pointer hover:text-brand-400 transition-colors" title="Copy ID" onclick="copyText(document.getElementById('drawer-id').innerText)"></i>
+                </p>
+            </div>
+            <button onclick="closeDrawer()" class="text-slate-400 hover:text-white transition p-2 hover:bg-slate-800 rounded-full"><i class="fa-solid fa-xmark text-lg"></i></button>
+        </div>
+
+        <!-- Scroll Content -->
+        <div class="flex-1 overflow-y-auto p-6 space-y-8 custom-scrollbar">
+            
+            <!-- Summary Card -->
+            <div class="bg-slate-800/30 rounded-xl p-6 border border-slate-700 text-center relative overflow-hidden group">
+                <div class="absolute inset-0 bg-gradient-to-b from-brand-500/5 to-transparent opacity-0 group-hover:opacity-100 transition-opacity"></div>
+                <div class="w-16 h-16 bg-slate-800 rounded-full flex items-center justify-center mx-auto mb-4 text-2xl font-bold text-white border-2 border-slate-700 shadow-lg relative z-10" id="drawer-icon">Z</div>
+                <h2 class="text-3xl font-mono font-bold text-white mb-1 tracking-tight relative z-10" id="drawer-amount">$ 12,500.00</h2>
+                <p class="text-sm text-slate-400 font-medium relative z-10" id="drawer-party">Zara International Ltd</p>
+                <div class="mt-4 flex justify-center gap-2 relative z-10" id="drawer-badges">
+                    <!-- Badges injected here -->
+                </div>
+            </div>
+
+            <!-- Timeline -->
+            <div>
+                <h4 class="text-xs font-bold text-slate-500 uppercase tracking-wider mb-4 flex items-center gap-2">
+                    <i class="fa-solid fa-timeline"></i> Lifecycle
+                </h4>
+                <div class="space-y-6 relative pl-2" id="drawer-timeline">
+                    <!-- Timeline injected here based on status -->
+                </div>
+            </div>
+
+            <!-- Documents -->
+            <div>
+                <h4 class="text-xs font-bold text-slate-500 uppercase tracking-wider mb-4 flex items-center gap-2">
+                    <i class="fa-solid fa-folder-open"></i> The Digital Staple
+                </h4>
+                <div class="space-y-3" id="drawer-docs">
+                    <!-- Docs injected here -->
+                </div>
+            </div>
+
+            <!-- Metadata Table -->
+            <div class="bg-dark-950 rounded-lg p-4 border border-slate-800 text-xs">
+                <div class="grid grid-cols-2 gap-4">
+                    <div>
+                        <p class="text-slate-500 mb-1">Value Date</p>
+                        <p class="text-white font-mono">2026-01-14</p>
+                    </div>
+                    <div>
+                        <p class="text-slate-500 mb-1">Bank Reference</p>
+                        <p class="text-white font-mono">DBS/GIFT/9921</p>
+                    </div>
+                    <div>
+                        <p class="text-slate-500 mb-1">Exchange Rate</p>
+                        <p class="text-white font-mono">83.6050</p>
+                    </div>
+                    <div>
+                        <p class="text-slate-500 mb-1">Fees</p>
+                        <p class="text-white font-mono">$ 0.00</p>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+
+        <!-- Footer Actions -->
+        <div class="p-4 border-t border-slate-800 bg-dark-950 flex gap-3 sticky bottom-0 z-10">
+            <button class="flex-1 py-2.5 bg-slate-800 hover:bg-slate-700 text-white rounded-lg text-xs font-bold transition border border-slate-700 flex items-center justify-center gap-2" onclick="simulateEmail()">
+                <i class="fa-regular fa-envelope"></i> Email Receipt
+            </button>
+            <button class="flex-1 py-2.5 bg-brand-600 hover:bg-brand-500 text-white rounded-lg text-xs font-bold transition shadow-lg shadow-brand-500/20 flex items-center justify-center gap-2" onclick="simulateDownload()">
+                <i class="fa-solid fa-download"></i> Download Bundle
+            </button>
+        </div>
+    </div>
+
+    <!-- ATLAS CHATBOT WIDGET -->
+    <div id="atlas-widget-container"></div>
+
+    <!-- SCRIPTS -->
+    <script src="backend.js"></script>
+    <script src="chatbot.js"></script>
+    <script>
+        // --- Extensive Mock Data ---
+        // REQUIREMENT: Only 1 failed, 2 pending, 1 processing transactions interspersed. Rest completed.
+        const generateMockData = () => {
+            const parties = ['Zara Intl Ltd', 'Maersk Logistics', 'FedEx Express', 'H&M Sourcing', 'AWS Cloud', 'Uniqlo Japan', 'Google Ads', 'Meta Platforms', 'Lazada Group', 'Shopee Pte', 'Toyota Motor', 'Samsung Electronics', 'DHL Supply Chain', 'Shopify Inc', 'Stripe Payments'];
+            const types = ['inflow', 'outflow'];
+            const currencies = ['USD', 'SGD', 'EUR', 'JPY', 'GBP'];
+            
+            let data = [];
+            
+            // Generate 60 base Completed Transactions
+            for(let i=0; i<60; i++) {
+                const date = new Date();
+                date.setDate(date.getDate() - (i + 1)); // Past dates
+                const type = types[Math.floor(Math.random() * types.length)];
+                
+                data.push({
+                    id: `TXN-${8821 + i}-${type === 'inflow' ? 'IN' : 'OUT'}`,
+                    date: date.toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' }),
+                    party: parties[Math.floor(Math.random() * parties.length)],
+                    type: type,
+                    amount: Math.floor(Math.random() * 50000) + 100,
+                    currency: currencies[Math.floor(Math.random() * currencies.length)],
+                    status: 'completed',
+                    docs: true,
+                    reason: ''
+                });
+            }
+
+            // Inject Special Cases at specific indices to jumble them
+            
+            // 1. Pending (Index 3 - Recent)
+            data.splice(3, 0, {
+                id: 'TXN-PENDING-001',
+                date: 'Today, 09:15 AM',
+                party: 'FedEx Express',
+                type: 'outflow',
+                amount: 450,
+                currency: 'USD',
+                status: 'pending',
+                docs: false,
+                reason: 'Awaiting Bank Clearance'
+            });
+
+            // 2. Failed (Index 8 - A bit older)
+            data.splice(8, 0, {
+                id: 'TXN-FAILED-001',
+                date: 'Yesterday, 04:30 PM',
+                party: 'Meta Platforms',
+                type: 'outflow',
+                amount: 2500,
+                currency: 'USD',
+                status: 'failed',
+                docs: false,
+                reason: 'Insufficient Funds in EEFC Account'
+            });
+
+            // 3. Processing (Index 12 - Mix it up)
+            data.splice(12, 0, {
+                id: 'TXN-PROC-002',
+                date: 'Today, 10:00 AM',
+                party: 'Maersk Logistics',
+                type: 'outflow',
+                amount: 1200,
+                currency: 'USD',
+                status: 'processing',
+                docs: false,
+                reason: 'Processing via SWIFT gpi'
+            });
+
+            // 4. Another Pending (Index 18)
+            data.splice(18, 0, {
+                id: 'TXN-PENDING-003',
+                date: '2 Days Ago',
+                party: 'AWS Cloud',
+                type: 'outflow',
+                amount: 3200,
+                currency: 'USD',
+                status: 'pending',
+                docs: false,
+                reason: 'Beneficiary Bank Review'
+            });
+
+            return data;
+        };
+
+        const AllTransactions = generateMockData();
+        let filteredData = [...AllTransactions];
+        let currentPage = 1;
+        const itemsPerPage = 12;
+        let currentFilter = 'all';
+
+        // --- Core Logic ---
+        document.addEventListener('DOMContentLoaded', () => {
+            renderTable();
+            initChatbotWidget();
+        });
+
+        function renderTable() {
+            const tbody = document.getElementById('ledger-body');
+            tbody.innerHTML = '';
+
+            const start = (currentPage - 1) * itemsPerPage;
+            const end = start + itemsPerPage;
+            const pageData = filteredData.slice(start, end);
+
+            if(pageData.length === 0) {
+                tbody.innerHTML = `<tr><td colspan="8" class="px-6 py-12 text-center text-slate-500"><div class="flex flex-col items-center justify-center gap-3"><i class="fa-solid fa-folder-open text-2xl text-slate-700"></i><p>No transactions found matching your criteria.</p></div></td></tr>`;
+            } else {
+                pageData.forEach((txn, index) => {
+                    const isInflow = txn.type === 'inflow';
+                    const color = isInflow ? 'text-green-400' : 'text-slate-300';
+                    const prefix = isInflow ? '+ ' : '- ';
+                    
+                    let badgeClass = '';
+                    let statusIcon = '';
+                    switch(txn.status) {
+                        case 'completed': 
+                            badgeClass = 'bg-green-900/20 text-green-400 border-green-500/20'; 
+                            statusIcon = '<i class="fa-solid fa-check mr-1"></i>';
+                            break;
+                        case 'pending': 
+                            badgeClass = 'bg-amber-900/20 text-amber-400 border-amber-500/20'; 
+                            statusIcon = '<i class="fa-solid fa-clock mr-1"></i>';
+                            break;
+                        case 'processing':
+                            badgeClass = 'bg-blue-900/20 text-blue-400 border-blue-500/20';
+                            statusIcon = '<i class="fa-solid fa-spinner fa-spin mr-1"></i>';
+                            break;
+                        case 'failed': 
+                            badgeClass = 'bg-red-900/20 text-red-400 border-red-500/20'; 
+                            statusIcon = '<i class="fa-solid fa-circle-xmark mr-1"></i>';
+                            break;
+                    }
+                    
+                    const docIcon = txn.docs ? '<i class="fa-solid fa-file-circle-check text-blue-400 cursor-pointer hover:text-white transition-colors" title="Download Bundle"></i>' : 
+                                               '<span class="text-slate-700 cursor-not-allowed text-xs">-</span>';
+
+                    const row = document.createElement('tr');
+                    row.className = 'txn-row border-b border-slate-800/50 cursor-pointer group animate-fade-in transition-all duration-200';
+                    row.style.animationDelay = `${index * 0.03}s`;
+                    row.onclick = () => openDrawer(txn);
+
+                    row.innerHTML = `
+                        <td class="px-6 py-4 text-xs font-mono text-slate-400 whitespace-nowrap">${txn.date}</td>
+                        <td class="px-6 py-4 text-xs font-mono text-white font-bold group-hover:text-brand-400 transition-colors">${txn.id}</td>
+                        <td class="px-6 py-4">
+                            <div class="flex items-center gap-3">
+                                <div class="w-8 h-8 rounded bg-slate-800 flex items-center justify-center font-bold text-xs text-white border border-slate-700 shadow-sm">${txn.party.charAt(0)}</div>
+                                <span class="font-bold text-slate-200 text-sm">${txn.party}</span>
+                            </div>
+                        </td>
+                        <td class="px-6 py-4">
+                            <span class="text-[10px] uppercase font-bold px-2 py-1 rounded bg-slate-800 border border-slate-700 text-slate-400 tracking-wider">${txn.type}</span>
+                        </td>
+                        <td class="px-6 py-4 text-right font-mono font-bold text-sm ${color}">
+                            ${prefix}${txn.currency} ${txn.amount.toLocaleString()}
+                        </td>
+                        <td class="px-6 py-4 text-center">
+                            <span class="text-[10px] uppercase font-bold px-2.5 py-1 rounded border ${badgeClass} inline-flex items-center">${statusIcon} ${txn.status}</span>
+                        </td>
+                        <td class="px-6 py-4 text-center text-lg">
+                            ${docIcon}
+                        </td>
+                        <td class="px-6 py-4 text-right">
+                            <i class="fa-solid fa-chevron-right text-slate-600 text-xs group-hover:text-white transition-colors"></i>
+                        </td>
+                    `;
+                    tbody.appendChild(row);
+                });
+            }
+            updatePagination();
+        }
+
+        function updatePagination() {
+            document.getElementById('page-start').innerText = ((currentPage - 1) * itemsPerPage) + 1;
+            document.getElementById('page-end').innerText = Math.min(currentPage * itemsPerPage, filteredData.length);
+            document.getElementById('total-count').innerText = filteredData.length;
+            
+            document.getElementById('prev-btn').disabled = currentPage === 1;
+            document.getElementById('next-btn').disabled = currentPage * itemsPerPage >= filteredData.length;
+        }
+
+        function nextPage() {
+            if (currentPage * itemsPerPage < filteredData.length) {
+                currentPage++;
+                renderTable();
+            }
+        }
+
+        function prevPage() {
+            if (currentPage > 1) {
+                currentPage--;
+                renderTable();
+            }
+        }
+
+        function filterTable() {
+            const term = document.getElementById('ledger-search').value.toLowerCase();
+            filteredData = AllTransactions.filter(t => 
+                (currentFilter === 'all' || t.type === currentFilter || t.status === currentFilter || (currentFilter === 'pending' && (t.status === 'pending' || t.status === 'processing'))) &&
+                (t.party.toLowerCase().includes(term) || t.id.toLowerCase().includes(term) || t.amount.toString().includes(term))
+            );
+            currentPage = 1;
+            renderTable();
+        }
+
+        function setFilter(type, el) {
+            currentFilter = type;
+            // Update UI
+            document.querySelectorAll('#filter-tabs span').forEach(s => s.classList.remove('active'));
+            el.classList.add('active');
+            filterTable();
+        }
+
+        // --- Drawer Logic (Enhanced for Correct Status Handling) ---
+        function openDrawer(txn) {
+            const drawer = document.getElementById('txn-drawer');
+            drawer.classList.remove('translate-x-full');
+            
+            // 1. Hydrate Header
+            document.getElementById('drawer-id').innerText = txn.id;
+            document.getElementById('drawer-amount').innerText = `${txn.currency} ${txn.amount.toLocaleString()}`;
+            document.getElementById('drawer-party').innerText = txn.party;
+            document.getElementById('drawer-icon').innerText = txn.party.charAt(0);
+
+            // 2. Hydrate Badges (Dynamic based on status)
+            const badgeContainer = document.getElementById('drawer-badges');
+            badgeContainer.innerHTML = '';
+            
+            const typeBadge = document.createElement('span');
+            typeBadge.className = 'px-2 py-1 bg-blue-900/30 text-blue-400 border border-blue-500/20 rounded text-[10px] font-bold uppercase tracking-wider';
+            typeBadge.innerText = txn.type.toUpperCase();
+            badgeContainer.appendChild(typeBadge);
+
+            const statusBadge = document.createElement('span');
+            if (txn.status === 'failed') {
+                statusBadge.className = 'px-2 py-1 bg-red-900/30 text-red-400 border border-red-500/20 rounded text-[10px] font-bold uppercase tracking-wider flex items-center gap-1';
+                statusBadge.innerHTML = '<i class="fa-solid fa-triangle-exclamation"></i> Failed';
+            } else if (txn.status === 'pending' || txn.status === 'processing') {
+                statusBadge.className = 'px-2 py-1 bg-amber-900/30 text-amber-400 border border-amber-500/20 rounded text-[10px] font-bold uppercase tracking-wider flex items-center gap-1';
+                statusBadge.innerHTML = '<i class="fa-solid fa-clock"></i> Pending';
+            } else {
+                statusBadge.className = 'px-2 py-1 bg-green-900/30 text-green-400 border border-green-500/20 rounded text-[10px] font-bold uppercase tracking-wider flex items-center gap-1';
+                statusBadge.innerHTML = '<i class="fa-solid fa-check"></i> Completed';
+            }
+            badgeContainer.appendChild(statusBadge);
+
+            // 3. Hydrate Timeline (Logic specific to status)
+            const timelineContainer = document.getElementById('drawer-timeline');
+            let timelineHTML = `<div class="absolute left-2 top-2 bottom-2 w-0.5 bg-slate-800"></div>`;
+            
+            // Step 1: Initiated (Always done)
+            timelineHTML += `
+                <div class="relative flex gap-4">
+                    <div class="w-4 h-4 bg-green-500 rounded-full border-4 border-dark-900 z-10 flex-shrink-0"></div>
+                    <div>
+                        <p class="text-sm font-bold text-white">Transaction Initiated</p>
+                        <p class="text-xs text-slate-500">${txn.date}</p>
+                    </div>
+                </div>`;
+
+            if (txn.status === 'failed') {
+                // FAILED FLOW
+                timelineHTML += `
+                <div class="relative flex gap-4">
+                    <div class="w-4 h-4 bg-red-500 rounded-full border-4 border-dark-900 z-10 flex-shrink-0"></div>
+                    <div>
+                        <p class="text-sm font-bold text-red-400">Processing Failed</p>
+                        <p class="text-xs text-slate-500">Reason: ${txn.reason || 'Bank Rejected'}</p>
+                    </div>
+                </div>
+                <div class="relative flex gap-4 opacity-50">
+                    <div class="w-4 h-4 bg-slate-700 rounded-full border-4 border-dark-900 z-10 flex-shrink-0"></div>
+                    <div>
+                        <p class="text-sm font-bold text-slate-400">Settlement</p>
+                        <p class="text-xs text-slate-500">Cancelled</p>
+                    </div>
+                </div>`;
+            } else if (txn.status === 'pending' || txn.status === 'processing') {
+                // PENDING FLOW
+                timelineHTML += `
+                <div class="relative flex gap-4">
+                    <div class="w-4 h-4 bg-amber-500 rounded-full border-4 border-dark-900 z-10 flex-shrink-0 animate-pulse"></div>
+                    <div>
+                        <p class="text-sm font-bold text-amber-400">Bank Processing</p>
+                        <p class="text-xs text-slate-500">In Progress...</p>
+                    </div>
+                </div>
+                <div class="relative flex gap-4 opacity-50">
+                    <div class="w-4 h-4 bg-slate-700 rounded-full border-4 border-dark-900 z-10 flex-shrink-0"></div>
+                    <div>
+                        <p class="text-sm font-bold text-slate-400">Compliance Check</p>
+                        <p class="text-xs text-slate-500">Pending</p>
+                    </div>
+                </div>`;
+            } else {
+                // COMPLETED FLOW
+                timelineHTML += `
+                <div class="relative flex gap-4">
+                    <div class="w-4 h-4 bg-green-500 rounded-full border-4 border-dark-900 z-10 flex-shrink-0"></div>
+                    <div>
+                        <p class="text-sm font-bold text-white">Wholesale Conversion</p>
+                        <p class="text-xs text-slate-500">GIFT City FCSS • Rate: 83.60</p>
+                    </div>
+                </div>
+                <div class="relative flex gap-4">
+                    <div class="w-4 h-4 bg-green-500 rounded-full border-4 border-dark-900 z-10 flex-shrink-0"></div>
+                    <div>
+                        <p class="text-sm font-bold text-white">Settled</p>
+                        <p class="text-xs text-slate-500">Funds Available</p>
+                    </div>
+                </div>
+                <div class="relative flex gap-4">
+                    <div class="w-4 h-4 bg-blue-500 rounded-full border-4 border-dark-900 z-10 flex-shrink-0 animate-pulse"></div>
+                    <div>
+                        <p class="text-sm font-bold text-white">Compliance Closure</p>
+                        <p class="text-xs text-slate-500">e-FIRA Generated • Syncing EDPMS...</p>
+                    </div>
+                </div>`;
+            }
+            timelineContainer.innerHTML = timelineHTML;
+
+            // 4. Hydrate Docs
+            const docsContainer = document.getElementById('drawer-docs');
+            if (txn.status === 'completed') {
+                docsContainer.innerHTML = `
+                    <div class="flex items-center justify-between p-3 bg-slate-800 rounded-lg border border-slate-700 hover:border-brand-500 transition cursor-pointer group">
+                        <div class="flex items-center gap-3">
+                            <i class="fa-solid fa-file-invoice text-slate-400 group-hover:text-brand-400"></i>
+                            <div>
+                                <p class="text-sm font-bold text-white">Commercial Invoice</p>
+                                <p class="text-[10px] text-slate-500">INV-AUTO-${txn.id}.pdf</p>
+                            </div>
+                        </div>
+                        <i class="fa-solid fa-download text-slate-500 hover:text-white"></i>
+                    </div>
+                    <div class="flex items-center justify-between p-3 bg-slate-800 rounded-lg border border-slate-700 hover:border-brand-500 transition cursor-pointer group">
+                        <div class="flex items-center gap-3">
+                            <i class="fa-solid fa-file-pdf text-slate-400 group-hover:text-red-400"></i>
+                            <div>
+                                <p class="text-sm font-bold text-white">e-FIRA Advice</p>
+                                <p class="text-[10px] text-slate-500">Digitally Signed</p>
+                            </div>
+                        </div>
+                        <i class="fa-solid fa-download text-slate-500 hover:text-white"></i>
+                    </div>`;
+            } else {
+                docsContainer.innerHTML = `
+                    <div class="p-4 bg-slate-800/50 border border-slate-700 rounded-lg text-center">
+                        <i class="fa-solid fa-file-circle-xmark text-slate-500 text-xl mb-2"></i>
+                        <p class="text-xs text-slate-400">Documents are not available for ${txn.status} transactions.</p>
+                    </div>
+                `;
+            }
+        }
+
+        function closeDrawer() {
+            document.getElementById('txn-drawer').classList.add('translate-x-full');
+        }
+
+        function copyText(text) {
+            navigator.clipboard.writeText(text);
+            const btn = event.target;
+            btn.classList.replace('fa-copy', 'fa-check');
+            btn.classList.add('text-green-400');
+            setTimeout(() => {
+                btn.classList.replace('fa-check', 'fa-copy');
+                btn.classList.remove('text-green-400');
+            }, 2000);
+        }
+
+        function simulateDownload() {
+            const btn = event.currentTarget;
+            btn.innerHTML = '<i class="fa-solid fa-circle-notch fa-spin"></i> Zipping...';
+            setTimeout(() => {
+                btn.innerHTML = '<i class="fa-solid fa-check"></i> Downloaded';
+                btn.classList.add('bg-green-600', 'hover:bg-green-500');
+                setTimeout(() => {
+                    btn.innerHTML = '<i class="fa-solid fa-download"></i> Download Bundle';
+                    btn.classList.remove('bg-green-600', 'hover:bg-green-500');
+                }, 2000);
+            }, 1500);
+        }
+
+        function simulateEmail() {
+            const btn = event.currentTarget;
+            btn.innerHTML = '<i class="fa-solid fa-circle-notch fa-spin"></i> Sending...';
+            setTimeout(() => {
+                btn.innerHTML = '<i class="fa-solid fa-check"></i> Sent';
+                setTimeout(() => {
+                    btn.innerHTML = '<i class="fa-regular fa-envelope"></i> Email Receipt';
+                }, 2000);
+            }, 1500);
+        }
+
+        function simulateExport() {
+            const btn = event.currentTarget;
+            btn.innerHTML = '<i class="fa-solid fa-circle-notch fa-spin"></i>';
+            setTimeout(() => {
+                btn.innerHTML = '<i class="fa-solid fa-check"></i> Done';
+                setTimeout(() => {
+                    btn.innerHTML = '<i class="fa-solid fa-download"></i> Export CSV';
+                }, 2000);
+            }, 1000);
+        }
+
+        // --- ATLAS CHATBOT (Embedded) ---
+        function initChatbotWidget() {
+            const container = document.getElementById('atlas-widget-container');
+            container.innerHTML = `
+                <div id="atlas-window" class="fixed bottom-20 right-6 w-[350px] bg-dark-900 border border-slate-700 rounded-2xl shadow-2xl hidden flex-col z-50 overflow-hidden transform transition-all duration-300 origin-bottom-right scale-95 opacity-0" style="height: 500px;">
+                     <div class="bg-slate-800 p-4 flex justify-between items-center border-b border-slate-700">
+                        <div class="flex items-center gap-2">
+                             <div class="w-8 h-8 rounded-full bg-brand-600 flex items-center justify-center text-white text-xs"><i class="fa-solid fa-robot"></i></div>
+                             <div>
+                                 <span class="font-bold text-white text-sm block">Atlas AI</span>
+                                 <span class="text-[10px] text-green-400 flex items-center gap-1"><span class="w-1.5 h-1.5 bg-green-500 rounded-full animate-pulse"></span> Online</span>
+                             </div>
+                        </div>
+                        <button onclick="toggleAtlas()" class="text-slate-400 hover:text-white"><i class="fa-solid fa-xmark"></i></button>
+                     </div>
+                     <div id="atlas-messages" class="flex-1 p-4 overflow-y-auto space-y-4 bg-dark-950 scroll-smooth">
+                        <div class="flex gap-3">
+                            <div class="w-8 h-8 rounded-full bg-slate-800 flex items-center justify-center shrink-0 text-slate-400 text-xs border border-slate-700"><i class="fa-solid fa-robot"></i></div>
+                            <div class="bg-slate-800 border border-slate-700 p-3 rounded-2xl rounded-tl-none text-sm text-slate-300 shadow-sm leading-relaxed">
+                                Need an Audit Report for your failed transactions? I can filter and export them for you.
+                            </div>
+                        </div>
+                     </div>
+                     <div class="p-3 bg-slate-800 border-t border-slate-700 flex gap-2">
+                        <input type="text" id="atlas-input" class="flex-1 bg-dark-950 border border-slate-700 rounded-lg px-3 py-2 text-sm text-white focus:border-brand-500 focus:outline-none placeholder-slate-600" placeholder="Type query..." onkeypress="handleAtlasEnter(event)">
+                        <button onclick="handleAtlasSubmit()" class="w-10 h-10 bg-brand-600 text-white rounded-lg hover:bg-brand-500 flex items-center justify-center transition active:scale-95"><i class="fa-solid fa-paper-plane"></i></button>
+                     </div>
+                </div>
+            `;
+        }
+
+        function toggleAtlas() {
+            const win = document.getElementById('atlas-window');
+            if (win.classList.contains('hidden')) {
+                win.classList.remove('hidden');
+                setTimeout(() => {
+                    win.classList.remove('scale-95', 'opacity-0');
+                    win.classList.add('scale-100', 'opacity-100');
+                    document.getElementById('atlas-input').focus();
+                }, 10);
+            } else {
+                win.classList.remove('scale-100', 'opacity-100');
+                win.classList.add('scale-95', 'opacity-0');
+                setTimeout(() => win.classList.add('hidden'), 300);
+            }
+        }
+
+        function handleAtlasEnter(e) { if(e.key==='Enter') handleAtlasSubmit(); }
+
+        async function handleAtlasSubmit() {
+            const inp = document.getElementById('atlas-input');
+            const msg = inp.value;
+            if(!msg) return;
+
+            addMsg(msg, 'user');
+            inp.value = '';
+
+            const loadingId = 'loading-' + Date.now();
+            const msgBox = document.getElementById('atlas-messages');
+            const loadingDiv = document.createElement('div');
+            loadingDiv.id = loadingId;
+            loadingDiv.className = 'flex gap-3';
+            loadingDiv.innerHTML = `<div class="w-8 h-8 rounded-full bg-slate-800 flex items-center justify-center shrink-0 text-slate-400 text-xs border border-slate-700"><i class="fa-solid fa-robot"></i></div><div class="bg-slate-800 border border-slate-700 p-3 rounded-2xl rounded-tl-none text-sm text-slate-400 shadow-sm"><i class="fa-solid fa-ellipsis fa-fade"></i></div>`;
+            msgBox.appendChild(loadingDiv);
+            msgBox.scrollTop = msgBox.scrollHeight;
+
+            setTimeout(() => {
+                document.getElementById(loadingId).remove();
+                if(typeof AtlasBackend !== 'undefined') {
+                    const reply = AtlasBackend.process(msg);
+                    addMsg(reply, 'bot');
+                } else {
+                    addMsg("I am currently offline. Please check connection.", 'bot');
+                }
+            }, 800);
+        }
+
+        function addMsg(text, type) {
+            const box = document.getElementById('atlas-messages');
+            const div = document.createElement('div');
+            div.className = type === 'bot' ? 'flex gap-3 animate-fade-in' : 'flex gap-3 justify-end animate-fade-in';
+            
+            const formatted = text.replace(/\*\*(.*?)\*\*/g, '<strong class="text-white">$1</strong>');
+
+            div.innerHTML = type === 'bot' 
+                ? `<div class="w-8 h-8 rounded-full bg-slate-800 flex items-center justify-center shrink-0 text-slate-400 text-xs border border-slate-700"><i class="fa-solid fa-robot"></i></div><div class="bg-slate-800 border border-slate-700 p-3 rounded-2xl rounded-tl-none text-sm text-slate-300 shadow-sm max-w-[85%] leading-relaxed">${formatted}</div>`
+                : `<div class="bg-brand-600 text-white p-3 rounded-2xl rounded-tr-none text-sm shadow-sm max-w-[85%] leading-relaxed">${formatted}</div>`;
+            box.appendChild(div);
+            box.scrollTop = box.scrollHeight;
+        }
+    </script>
+</body>
+</html>

@@ -1,0 +1,848 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Global Accounts | SettleX Treasury OS</title>
+    
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    
+    <!-- Fonts: Inter & JetBrains Mono -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Plus+Jakarta+Sans:wght@500;600;700;800&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet">
+    
+    <!-- Icons -->
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+    
+    <!-- Chart.js -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+    <!-- Config -->
+    <script>
+        tailwind.config = {
+            darkMode: 'class',
+            theme: {
+                extend: {
+                    fontFamily: {
+                        sans: ['Inter', 'sans-serif'],
+                        display: ['Plus Jakarta Sans', 'sans-serif'],
+                        mono: ['JetBrains Mono', 'monospace'],
+                    },
+                    colors: {
+                        brand: {
+                            50: '#f0f9ff',
+                            100: '#e0f2fe',
+                            200: '#bae6fd',
+                            300: '#7dd3fc',
+                            400: '#38bdf8',
+                            500: '#0ea5e9',
+                            600: '#0284c7',
+                            700: '#0369a1',
+                            800: '#075985',
+                            900: '#0c4a6e',
+                            950: '#082f49',
+                        },
+                        dark: {
+                            800: '#1e293b',
+                            900: '#0f172a',
+                            950: '#020617',
+                        }
+                    },
+                    animation: {
+                        'pulse-slow': 'pulse 3s cubic-bezier(0.4, 0, 0.6, 1) infinite',
+                        'slide-in': 'slideIn 0.4s ease-out forwards',
+                        'fade-in': 'fadeIn 0.3s ease-out forwards',
+                        'flip': 'flip 0.6s cubic-bezier(0.455, 0.030, 0.515, 0.955) both',
+                        'float': 'float 6s ease-in-out infinite',
+                    },
+                    keyframes: {
+                        slideIn: {
+                            '0%': { transform: 'translateY(20px)', opacity: '0' },
+                            '100%': { transform: 'translateY(0)', opacity: '1' }
+                        },
+                        fadeIn: {
+                            '0%': { opacity: '0' },
+                            '100%': { opacity: '1' }
+                        },
+                        float: {
+                            '0%, 100%': { transform: 'translateY(0)' },
+                            '50%': { transform: 'translateY(-10px)' },
+                        }
+                    },
+                    backgroundImage: {
+                        'card-gradient-1': 'linear-gradient(135deg, #0ea5e9 0%, #2563eb 100%)',
+                        'card-gradient-2': 'linear-gradient(135deg, #8b5cf6 0%, #6d28d9 100%)',
+                        'card-gradient-3': 'linear-gradient(135deg, #10b981 0%, #059669 100%)',
+                        'card-gradient-4': 'linear-gradient(135deg, #f59e0b 0%, #d97706 100%)',
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        /* Base */
+        body {
+            background-color: #020617;
+            color: #cbd5e1;
+        }
+
+        /* Glassmorphism */
+        .glass-panel {
+            background: rgba(15, 23, 42, 0.6);
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+        }
+
+        /* Card Patterns */
+        .card-pattern {
+            background-image: radial-gradient(rgba(255, 255, 255, 0.1) 1px, transparent 1px);
+            background-size: 20px 20px;
+        }
+        
+        .chip-sim {
+            background: linear-gradient(135deg, #fde68a 0%, #f59e0b 50%, #b45309 100%);
+            border-radius: 6px;
+            position: relative;
+            overflow: hidden;
+        }
+        .chip-sim::before {
+            content: '';
+            position: absolute;
+            top: 50%;
+            left: 0;
+            width: 100%;
+            height: 1px;
+            background: rgba(0,0,0,0.2);
+        }
+        .chip-sim::after {
+            content: '';
+            position: absolute;
+            left: 33%;
+            top: 0;
+            width: 1px;
+            height: 100%;
+            background: rgba(0,0,0,0.2);
+            box-shadow: 14px 0 0 rgba(0,0,0,0.2);
+        }
+
+        /* Grid */
+        .bg-grid {
+            background-size: 40px 40px;
+            background-image: 
+                linear-gradient(to right, rgba(255, 255, 255, 0.03) 1px, transparent 1px),
+                linear-gradient(to bottom, rgba(255, 255, 255, 0.03) 1px, transparent 1px);
+        }
+
+        /* Utilities */
+        .no-scrollbar::-webkit-scrollbar { display: none; }
+        .no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
+        
+        /* Copy Tooltip */
+        .copy-tooltip {
+            position: absolute;
+            top: -30px;
+            left: 50%;
+            transform: translateX(-50%);
+            background: #0f172a;
+            color: white;
+            padding: 4px 8px;
+            border-radius: 4px;
+            font-size: 10px;
+            opacity: 0;
+            transition: opacity 0.2s;
+            pointer-events: none;
+            border: 1px solid #334155;
+        }
+        .group:hover .copy-tooltip { opacity: 1; }
+    </style>
+</head>
+<body class="font-sans h-screen flex overflow-hidden selection:bg-brand-500 selection:text-white">
+
+    <!-- 1. SIDEBAR (Consistent) -->
+    <aside class="w-20 lg:w-72 bg-dark-900 border-r border-slate-800 flex flex-col flex-shrink-0 transition-all duration-300 z-50">
+        <!-- Logo -->
+        <div class="h-20 flex items-center px-0 lg:px-6 justify-center lg:justify-start border-b border-slate-800 cursor-pointer group" onclick="window.location.href='client-dashboard.html'">
+            <div class="w-10 h-10 bg-gradient-to-br from-brand-500 to-brand-700 rounded-xl flex items-center justify-center text-white font-bold text-xl shadow-lg shadow-brand-500/20 flex-shrink-0 transition-transform group-hover:scale-105">S</div>
+            <div class="hidden lg:block ml-3">
+                <h1 class="text-xl font-display font-bold text-white tracking-tight">Settle<span class="text-brand-400">X</span></h1>
+                <p class="text-[10px] text-slate-500 font-mono uppercase tracking-wider group-hover:text-brand-400 transition-colors">Treasury OS v2.4</p>
+            </div>
+        </div>
+
+        <!-- Nav -->
+        <nav class="flex-1 overflow-y-auto py-6 px-3 space-y-1">
+            <a href="client-dashboard.html" class="flex items-center gap-3 px-3 py-3 text-slate-400 hover:text-white hover:bg-slate-800 rounded-xl transition-all group">
+                <i class="fa-solid fa-border-all w-6 text-center group-hover:text-brand-400 transition-colors"></i>
+                <span class="hidden lg:block font-medium">Command Center</span>
+            </a>
+
+            <div class="hidden lg:block px-3 mt-6 mb-2 flex items-center justify-between">
+                <p class="text-[10px] font-bold text-slate-500 uppercase tracking-widest">Global Money</p>
+                <i class="fa-solid fa-globe text-[10px] text-slate-600"></i>
+            </div>
+
+            <a href="inflow-decision-gate.html" class="flex items-center gap-3 px-3 py-3 text-slate-400 hover:text-white hover:bg-slate-800 rounded-xl transition-all group">
+                <i class="fa-solid fa-inbox w-6 text-center group-hover:text-green-400 transition-colors"></i>
+                <span class="hidden lg:block font-medium">Inflow (Collections)</span>
+                <span class="hidden lg:flex ml-auto bg-brand-500 text-white text-[10px] font-bold px-2 py-0.5 rounded-full shadow-lg shadow-brand-500/40 animate-pulse-slow">3</span>
+            </a>
+
+            <a href="outflow-transfer.html" class="flex items-center gap-3 px-3 py-3 text-slate-400 hover:text-white hover:bg-slate-800 rounded-xl transition-all group">
+                <i class="fa-solid fa-paper-plane w-6 text-center group-hover:text-red-400 transition-colors"></i>
+                <span class="hidden lg:block font-medium">Outflow (Payments)</span>
+            </a>
+
+            <!-- Active: Virtual Accounts -->
+            <a href="#" class="flex items-center gap-3 px-3 py-3 bg-brand-900/30 text-white rounded-xl border border-brand-500/30 shadow-sm group relative overflow-hidden">
+                <div class="absolute inset-0 bg-brand-500/10 rounded-xl blur opacity-0 group-hover:opacity-100 transition-opacity"></div>
+                <div class="absolute left-0 top-0 bottom-0 w-1 bg-brand-500 rounded-l-xl"></div>
+                <i class="fa-solid fa-wallet w-6 text-center text-purple-400 text-lg group-hover:scale-110 transition-transform"></i>
+                <span class="hidden lg:block font-medium tracking-wide">Virtual Accounts</span>
+            </a>
+
+            <div class="hidden lg:block px-3 mt-6 mb-2 flex items-center justify-between">
+                <p class="text-[10px] font-bold text-slate-500 uppercase tracking-widest">Compliance</p>
+                <i class="fa-solid fa-shield-halved text-[10px] text-slate-600"></i>
+            </div>
+
+            <a href="transaction-history.html" class="flex items-center gap-3 px-3 py-3 text-slate-400 hover:text-white hover:bg-slate-800 rounded-xl transition-all group">
+                <i class="fa-solid fa-book-open w-6 text-center group-hover:text-amber-400 transition-colors"></i>
+                <span class="hidden lg:block font-medium">Digital Ledger</span>
+            </a>
+
+            <a href="compliance-vault.html" class="flex items-center gap-3 px-3 py-3 text-slate-400 hover:text-white hover:bg-slate-800 rounded-xl transition-all group">
+                <i class="fa-solid fa-file-shield w-6 text-center group-hover:text-blue-400 transition-colors"></i>
+                <span class="hidden lg:block font-medium">BoE & e-FIRA Vault</span>
+            </a>
+        </nav>
+        
+        <!-- Profile -->
+        <div class="p-4 border-t border-slate-800 bg-dark-900/50">
+            <div class="flex items-center gap-3 cursor-pointer hover:bg-slate-800 p-2 rounded-xl transition-colors group">
+                <div class="relative">
+                    <div class="w-10 h-10 rounded-full bg-slate-700 flex items-center justify-center border border-slate-600 group-hover:border-brand-500 transition-colors">
+                        <span class="font-bold text-white group-hover:text-brand-200">TE</span>
+                    </div>
+                    <div class="absolute -bottom-1 -right-1 w-3 h-3 bg-green-500 border-2 border-dark-900 rounded-full animate-pulse"></div>
+                </div>
+                <div class="hidden lg:block min-w-0">
+                    <p class="text-sm font-bold text-white truncate group-hover:text-brand-400 transition-colors">Tex Exports Pvt Ltd</p>
+                    <p class="text-[10px] text-slate-500 font-mono truncate">ID: IND-TN-8821</p>
+                </div>
+            </div>
+        </div>
+    </aside>
+
+    <!-- 2. MAIN WORKSPACE -->
+    <main class="flex-1 flex flex-col h-screen relative overflow-hidden bg-grid">
+        
+        <!-- Header -->
+        <header class="h-16 bg-dark-900/80 backdrop-blur-md border-b border-slate-800 flex items-center justify-between px-6 z-40 sticky top-0">
+            <div class="flex items-center gap-4">
+                <h2 class="text-lg font-bold text-white flex items-center gap-2">
+                    <i class="fa-solid fa-globe text-purple-500"></i> Global Collections
+                </h2>
+                <div class="h-4 w-px bg-slate-700 hidden md:block"></div>
+                <div class="hidden md:flex items-center gap-2 px-3 py-1.5 bg-purple-900/20 rounded-lg border border-purple-500/20">
+                    <span class="w-2 h-2 rounded-full bg-green-500 animate-pulse"></span>
+                    <span class="text-xs font-mono text-purple-300">DBS CONNECTED</span>
+                </div>
+            </div>
+            
+            <div class="flex items-center gap-4">
+                <button class="px-4 py-2 bg-brand-600 hover:bg-brand-500 text-white text-xs font-bold rounded-lg shadow-lg shadow-brand-500/20 transition transform active:scale-95 flex items-center gap-2" onclick="openAddAccountModal()">
+                    <i class="fa-solid fa-plus"></i> Open New Currency
+                </button>
+                <div class="h-6 w-px bg-slate-700"></div>
+                <button class="relative p-2 text-slate-400 hover:text-white transition-colors hover:bg-slate-800 rounded-lg" onclick="toggleAtlas()">
+                    <i class="fa-solid fa-headset"></i>
+                </button>
+            </div>
+        </header>
+
+        <!-- Content -->
+        <div class="flex-1 overflow-y-auto p-6 scroll-smooth">
+            
+            <!-- Cards Container -->
+            <div class="mb-10">
+                <div class="flex justify-between items-center mb-6">
+                    <div>
+                        <h3 class="text-xl font-display font-bold text-white">Your Virtual Accounts</h3>
+                        <p class="text-slate-400 text-sm">Share these details with international buyers to collect payments locally.</p>
+                    </div>
+                    <div class="flex gap-2">
+                        <button class="p-2 bg-slate-800 hover:bg-slate-700 rounded-lg text-slate-400 hover:text-white transition"><i class="fa-solid fa-chevron-left"></i></button>
+                        <button class="p-2 bg-slate-800 hover:bg-slate-700 rounded-lg text-slate-400 hover:text-white transition"><i class="fa-solid fa-chevron-right"></i></button>
+                    </div>
+                </div>
+
+                <!-- CARDS SCROLL -->
+                <div class="flex gap-6 overflow-x-auto pb-8 custom-scrollbar snap-x">
+                    
+                    <!-- Card 1: USD (DBS Singapore) -->
+                    <div class="min-w-[340px] h-[200px] bg-card-gradient-1 rounded-2xl p-6 relative overflow-hidden shadow-2xl transform hover:-translate-y-2 transition-transform duration-300 group cursor-pointer snap-center" onclick="selectAccount('USD')">
+                        <div class="card-pattern absolute inset-0 opacity-30"></div>
+                        <div class="relative z-10 flex flex-col h-full justify-between">
+                            <div class="flex justify-between items-start">
+                                <div class="flex items-center gap-2">
+                                    <div class="w-8 h-8 bg-white/20 rounded-full flex items-center justify-center backdrop-blur-sm">
+                                        <i class="fa-solid fa-dollar-sign text-white"></i>
+                                    </div>
+                                    <span class="font-bold text-white tracking-wide">USD Collection</span>
+                                </div>
+                                <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/c/cf/DBS_Bank_logo.svg/2560px-DBS_Bank_logo.svg.png" class="h-6 brightness-0 invert opacity-80">
+                            </div>
+                            
+                            <div class="flex gap-3">
+                                <div class="chip-sim w-10 h-8"></div>
+                                <i class="fa-solid fa-wifi text-white/50 rotate-90 text-xl"></i>
+                            </div>
+
+                            <div>
+                                <div class="flex justify-between items-end">
+                                    <div>
+                                        <p class="text-[10px] text-white/70 uppercase font-bold tracking-wider mb-1">Account Number</p>
+                                        <p class="font-mono text-lg text-white font-bold tracking-widest flex gap-2 items-center group/copy" onclick="copyText('8821-9923-1102')">
+                                            8821 9923 1102
+                                            <i class="fa-regular fa-copy text-xs opacity-0 group-hover/copy:opacity-100 transition-opacity"></i>
+                                        </p>
+                                    </div>
+                                    <p class="text-2xl font-bold text-white">$ 84,500.00</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Card 2: SGD (DBS Singapore) -->
+                    <div class="min-w-[340px] h-[200px] bg-card-gradient-2 rounded-2xl p-6 relative overflow-hidden shadow-2xl transform hover:-translate-y-2 transition-transform duration-300 group cursor-pointer snap-center opacity-80 hover:opacity-100" onclick="selectAccount('SGD')">
+                        <div class="card-pattern absolute inset-0 opacity-30"></div>
+                        <div class="relative z-10 flex flex-col h-full justify-between">
+                            <div class="flex justify-between items-start">
+                                <div class="flex items-center gap-2">
+                                    <div class="w-8 h-8 bg-white/20 rounded-full flex items-center justify-center backdrop-blur-sm">
+                                        <span class="font-bold text-white">S$</span>
+                                    </div>
+                                    <span class="font-bold text-white tracking-wide">SGD Collection</span>
+                                </div>
+                                <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/c/cf/DBS_Bank_logo.svg/2560px-DBS_Bank_logo.svg.png" class="h-6 brightness-0 invert opacity-80">
+                            </div>
+                            
+                            <div class="flex gap-3">
+                                <div class="chip-sim w-10 h-8"></div>
+                                <i class="fa-solid fa-wifi text-white/50 rotate-90 text-xl"></i>
+                            </div>
+
+                            <div>
+                                <div class="flex justify-between items-end">
+                                    <div>
+                                        <p class="text-[10px] text-white/70 uppercase font-bold tracking-wider mb-1">Account Number</p>
+                                        <p class="font-mono text-lg text-white font-bold tracking-widest flex gap-2 items-center group/copy" onclick="copyText('8821-9923-5501')">
+                                            8821 9923 5501
+                                            <i class="fa-regular fa-copy text-xs opacity-0 group-hover/copy:opacity-100 transition-opacity"></i>
+                                        </p>
+                                    </div>
+                                    <p class="text-2xl font-bold text-white">S$ 1,200.00</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Card 3: EUR (DBS Frankfurt) -->
+                    <div class="min-w-[340px] h-[200px] bg-card-gradient-3 rounded-2xl p-6 relative overflow-hidden shadow-2xl transform hover:-translate-y-2 transition-transform duration-300 group cursor-pointer snap-center opacity-80 hover:opacity-100" onclick="selectAccount('EUR')">
+                        <div class="card-pattern absolute inset-0 opacity-30"></div>
+                        <div class="relative z-10 flex flex-col h-full justify-between">
+                            <div class="flex justify-between items-start">
+                                <div class="flex items-center gap-2">
+                                    <div class="w-8 h-8 bg-white/20 rounded-full flex items-center justify-center backdrop-blur-sm">
+                                        <i class="fa-solid fa-euro-sign text-white"></i>
+                                    </div>
+                                    <span class="font-bold text-white tracking-wide">EUR Collection</span>
+                                </div>
+                                <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/c/cf/DBS_Bank_logo.svg/2560px-DBS_Bank_logo.svg.png" class="h-6 brightness-0 invert opacity-80">
+                            </div>
+                            
+                            <div class="flex gap-3">
+                                <div class="chip-sim w-10 h-8"></div>
+                                <i class="fa-solid fa-wifi text-white/50 rotate-90 text-xl"></i>
+                            </div>
+
+                            <div>
+                                <div class="flex justify-between items-end">
+                                    <div>
+                                        <p class="text-[10px] text-white/70 uppercase font-bold tracking-wider mb-1">IBAN</p>
+                                        <p class="font-mono text-sm text-white font-bold tracking-widest flex gap-2 items-center group/copy" onclick="copyText('DE89 3704 0044 0532 0130 00')">
+                                            DE89 3704 ... 0130 00
+                                            <i class="fa-regular fa-copy text-xs opacity-0 group-hover/copy:opacity-100 transition-opacity"></i>
+                                        </p>
+                                    </div>
+                                    <p class="text-2xl font-bold text-white">€ 0.00</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Add New Card Placeholder -->
+                    <div class="min-w-[340px] h-[200px] border-2 border-dashed border-slate-700 rounded-2xl p-6 flex flex-col items-center justify-center cursor-pointer hover:border-brand-500 hover:bg-slate-800/50 transition-all group snap-center" onclick="openAddAccountModal()">
+                        <div class="w-12 h-12 bg-slate-800 rounded-full flex items-center justify-center mb-3 group-hover:bg-brand-600 transition-colors">
+                            <i class="fa-solid fa-plus text-slate-400 group-hover:text-white"></i>
+                        </div>
+                        <p class="font-bold text-slate-400 group-hover:text-white">Add Currency</p>
+                        <p class="text-xs text-slate-500 mt-1">GBP, JPY, AUD available</p>
+                    </div>
+
+                </div>
+            </div>
+
+            <!-- ACCOUNT DETAILS & HISTORY -->
+            <div class="grid lg:grid-cols-3 gap-8">
+                
+                <!-- Left: Account Details (Sticky) -->
+                <div class="lg:col-span-1 space-y-6">
+                    <div class="glass-panel p-6 rounded-2xl border border-brand-500/30 relative overflow-hidden" id="account-details-panel">
+                        <div class="absolute top-0 right-0 w-20 h-20 bg-brand-500/10 rounded-bl-full"></div>
+                        
+                        <div class="flex items-center gap-3 mb-6">
+                            <img src="https://flagcdn.com/w40/us.png" id="detail-flag" class="w-8 h-6 rounded shadow-sm object-cover">
+                            <div>
+                                <h4 class="font-bold text-white" id="detail-currency">United States Dollar</h4>
+                                <p class="text-xs text-slate-400">DBS Singapore • Branch 081</p>
+                            </div>
+                        </div>
+
+                        <div class="space-y-4">
+                            <div class="bg-slate-800/50 p-3 rounded-xl border border-slate-700 group cursor-pointer" onclick="copyText('Tex Exports Pvt Ltd')">
+                                <p class="text-[10px] text-slate-500 uppercase font-bold mb-1">Account Holder Name</p>
+                                <div class="flex justify-between items-center">
+                                    <p class="text-sm font-bold text-white">Tex Exports Pvt Ltd</p>
+                                    <i class="fa-regular fa-copy text-slate-500 text-xs group-hover:text-white transition"></i>
+                                </div>
+                            </div>
+
+                            <div class="bg-slate-800/50 p-3 rounded-xl border border-slate-700 group cursor-pointer" onclick="copyText('DBSSSGSG')">
+                                <p class="text-[10px] text-slate-500 uppercase font-bold mb-1">SWIFT / BIC Code</p>
+                                <div class="flex justify-between items-center">
+                                    <p class="text-sm font-mono font-bold text-white">DBSSSGSG</p>
+                                    <i class="fa-regular fa-copy text-slate-500 text-xs group-hover:text-white transition"></i>
+                                </div>
+                            </div>
+
+                            <div class="bg-slate-800/50 p-3 rounded-xl border border-slate-700 group cursor-pointer" onclick="copyText('882199231102')">
+                                <p class="text-[10px] text-slate-500 uppercase font-bold mb-1">Account Number</p>
+                                <div class="flex justify-between items-center">
+                                    <p class="text-sm font-mono font-bold text-white" id="detail-account-num">8821 9923 1102</p>
+                                    <i class="fa-regular fa-copy text-slate-500 text-xs group-hover:text-white transition"></i>
+                                </div>
+                            </div>
+
+                            <div class="bg-slate-800/50 p-3 rounded-xl border border-slate-700 group cursor-pointer" onclick="copyText('12 Marina Boulevard, Singapore')">
+                                <p class="text-[10px] text-slate-500 uppercase font-bold mb-1">Bank Address</p>
+                                <div class="flex justify-between items-center">
+                                    <p class="text-sm font-bold text-white truncate">12 Marina Boulevard, Singapore</p>
+                                    <i class="fa-regular fa-copy text-slate-500 text-xs group-hover:text-white transition"></i>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="mt-6 pt-4 border-t border-slate-700 flex gap-3">
+                            <button class="flex-1 py-2 text-xs font-bold bg-white text-brand-900 rounded-lg hover:bg-slate-200 transition" onclick="shareDetails()">
+                                <i class="fa-solid fa-share-nodes mr-1"></i> Share
+                            </button>
+                            <button class="flex-1 py-2 text-xs font-bold border border-slate-600 text-slate-300 rounded-lg hover:bg-slate-800 transition" onclick="downloadStatement()">
+                                <i class="fa-solid fa-download mr-1"></i> Statement
+                            </button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Right: Transaction History -->
+                <div class="lg:col-span-2">
+                    <div class="glass-panel rounded-2xl overflow-hidden min-h-[500px] flex flex-col">
+                        <div class="p-6 border-b border-slate-800 flex justify-between items-center bg-dark-900/50">
+                            <h4 class="font-bold text-white">Transaction History</h4>
+                            <div class="flex gap-2">
+                                <div class="relative">
+                                    <i class="fa-solid fa-search absolute left-3 top-2.5 text-slate-500 text-xs"></i>
+                                    <input type="text" class="bg-slate-800 border border-slate-700 rounded-lg pl-8 pr-4 py-1.5 text-xs text-white focus:outline-none focus:border-brand-500" placeholder="Search...">
+                                </div>
+                                <button class="p-1.5 bg-slate-800 hover:bg-slate-700 rounded-lg text-slate-400 hover:text-white transition"><i class="fa-solid fa-filter"></i></button>
+                            </div>
+                        </div>
+
+                        <div class="flex-1 overflow-y-auto custom-scrollbar">
+                            <table class="w-full text-sm text-left">
+                                <thead class="text-xs text-slate-500 uppercase bg-slate-800/50 sticky top-0 backdrop-blur-md">
+                                    <tr>
+                                        <th class="px-6 py-3 font-semibold">Date</th>
+                                        <th class="px-6 py-3 font-semibold">Description</th>
+                                        <th class="px-6 py-3 font-semibold">Method</th>
+                                        <th class="px-6 py-3 font-semibold text-right">Amount</th>
+                                    </tr>
+                                </thead>
+                                <tbody class="divide-y divide-slate-800" id="txn-history-body">
+                                    <!-- Populated via JS -->
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+
+        </div>
+    </main>
+
+    <!-- MODALS -->
+
+    <!-- Add Account Modal -->
+    <div id="add-account-modal" class="fixed inset-0 bg-black/80 backdrop-blur-sm hidden items-center justify-center z-50 transition-opacity opacity-0 pointer-events-none">
+        <div class="bg-dark-900 border border-slate-700 rounded-2xl w-full max-w-md shadow-2xl transform scale-95 transition-transform duration-300">
+            <div class="p-6">
+                <div class="flex justify-between items-center mb-6">
+                    <h3 class="font-bold text-white text-lg">Open Collection Account</h3>
+                    <button onclick="closeAddAccountModal()" class="text-slate-400 hover:text-white"><i class="fa-solid fa-xmark"></i></button>
+                </div>
+
+                <div class="space-y-4">
+                    <label class="block text-xs font-bold text-slate-400 uppercase tracking-wider mb-2">Select Currency</label>
+                    <div class="grid grid-cols-2 gap-3">
+                        <div class="border border-slate-700 rounded-xl p-4 cursor-pointer hover:border-brand-500 hover:bg-slate-800 transition-colors flex items-center gap-3 group" onclick="selectNewCurrency(this)">
+                            <img src="https://flagcdn.com/w40/gb.png" class="w-8 rounded shadow-sm">
+                            <div>
+                                <p class="font-bold text-white text-sm">GBP</p>
+                                <p class="text-[10px] text-slate-500">British Pound</p>
+                            </div>
+                            <i class="fa-regular fa-circle ml-auto text-slate-600 group-hover:text-brand-500"></i>
+                        </div>
+                        <div class="border border-slate-700 rounded-xl p-4 cursor-pointer hover:border-brand-500 hover:bg-slate-800 transition-colors flex items-center gap-3 group" onclick="selectNewCurrency(this)">
+                            <img src="https://flagcdn.com/w40/jp.png" class="w-8 rounded shadow-sm">
+                            <div>
+                                <p class="font-bold text-white text-sm">JPY</p>
+                                <p class="text-[10px] text-slate-500">Japanese Yen</p>
+                            </div>
+                            <i class="fa-regular fa-circle ml-auto text-slate-600 group-hover:text-brand-500"></i>
+                        </div>
+                        <div class="border border-slate-700 rounded-xl p-4 cursor-pointer hover:border-brand-500 hover:bg-slate-800 transition-colors flex items-center gap-3 group" onclick="selectNewCurrency(this)">
+                            <img src="https://flagcdn.com/w40/au.png" class="w-8 rounded shadow-sm">
+                            <div>
+                                <p class="font-bold text-white text-sm">AUD</p>
+                                <p class="text-[10px] text-slate-500">Australian Dollar</p>
+                            </div>
+                            <i class="fa-regular fa-circle ml-auto text-slate-600 group-hover:text-brand-500"></i>
+                        </div>
+                        <div class="border border-slate-700 rounded-xl p-4 cursor-pointer hover:border-brand-500 hover:bg-slate-800 transition-colors flex items-center gap-3 group" onclick="selectNewCurrency(this)">
+                            <img src="https://flagcdn.com/w40/ca.png" class="w-8 rounded shadow-sm">
+                            <div>
+                                <p class="font-bold text-white text-sm">CAD</p>
+                                <p class="text-[10px] text-slate-500">Canadian Dollar</p>
+                            </div>
+                            <i class="fa-regular fa-circle ml-auto text-slate-600 group-hover:text-brand-500"></i>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="mt-6 p-4 bg-blue-900/20 border border-blue-500/20 rounded-xl flex gap-3">
+                    <i class="fa-solid fa-circle-info text-blue-400 mt-0.5"></i>
+                    <p class="text-xs text-blue-200">New accounts are activated instantly. You will receive unique account details under your entity name.</p>
+                </div>
+
+                <button class="w-full mt-6 py-3 bg-brand-600 hover:bg-brand-500 text-white rounded-xl font-bold shadow-lg transition active:scale-95" onclick="submitAddAccount()">
+                    Create Account
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- ATLAS CHATBOT WIDGET -->
+    <div id="atlas-widget-container"></div>
+
+    <!-- SCRIPTS -->
+    <script src="backend.js"></script>
+    <script src="chatbot.js"></script>
+    <script>
+        // --- Mock Data ---
+        const AccountsData = {
+            'USD': {
+                flag: 'https://flagcdn.com/w40/us.png',
+                name: 'United States Dollar',
+                branch: 'DBS Singapore • Branch 081',
+                number: '8821 9923 1102',
+                swift: 'DBSSSGSG',
+                address: '12 Marina Boulevard, Singapore',
+                transactions: [
+                    { date: 'Today', desc: 'Zara International Ltd', method: 'PayNow', amount: 12500, type: 'in' },
+                    { date: 'Yesterday', desc: 'FedEx Global Refund', method: 'ACH', amount: 450, type: 'in' },
+                    { date: 'Oct 24', desc: 'Transfer to INR Account', method: 'GIFT Rail', amount: -5000, type: 'out' },
+                    { date: 'Oct 22', desc: 'H&M Sourcing Payment', method: 'SWIFT', amount: 18200, type: 'in' },
+                    { date: 'Oct 20', desc: 'AWS Cloud Services', method: 'Direct Debit', amount: -210, type: 'out' },
+                ]
+            },
+            'SGD': {
+                flag: 'https://flagcdn.com/w40/sg.png',
+                name: 'Singapore Dollar',
+                branch: 'DBS Singapore • Branch 001',
+                number: '8821 9923 5501',
+                swift: 'DBSSSGSG',
+                address: '12 Marina Boulevard, Singapore',
+                transactions: [
+                    { date: 'Today', desc: 'Local Office Expenses', method: 'FAST', amount: -450, type: 'out' },
+                    { date: 'Oct 25', desc: 'Lazada Seller Payout', method: 'PayNow', amount: 2300, type: 'in' },
+                ]
+            },
+            'EUR': {
+                flag: 'https://flagcdn.com/w40/eu.png',
+                name: 'Euro',
+                branch: 'DBS Frankfurt • Branch 442',
+                number: 'DE89 3704 ... 0130 00',
+                swift: 'DBSDEFF',
+                address: 'Bockenheimer Landstraße, Frankfurt',
+                transactions: []
+            }
+        };
+
+        // --- Logic ---
+        document.addEventListener('DOMContentLoaded', () => {
+            selectAccount('USD'); // Default load
+            initChatbotWidget();
+        });
+
+        function selectAccount(currency) {
+            const data = AccountsData[currency];
+            if(!data) return;
+
+            // Animate Panel Change
+            const panel = document.getElementById('account-details-panel');
+            panel.classList.add('opacity-50', 'scale-95');
+            
+            setTimeout(() => {
+                // Update Details
+                document.getElementById('detail-flag').src = data.flag;
+                document.getElementById('detail-currency').innerText = data.name;
+                document.getElementById('detail-account-num').innerText = data.number;
+                
+                // Reset Animation
+                panel.classList.remove('opacity-50', 'scale-95');
+                
+                // Update History
+                renderHistory(data.transactions, currency);
+            }, 150);
+        }
+
+        function renderHistory(txns, currency) {
+            const tbody = document.getElementById('txn-history-body');
+            tbody.innerHTML = '';
+
+            if (txns.length === 0) {
+                tbody.innerHTML = `
+                    <tr>
+                        <td colspan="4" class="px-6 py-12 text-center text-slate-500">
+                            <div class="w-12 h-12 bg-slate-800 rounded-full flex items-center justify-center mx-auto mb-3">
+                                <i class="fa-solid fa-ghost text-xl"></i>
+                            </div>
+                            No transactions yet
+                        </td>
+                    </tr>`;
+                return;
+            }
+
+            txns.forEach((t, i) => {
+                const isPos = t.type === 'in';
+                const color = isPos ? 'text-green-400' : 'text-slate-300';
+                const prefix = isPos ? '+ ' : '- ';
+                const row = document.createElement('tr');
+                row.className = 'hover:bg-white/5 transition-colors border-b border-slate-800/50 group animate-fade-in';
+                row.style.animationDelay = `${i * 0.05}s`;
+                
+                row.innerHTML = `
+                    <td class="px-6 py-4 text-slate-400 text-xs font-mono">${t.date}</td>
+                    <td class="px-6 py-4">
+                        <p class="font-bold text-slate-200 text-sm">${t.desc}</p>
+                    </td>
+                    <td class="px-6 py-4">
+                        <span class="bg-slate-800 text-slate-400 border border-slate-700 text-[10px] px-2 py-1 rounded font-bold">${t.method}</span>
+                    </td>
+                    <td class="px-6 py-4 text-right font-mono ${color} font-bold text-sm">
+                        ${prefix}${currency} ${Math.abs(t.amount).toLocaleString()}
+                    </td>
+                `;
+                tbody.appendChild(row);
+            });
+        }
+
+        function copyText(text) {
+            navigator.clipboard.writeText(text).then(() => {
+                // Show toast
+                const toast = document.createElement('div');
+                toast.className = 'fixed top-6 left-1/2 -translate-x-1/2 bg-slate-800 text-white px-4 py-2 rounded-lg shadow-lg text-xs font-bold z-50 animate-fade-in flex items-center gap-2';
+                toast.innerHTML = '<i class="fa-solid fa-check text-green-400"></i> Copied to clipboard';
+                document.body.appendChild(toast);
+                setTimeout(() => toast.remove(), 2000);
+            });
+        }
+
+        function downloadStatement() {
+            const btn = event.currentTarget;
+            btn.innerHTML = '<i class="fa-solid fa-circle-notch fa-spin mr-1"></i> Generating...';
+            setTimeout(() => {
+                btn.innerHTML = '<i class="fa-solid fa-check mr-1"></i> Downloaded';
+                setTimeout(() => {
+                    btn.innerHTML = '<i class="fa-solid fa-download mr-1"></i> Statement';
+                }, 2000);
+            }, 1500);
+        }
+
+        // --- Add Account Modal ---
+        function openAddAccountModal() {
+            const modal = document.getElementById('add-account-modal');
+            modal.classList.remove('hidden', 'pointer-events-none');
+            setTimeout(() => {
+                modal.classList.remove('opacity-0');
+                modal.firstElementChild.classList.remove('scale-95');
+                modal.firstElementChild.classList.add('scale-100');
+            }, 10);
+        }
+
+        function closeAddAccountModal() {
+            const modal = document.getElementById('add-account-modal');
+            modal.classList.add('opacity-0');
+            modal.firstElementChild.classList.remove('scale-100');
+            modal.firstElementChild.classList.add('scale-95');
+            setTimeout(() => {
+                modal.classList.add('hidden', 'pointer-events-none');
+            }, 300);
+        }
+
+        function selectNewCurrency(el) {
+            // Remove active class from others
+            el.parentElement.querySelectorAll('div').forEach(d => {
+                d.classList.remove('border-brand-500', 'bg-slate-800');
+                d.classList.add('border-slate-700');
+                d.querySelector('i').classList.remove('fa-solid', 'fa-circle-check', 'text-brand-500');
+                d.querySelector('i').classList.add('fa-regular', 'fa-circle', 'text-slate-600');
+            });
+            
+            // Add active class
+            el.classList.remove('border-slate-700');
+            el.classList.add('border-brand-500', 'bg-slate-800');
+            const icon = el.querySelector('i');
+            icon.classList.remove('fa-regular', 'fa-circle', 'text-slate-600');
+            icon.classList.add('fa-solid', 'fa-circle-check', 'text-brand-500');
+        }
+
+        function submitAddAccount() {
+            const btn = event.currentTarget;
+            btn.innerHTML = '<i class="fa-solid fa-circle-notch fa-spin"></i> Activating...';
+            setTimeout(() => {
+                closeAddAccountModal();
+                btn.innerHTML = 'Create Account';
+                // Show success toast
+                const toast = document.createElement('div');
+                toast.className = 'fixed top-6 right-6 bg-dark-900 border border-slate-700 text-white px-6 py-4 rounded-xl shadow-2xl flex items-center gap-3 z-50 animate-slide-in';
+                toast.innerHTML = `
+                    <div class="w-8 h-8 bg-green-500/20 text-green-500 rounded-full flex items-center justify-center flex-shrink-0">
+                        <i class="fa-solid fa-check"></i>
+                    </div>
+                    <div>
+                        <h4 class="font-bold text-sm">Success</h4>
+                        <p class="text-xs text-slate-400">New currency account activated.</p>
+                    </div>
+                `;
+                document.body.appendChild(toast);
+                setTimeout(() => toast.remove(), 3000);
+            }, 1500);
+        }
+
+        // --- ATLAS CHATBOT (Embedded) ---
+        function initChatbotWidget() {
+            const container = document.getElementById('atlas-widget-container');
+            container.innerHTML = `
+                <div id="atlas-window" class="fixed bottom-20 right-6 w-[350px] bg-dark-900 border border-slate-700 rounded-2xl shadow-2xl hidden flex-col z-50 overflow-hidden transform transition-all duration-300 origin-bottom-right scale-95 opacity-0" style="height: 500px;">
+                     <div class="bg-slate-800 p-4 flex justify-between items-center border-b border-slate-700">
+                        <div class="flex items-center gap-2">
+                             <div class="w-8 h-8 rounded-full bg-brand-600 flex items-center justify-center text-white text-xs"><i class="fa-solid fa-robot"></i></div>
+                             <div>
+                                 <span class="font-bold text-white text-sm block">Atlas AI</span>
+                                 <span class="text-[10px] text-green-400 flex items-center gap-1"><span class="w-1.5 h-1.5 bg-green-500 rounded-full animate-pulse"></span> Online</span>
+                             </div>
+                        </div>
+                        <button onclick="toggleAtlas()" class="text-slate-400 hover:text-white"><i class="fa-solid fa-xmark"></i></button>
+                     </div>
+                     <div id="atlas-messages" class="flex-1 p-4 overflow-y-auto space-y-4 bg-dark-950 scroll-smooth">
+                        <div class="flex gap-3">
+                            <div class="w-8 h-8 rounded-full bg-slate-800 flex items-center justify-center shrink-0 text-slate-400 text-xs border border-slate-700"><i class="fa-solid fa-robot"></i></div>
+                            <div class="bg-slate-800 border border-slate-700 p-3 rounded-2xl rounded-tl-none text-sm text-slate-300 shadow-sm leading-relaxed">
+                                I can generate Account Confirmation Letters for your buyers. Which currency do you need?
+                            </div>
+                        </div>
+                     </div>
+                     <div class="p-3 bg-slate-800 border-t border-slate-700 flex gap-2">
+                        <input type="text" id="atlas-input" class="flex-1 bg-dark-950 border border-slate-700 rounded-lg px-3 py-2 text-sm text-white focus:border-brand-500 focus:outline-none placeholder-slate-600" placeholder="Type query..." onkeypress="handleAtlasEnter(event)">
+                        <button onclick="handleAtlasSubmit()" class="w-10 h-10 bg-brand-600 text-white rounded-lg hover:bg-brand-500 flex items-center justify-center transition active:scale-95"><i class="fa-solid fa-paper-plane"></i></button>
+                     </div>
+                </div>
+            `;
+        }
+
+        function toggleAtlas() {
+            const win = document.getElementById('atlas-window');
+            if (win.classList.contains('hidden')) {
+                win.classList.remove('hidden');
+                setTimeout(() => {
+                    win.classList.remove('scale-95', 'opacity-0');
+                    win.classList.add('scale-100', 'opacity-100');
+                    document.getElementById('atlas-input').focus();
+                }, 10);
+            } else {
+                win.classList.remove('scale-100', 'opacity-100');
+                win.classList.add('scale-95', 'opacity-0');
+                setTimeout(() => win.classList.add('hidden'), 300);
+            }
+        }
+
+        function handleAtlasEnter(e) { if(e.key==='Enter') handleAtlasSubmit(); }
+
+        async function handleAtlasSubmit() {
+            const inp = document.getElementById('atlas-input');
+            const msg = inp.value;
+            if(!msg) return;
+
+            addMsg(msg, 'user');
+            inp.value = '';
+
+            const loadingId = 'loading-' + Date.now();
+            const msgBox = document.getElementById('atlas-messages');
+            const loadingDiv = document.createElement('div');
+            loadingDiv.id = loadingId;
+            loadingDiv.className = 'flex gap-3';
+            loadingDiv.innerHTML = `<div class="w-8 h-8 rounded-full bg-slate-800 flex items-center justify-center shrink-0 text-slate-400 text-xs border border-slate-700"><i class="fa-solid fa-robot"></i></div><div class="bg-slate-800 border border-slate-700 p-3 rounded-2xl rounded-tl-none text-sm text-slate-400 shadow-sm"><i class="fa-solid fa-ellipsis fa-fade"></i></div>`;
+            msgBox.appendChild(loadingDiv);
+            msgBox.scrollTop = msgBox.scrollHeight;
+
+            setTimeout(() => {
+                document.getElementById(loadingId).remove();
+                if(typeof AtlasBackend !== 'undefined') {
+                    const reply = AtlasBackend.process(msg);
+                    addMsg(reply, 'bot');
+                } else {
+                    addMsg("I am currently offline. Please check connection.", 'bot');
+                }
+            }, 800);
+        }
+
+        function addMsg(text, type) {
+            const box = document.getElementById('atlas-messages');
+            const div = document.createElement('div');
+            div.className = type === 'bot' ? 'flex gap-3 animate-fade-in' : 'flex gap-3 justify-end animate-fade-in';
+            
+            const formatted = text.replace(/\*\*(.*?)\*\*/g, '<strong class="text-white">$1</strong>');
+
+            div.innerHTML = type === 'bot' 
+                ? `<div class="w-8 h-8 rounded-full bg-slate-800 flex items-center justify-center shrink-0 text-slate-400 text-xs border border-slate-700"><i class="fa-solid fa-robot"></i></div><div class="bg-slate-800 border border-slate-700 p-3 rounded-2xl rounded-tl-none text-sm text-slate-300 shadow-sm max-w-[85%] leading-relaxed">${formatted}</div>`
+                : `<div class="bg-brand-600 text-white p-3 rounded-2xl rounded-tr-none text-sm shadow-sm max-w-[85%] leading-relaxed">${formatted}</div>`;
+            box.appendChild(div);
+            box.scrollTop = box.scrollHeight;
+        }
+    </script>
+</body>
+</html>

@@ -1,0 +1,885 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Inflow Decision Gate | SettleX Treasury OS</title>
+    
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    
+    <!-- Fonts: Inter & Plus Jakarta Sans -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600&family=Plus+Jakarta+Sans:wght@500;600;700;800&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet">
+    
+    <!-- Icons -->
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+    
+    <!-- Chart.js -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+    <!-- Config -->
+    <script>
+        tailwind.config = {
+            darkMode: 'class',
+            theme: {
+                extend: {
+                    fontFamily: {
+                        sans: ['Inter', 'sans-serif'],
+                        display: ['Plus Jakarta Sans', 'sans-serif'],
+                        mono: ['JetBrains Mono', 'monospace'],
+                    },
+                    colors: {
+                        brand: {
+                            50: '#f0f9ff',
+                            100: '#e0f2fe',
+                            200: '#bae6fd',
+                            300: '#7dd3fc',
+                            400: '#38bdf8',
+                            500: '#0ea5e9',
+                            600: '#0284c7',
+                            700: '#0369a1',
+                            800: '#075985',
+                            900: '#0c4a6e',
+                            950: '#082f49',
+                        },
+                        dark: {
+                            800: '#1e293b',
+                            900: '#0f172a',
+                            950: '#020617',
+                        },
+                        // Semantic Colors for Trade
+                        trade: {
+                            profit: '#10b981', // Green
+                            loss: '#ef4444',   // Red
+                            warn: '#f59e0b',   // Amber
+                            info: '#3b82f6'    // Blue
+                        }
+                    },
+                    animation: {
+                        'pulse-slow': 'pulse 3s cubic-bezier(0.4, 0, 0.6, 1) infinite',
+                        'slide-in': 'slideIn 0.4s ease-out forwards',
+                        'fade-out-up': 'fadeOutUp 0.5s ease-in forwards',
+                        'flash': 'flash 1s ease-in-out',
+                        'spin-slow': 'spin 3s linear infinite',
+                        'bounce-subtle': 'bounceSubtle 2s infinite',
+                    },
+                    keyframes: {
+                        slideIn: {
+                            '0%': { transform: 'translateY(20px)', opacity: '0' },
+                            '100%': { transform: 'translateY(0)', opacity: '1' }
+                        },
+                        fadeOutUp: {
+                            '0%': { opacity: '1', transform: 'translateY(0)' },
+                            '100%': { opacity: '0', transform: 'translateY(-20px)', height: '0', margin: '0', padding: '0' }
+                        },
+                        flash: {
+                            '0%, 100%': { opacity: '1' },
+                            '50%': { opacity: '0.5' },
+                        },
+                        bounceSubtle: {
+                            '0%, 100%': { transform: 'translateY(-2px)' },
+                            '50%': { transform: 'translateY(2px)' },
+                        }
+                    },
+                    boxShadow: {
+                        'neon': '0 0 10px rgba(14, 165, 233, 0.5), 0 0 20px rgba(14, 165, 233, 0.3)',
+                        'glass': '0 8px 32px 0 rgba(0, 0, 0, 0.37)',
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        /* Base Styles */
+        body {
+            background-color: #020617; /* dark-950 */
+            color: #cbd5e1; /* slate-300 */
+        }
+
+        /* Glassmorphism Utilities */
+        .glass-panel {
+            background: rgba(15, 23, 42, 0.7);
+            backdrop-filter: blur(16px);
+            -webkit-backdrop-filter: blur(16px);
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+        }
+
+        /* Range Slider Styling */
+        input[type=range] {
+            -webkit-appearance: none; 
+            width: 100%; 
+            background: transparent; 
+        }
+        input[type=range]:focus {
+            outline: none;
+        }
+        input[type=range]::-webkit-slider-thumb {
+            -webkit-appearance: none;
+            height: 24px;
+            width: 24px;
+            border-radius: 50%;
+            background: #0ea5e9;
+            cursor: pointer;
+            margin-top: -10px; 
+            box-shadow: 0 0 10px rgba(14, 165, 233, 0.5);
+            border: 2px solid #ffffff;
+            transition: transform 0.1s ease;
+        }
+        input[type=range]::-webkit-slider-thumb:hover {
+            transform: scale(1.1);
+        }
+        input[type=range]::-webkit-slider-runnable-track {
+            width: 100%;
+            height: 4px;
+            cursor: pointer;
+            background: #334155;
+            border-radius: 2px;
+        }
+        
+        /* Custom Scrollbar */
+        ::-webkit-scrollbar { width: 6px; height: 6px; }
+        ::-webkit-scrollbar-track { background: #0f172a; }
+        ::-webkit-scrollbar-thumb { background: #334155; border-radius: 4px; }
+        ::-webkit-scrollbar-thumb:hover { background: #475569; }
+        
+        /* Grid Pattern Background */
+        .bg-grid {
+            background-size: 40px 40px;
+            background-image: 
+                linear-gradient(to right, rgba(255, 255, 255, 0.03) 1px, transparent 1px),
+                linear-gradient(to bottom, rgba(255, 255, 255, 0.03) 1px, transparent 1px);
+        }
+
+        /* Utilities */
+        .no-scrollbar::-webkit-scrollbar { display: none; }
+        .no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
+    </style>
+</head>
+<body class="font-sans h-screen flex overflow-hidden selection:bg-brand-500 selection:text-white">
+
+    <!-- 1. PROFESSIONAL SIDEBAR -->
+    <aside class="w-20 lg:w-72 bg-dark-900 border-r border-slate-800 flex flex-col flex-shrink-0 transition-all duration-300 z-50">
+        
+        <!-- Logo Area -->
+        <div class="h-20 flex items-center px-0 lg:px-6 justify-center lg:justify-start border-b border-slate-800 relative group cursor-pointer" onclick="window.location.href='client-dashboard.html'">
+            <div class="w-10 h-10 bg-gradient-to-br from-brand-500 to-brand-700 rounded-xl flex items-center justify-center text-white font-bold text-xl shadow-lg shadow-brand-500/20 flex-shrink-0 transition-transform group-hover:scale-105">
+                S
+            </div>
+            <div class="hidden lg:block ml-3">
+                <h1 class="text-xl font-display font-bold text-white tracking-tight">Settle<span class="text-brand-400">X</span></h1>
+                <p class="text-[10px] text-slate-500 font-mono uppercase tracking-wider group-hover:text-brand-400 transition-colors">Treasury OS v2.4</p>
+            </div>
+        </div>
+
+        <!-- Main Navigation -->
+        <nav class="flex-1 overflow-y-auto py-6 px-3 space-y-1">
+            
+            <!-- Dashboard -->
+            <a href="client-dashboard.html" class="flex items-center gap-3 px-3 py-3 text-slate-400 hover:text-white hover:bg-slate-800 rounded-xl transition-all group">
+                <i class="fa-solid fa-border-all w-6 text-center group-hover:text-brand-400 transition-colors"></i>
+                <span class="hidden lg:block font-medium">Command Center</span>
+            </a>
+
+            <div class="hidden lg:block px-3 mt-6 mb-2 flex items-center justify-between">
+                <p class="text-[10px] font-bold text-slate-500 uppercase tracking-widest">Global Money</p>
+                <i class="fa-solid fa-globe text-[10px] text-slate-600"></i>
+            </div>
+
+            <!-- Inflow (Active) -->
+            <a href="#" class="flex items-center gap-3 px-3 py-3 bg-brand-900/30 text-white rounded-xl border border-brand-500/30 shadow-sm group relative overflow-hidden">
+                <div class="absolute inset-0 bg-brand-500/10 rounded-xl blur opacity-0 group-hover:opacity-100 transition-opacity"></div>
+                <div class="absolute left-0 top-0 bottom-0 w-1 bg-brand-500 rounded-l-xl"></div>
+                <i class="fa-solid fa-inbox w-6 text-center text-green-400 text-lg group-hover:scale-110 transition-transform"></i>
+                <span class="hidden lg:block font-medium tracking-wide">Inflow (Collections)</span>
+                <span class="hidden lg:flex ml-auto bg-brand-500 text-white text-[10px] font-bold px-2 py-0.5 rounded-full shadow-lg shadow-brand-500/40 animate-pulse-slow" id="sidebar-badge">3</span>
+            </a>
+
+            <!-- Outflow -->
+            <a href="outflow-transfer.html" class="flex items-center gap-3 px-3 py-3 text-slate-400 hover:text-white hover:bg-slate-800 rounded-xl transition-all group">
+                <i class="fa-solid fa-paper-plane w-6 text-center group-hover:text-red-400 transition-colors group-hover:translate-x-[2px]"></i>
+                <span class="hidden lg:block font-medium">Outflow (Payments)</span>
+            </a>
+
+            <!-- Virtual Accounts -->
+            <a href="virtual-accounts.html" class="flex items-center gap-3 px-3 py-3 text-slate-400 hover:text-white hover:bg-slate-800 rounded-xl transition-all group">
+                <i class="fa-solid fa-wallet w-6 text-center group-hover:text-purple-400 transition-colors"></i>
+                <span class="hidden lg:block font-medium">Virtual Accounts</span>
+            </a>
+
+            <div class="hidden lg:block px-3 mt-6 mb-2 flex items-center justify-between">
+                <p class="text-[10px] font-bold text-slate-500 uppercase tracking-widest">Compliance</p>
+                <i class="fa-solid fa-shield-halved text-[10px] text-slate-600"></i>
+            </div>
+
+            <!-- Ledger -->
+            <a href="transaction-history.html" class="flex items-center gap-3 px-3 py-3 text-slate-400 hover:text-white hover:bg-slate-800 rounded-xl transition-all group">
+                <i class="fa-solid fa-book-open w-6 text-center group-hover:text-amber-400 transition-colors"></i>
+                <span class="hidden lg:block font-medium">Digital Ledger</span>
+            </a>
+
+            <!-- Docs Vault (FIXED: Added back to match dashboard) -->
+            <a href="compliance-vault.html" class="flex items-center gap-3 px-3 py-3 text-slate-400 hover:text-white hover:bg-slate-800 rounded-xl transition-all group">
+                <i class="fa-solid fa-file-shield w-6 text-center group-hover:text-blue-400 transition-colors"></i>
+                <span class="hidden lg:block font-medium">BoE & e-FIRA Vault</span>
+            </a>
+        </nav>
+
+        <!-- User Profile Widget -->
+        <div class="p-4 border-t border-slate-800 bg-dark-900/50">
+            <div class="flex items-center gap-3 cursor-pointer hover:bg-slate-800 p-2 rounded-xl transition-colors group" onclick="alert('Profile Settings')">
+                <div class="relative">
+                    <div class="w-10 h-10 rounded-full bg-slate-700 flex items-center justify-center border border-slate-600 group-hover:border-brand-500 transition-colors">
+                        <span class="font-bold text-white group-hover:text-brand-200">TE</span>
+                    </div>
+                    <div class="absolute -bottom-1 -right-1 w-3 h-3 bg-green-500 border-2 border-dark-900 rounded-full animate-pulse"></div>
+                </div>
+                <div class="hidden lg:block min-w-0">
+                    <p class="text-sm font-bold text-white truncate group-hover:text-brand-400 transition-colors">Tex Exports Pvt Ltd</p>
+                    <p class="text-[10px] text-slate-500 font-mono truncate">ID: IND-TN-8821</p>
+                </div>
+                <div class="hidden lg:block ml-auto text-slate-500 group-hover:text-white transition-colors">
+                    <i class="fa-solid fa-gear text-xs"></i>
+                </div>
+            </div>
+        </div>
+    </aside>
+
+    <!-- 2. MAIN WORKSPACE -->
+    <main class="flex-1 flex flex-col h-screen relative overflow-hidden bg-grid">
+        
+        <!-- Header -->
+        <header class="h-16 bg-dark-900/80 backdrop-blur-md border-b border-slate-800 flex items-center justify-between px-6 z-40 sticky top-0 transition-all duration-300">
+            
+            <!-- Context -->
+            <div class="flex items-center gap-4">
+                <h2 class="text-lg font-bold text-white flex items-center gap-2">
+                    <i class="fa-solid fa-bolt text-brand-500"></i> The Decision Gate
+                </h2>
+                <div class="h-4 w-px bg-slate-700 hidden md:block"></div>
+                <div class="hidden md:flex items-center gap-2 px-3 py-1.5 bg-green-900/20 rounded-lg border border-green-500/20 shadow-sm cursor-help hover:border-green-500/40 transition-colors">
+                    <span class="w-2 h-2 rounded-full bg-green-500 animate-pulse"></span>
+                    <span class="text-xs font-mono text-green-400">GIFT CITY FCSS: ONLINE</span>
+                </div>
+            </div>
+            
+            <!-- Actions -->
+            <div class="flex items-center gap-4">
+                <!-- Rate Ticker Widget -->
+                <div class="hidden lg:flex items-center gap-4 px-4 py-1.5 bg-slate-800/50 rounded-full border border-slate-700 hover:border-brand-500/30 transition-colors cursor-pointer" onclick="toggleAtlas()">
+                    <div class="flex items-center gap-2 text-xs">
+                        <span class="text-slate-400">USD Wholesale:</span>
+                        <span class="font-mono text-white font-bold" id="live-rate-usd">83.60</span>
+                        <span class="text-green-400 flex items-center gap-1"><i class="fa-solid fa-arrow-up text-[10px]"></i> +0.05%</span>
+                    </div>
+                    <div class="h-3 w-px bg-slate-600"></div>
+                    <div class="flex items-center gap-2 text-xs">
+                        <span class="text-slate-400">Next Batch:</span>
+                        <span class="font-mono text-brand-400 font-bold">14:00 IST</span>
+                    </div>
+                </div>
+
+                <div class="h-6 w-px bg-slate-700"></div>
+
+                <!-- Support -->
+                <button class="relative p-2 text-slate-400 hover:text-white transition-colors hover:bg-slate-800 rounded-lg" onclick="toggleAtlas()" title="Ask Atlas AI">
+                    <i class="fa-solid fa-headset"></i>
+                </button>
+            </div>
+        </header>
+
+        <!-- Content Area -->
+        <div class="flex-1 overflow-y-auto p-6 scroll-smooth" id="scroll-container">
+            
+            <!-- Intro Banner -->
+            <div class="mb-8 flex justify-between items-end animate-slide-in">
+                <div>
+                    <h3 class="text-2xl font-display font-bold text-white mb-2">Pending Inflows</h3>
+                    <p class="text-slate-400 text-sm max-w-2xl leading-relaxed">
+                        Funds received at DBS Singapore. Decide to <strong class="text-brand-400">Convert (Sprinter Mode)</strong> for immediate INR or <strong class="text-purple-400">Park (Strategist Mode)</strong> in EEFC to hedge against future imports.
+                    </p>
+                </div>
+                <div class="text-right hidden md:block">
+                    <p class="text-xs text-slate-500 uppercase tracking-wider font-bold mb-1">Total Pending Value</p>
+                    <p class="text-3xl font-mono font-bold text-white tracking-tight" id="total-pending-value">$ 34,900.00</p>
+                </div>
+            </div>
+
+            <!-- DECISION CARDS CONTAINER -->
+            <div class="space-y-6" id="decision-cards-container">
+                
+                <!-- Card 1: Zara International -->
+                <div class="glass-panel rounded-2xl p-0 overflow-hidden animate-slide-in relative group border border-slate-700 hover:border-brand-500/50 transition-all duration-300 hover:shadow-neon" id="card-txn-001">
+                    <!-- Timer Progress Bar -->
+                    <div class="h-1 w-full bg-slate-800">
+                        <div class="h-full bg-brand-500 w-[100%] animate-[width_300s_linear_forwards]"></div>
+                    </div>
+                    
+                    <div class="p-6 grid lg:grid-cols-12 gap-8">
+                        
+                        <!-- Left: Transaction Info (Col 4) -->
+                        <div class="lg:col-span-4 flex flex-col justify-between border-b lg:border-b-0 lg:border-r border-slate-800 pb-6 lg:pb-0 lg:pr-6">
+                            <div>
+                                <div class="flex items-center justify-between mb-4">
+                                    <span class="px-2 py-1 bg-green-500/10 text-green-400 border border-green-500/20 rounded text-[10px] font-bold uppercase tracking-wider flex items-center gap-1">
+                                        <span class="w-1.5 h-1.5 bg-green-500 rounded-full animate-pulse"></span> Received: 10:42 AM
+                                    </span>
+                                    <span class="text-slate-500 text-xs font-mono">#TXN-8821</span>
+                                </div>
+                                <div class="flex items-center gap-4 mb-4">
+                                    <div class="w-12 h-12 bg-white text-slate-900 rounded-xl flex items-center justify-center font-bold text-lg shadow-lg">Z</div>
+                                    <div>
+                                        <h4 class="text-lg font-bold text-white">Zara International Ltd</h4>
+                                        <p class="text-xs text-slate-400">Singapore • via PayNow Instant</p>
+                                    </div>
+                                </div>
+                                <div class="bg-slate-800/50 rounded-lg p-3 border border-slate-700">
+                                    <div class="flex justify-between text-xs mb-1">
+                                        <span class="text-slate-400">Invoice Match</span>
+                                        <span class="text-green-400 font-bold"><i class="fa-solid fa-check"></i> #INV-9921</span>
+                                    </div>
+                                    <div class="flex justify-between text-xs">
+                                        <span class="text-slate-400">Goods Type</span>
+                                        <span class="text-white">Textile / Garments</span>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="mt-4 lg:mt-0">
+                                <p class="text-xs text-slate-500 uppercase tracking-wider font-bold mb-1">Incoming Amount</p>
+                                <p class="text-3xl font-mono font-bold text-white tracking-tight">$ 12,500.00</p>
+                            </div>
+                        </div>
+
+                        <!-- Middle: Strategy Control (Col 5) -->
+                        <div class="lg:col-span-5 flex flex-col justify-center px-2">
+                            <h5 class="text-sm font-bold text-slate-300 mb-4 flex items-center gap-2">
+                                <i class="fa-solid fa-chess-knight text-brand-400"></i> Choose Strategy
+                            </h5>
+                            
+                            <!-- Slider Container -->
+                            <div class="bg-dark-950 rounded-xl p-5 border border-slate-700 shadow-inner">
+                                <div class="flex justify-between mb-2 text-xs font-bold">
+                                    <span class="text-brand-400">Convert to INR</span>
+                                    <span class="text-purple-400">Park in EEFC</span>
+                                </div>
+                                
+                                <input type="range" min="0" max="100" value="100" class="w-full h-2 bg-slate-700 rounded-lg appearance-none cursor-pointer mb-4" id="slider-txn-001" oninput="updateSplit('txn-001', this.value)">
+                                
+                                <div class="flex justify-between items-center">
+                                    <div class="text-center w-1/2 border-r border-slate-700 pr-2">
+                                        <p class="text-[10px] text-slate-500 uppercase">Convert Amount</p>
+                                        <p class="text-lg font-mono font-bold text-white" id="convert-val-txn-001">$ 12,500</p>
+                                        <p class="text-[10px] text-brand-400 font-mono">≈ ₹ <span id="inr-est-txn-001">10,45,000</span></p>
+                                    </div>
+                                    <div class="text-center w-1/2 pl-2">
+                                        <p class="text-[10px] text-slate-500 uppercase">Park Amount</p>
+                                        <p class="text-lg font-mono font-bold text-white" id="park-val-txn-001">$ 0</p>
+                                        <p class="text-[10px] text-purple-400 font-mono">Tax Free</p>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="flex justify-center gap-2 mt-4">
+                                <button onclick="setPreset('txn-001', 100)" class="px-3 py-1.5 text-[10px] font-bold bg-slate-800 hover:bg-brand-900 text-slate-300 rounded-lg border border-slate-700 transition active:scale-95">Sprinter (100% INR)</button>
+                                <button onclick="setPreset('txn-001', 50)" class="px-3 py-1.5 text-[10px] font-bold bg-slate-800 hover:bg-brand-900 text-slate-300 rounded-lg border border-slate-700 transition active:scale-95">Split (50/50)</button>
+                                <button onclick="setPreset('txn-001', 0)" class="px-3 py-1.5 text-[10px] font-bold bg-slate-800 hover:bg-brand-900 text-slate-300 rounded-lg border border-slate-700 transition active:scale-95">Strategist (100% USD)</button>
+                            </div>
+                        </div>
+
+                        <!-- Right: Action (Col 3) -->
+                        <div class="lg:col-span-3 flex flex-col justify-center border-t lg:border-t-0 lg:border-l border-slate-800 pt-6 lg:pt-0 lg:pl-6">
+                            <div class="mb-4 bg-green-900/10 p-3 rounded-lg border border-green-500/20">
+                                <div class="flex justify-between text-xs mb-1">
+                                    <span class="text-slate-400">Wholesale Rate</span>
+                                    <span class="text-white font-mono font-bold">83.60</span>
+                                </div>
+                                <div class="flex justify-between text-xs">
+                                    <span class="text-slate-400">Savings vs Bank</span>
+                                    <span class="text-green-400 font-mono font-bold">₹ 18,750</span>
+                                </div>
+                            </div>
+                            <button onclick="executeDecision('txn-001')" class="w-full py-3 bg-brand-600 hover:bg-brand-500 text-white rounded-xl font-bold shadow-lg shadow-brand-500/30 transition-all transform active:scale-95 flex items-center justify-center gap-2 group/btn">
+                                Execute Decision <i class="fa-solid fa-arrow-right group-hover/btn:translate-x-1 transition-transform"></i>
+                            </button>
+                            <p class="text-[10px] text-center text-slate-500 mt-3 flex items-center justify-center gap-1">
+                                <i class="fa-solid fa-lock text-brand-500"></i> Rate locked for <span class="text-slate-300 font-mono" id="timer-txn-001">04:59</span>
+                            </p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Card 2: H&M Sourcing -->
+                <div class="glass-panel rounded-2xl p-0 overflow-hidden animate-slide-in relative group border border-slate-700 hover:border-brand-500/50 transition-all duration-300 hover:shadow-neon" id="card-txn-002" style="animation-delay: 0.1s;">
+                    <!-- Timer Progress -->
+                    <div class="h-1 w-full bg-slate-800">
+                        <div class="h-full bg-yellow-500 w-[100%] animate-[width_600s_linear_forwards]"></div>
+                    </div>
+
+                    <div class="p-6 grid lg:grid-cols-12 gap-8">
+                        <!-- Left -->
+                        <div class="lg:col-span-4 flex flex-col justify-between border-b lg:border-b-0 lg:border-r border-slate-800 pb-6 lg:pb-0 lg:pr-6">
+                            <div>
+                                <div class="flex items-center justify-between mb-4">
+                                    <span class="px-2 py-1 bg-yellow-500/10 text-yellow-400 border border-yellow-500/20 rounded text-[10px] font-bold uppercase tracking-wider flex items-center gap-1">
+                                        <i class="fa-regular fa-clock"></i> Received: 09:15 AM
+                                    </span>
+                                    <span class="text-slate-500 text-xs font-mono">#TXN-8824</span>
+                                </div>
+                                <div class="flex items-center gap-4 mb-4">
+                                    <div class="w-12 h-12 bg-white text-slate-900 rounded-xl flex items-center justify-center font-bold text-lg shadow-lg">H</div>
+                                    <div>
+                                        <h4 class="text-lg font-bold text-white">H&M Global Sourcing</h4>
+                                        <p class="text-xs text-slate-400">Sweden • via SWIFT gpi</p>
+                                    </div>
+                                </div>
+                                <div class="bg-slate-800/50 rounded-lg p-3 border border-slate-700">
+                                    <div class="flex justify-between text-xs mb-1">
+                                        <span class="text-slate-400">Invoice Match</span>
+                                        <span class="text-green-400 font-bold"><i class="fa-solid fa-check"></i> #INV-9924</span>
+                                    </div>
+                                    <div class="flex justify-between text-xs">
+                                        <span class="text-slate-400">Goods Type</span>
+                                        <span class="text-white">Apparel / Cotton</span>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="mt-4 lg:mt-0">
+                                <p class="text-xs text-slate-500 uppercase tracking-wider font-bold mb-1">Incoming Amount</p>
+                                <p class="text-3xl font-mono font-bold text-white tracking-tight">$ 18,200.00</p>
+                            </div>
+                        </div>
+
+                        <!-- Middle -->
+                        <div class="lg:col-span-5 flex flex-col justify-center px-2">
+                            <h5 class="text-sm font-bold text-slate-300 mb-4 flex items-center gap-2">
+                                <i class="fa-solid fa-chess-knight text-brand-400"></i> Choose Strategy
+                            </h5>
+                            
+                            <div class="bg-dark-950 rounded-xl p-5 border border-slate-700 shadow-inner">
+                                <div class="flex justify-between mb-2 text-xs font-bold">
+                                    <span class="text-brand-400">Convert to INR</span>
+                                    <span class="text-purple-400">Park in EEFC</span>
+                                </div>
+                                <input type="range" min="0" max="100" value="100" class="w-full h-2 bg-slate-700 rounded-lg appearance-none cursor-pointer mb-4" id="slider-txn-002" oninput="updateSplit('txn-002', this.value)">
+                                <div class="flex justify-between items-center">
+                                    <div class="text-center w-1/2 border-r border-slate-700 pr-2">
+                                        <p class="text-[10px] text-slate-500 uppercase">Convert</p>
+                                        <p class="text-lg font-mono font-bold text-white" id="convert-val-txn-002">$ 18,200</p>
+                                        <p class="text-[10px] text-brand-400 font-mono">≈ ₹ <span id="inr-est-txn-002">15,21,520</span></p>
+                                    </div>
+                                    <div class="text-center w-1/2 pl-2">
+                                        <p class="text-[10px] text-slate-500 uppercase">Park</p>
+                                        <p class="text-lg font-mono font-bold text-white" id="park-val-txn-002">$ 0</p>
+                                        <p class="text-[10px] text-purple-400 font-mono">Tax Free</p>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="flex justify-center gap-2 mt-4">
+                                <button onclick="setPreset('txn-002', 100)" class="px-3 py-1.5 text-[10px] font-bold bg-slate-800 hover:bg-brand-900 text-slate-300 rounded-lg border border-slate-700 transition active:scale-95">Sprinter</button>
+                                <button onclick="setPreset('txn-002', 50)" class="px-3 py-1.5 text-[10px] font-bold bg-slate-800 hover:bg-brand-900 text-slate-300 rounded-lg border border-slate-700 transition active:scale-95">Split</button>
+                                <button onclick="setPreset('txn-002', 0)" class="px-3 py-1.5 text-[10px] font-bold bg-slate-800 hover:bg-brand-900 text-slate-300 rounded-lg border border-slate-700 transition active:scale-95">Strategist</button>
+                            </div>
+                        </div>
+
+                        <!-- Right -->
+                        <div class="lg:col-span-3 flex flex-col justify-center border-t lg:border-t-0 lg:border-l border-slate-800 pt-6 lg:pt-0 lg:pl-6">
+                            <div class="mb-4 bg-green-900/10 p-3 rounded-lg border border-green-500/20">
+                                <div class="flex justify-between text-xs mb-1">
+                                    <span class="text-slate-400">Wholesale Rate</span>
+                                    <span class="text-white font-mono font-bold">83.60</span>
+                                </div>
+                                <div class="flex justify-between text-xs">
+                                    <span class="text-slate-400">Savings vs Bank</span>
+                                    <span class="text-green-400 font-mono font-bold">₹ 27,300</span>
+                                </div>
+                            </div>
+                            <button onclick="executeDecision('txn-002')" class="w-full py-3 bg-brand-600 hover:bg-brand-500 text-white rounded-xl font-bold shadow-lg shadow-brand-500/30 transition-all transform active:scale-95 flex items-center justify-center gap-2 group/btn">
+                                Execute Decision <i class="fa-solid fa-arrow-right group-hover/btn:translate-x-1 transition-transform"></i>
+                            </button>
+                            <p class="text-[10px] text-center text-slate-500 mt-3 flex items-center justify-center gap-1">
+                                <i class="fa-solid fa-lock text-brand-500"></i> Rate locked for <span class="text-slate-300 font-mono" id="timer-txn-002">09:12</span>
+                            </p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Card 3: FedEx (Small) -->
+                <div class="glass-panel rounded-2xl p-0 overflow-hidden animate-slide-in relative group border border-slate-700 hover:border-brand-500/50 transition-all duration-300 hover:shadow-neon" id="card-txn-003" style="animation-delay: 0.2s;">
+                    <div class="p-6 grid lg:grid-cols-12 gap-8">
+                        <div class="lg:col-span-4 flex flex-col justify-between border-b lg:border-b-0 lg:border-r border-slate-800 pb-6 lg:pb-0 lg:pr-6">
+                            <div class="flex items-center gap-4 mb-2">
+                                <div class="w-12 h-12 bg-white text-slate-900 rounded-xl flex items-center justify-center font-bold text-lg shadow-lg">F</div>
+                                <div>
+                                    <h4 class="text-lg font-bold text-white">FedEx Global</h4>
+                                    <p class="text-xs text-slate-400">Refund • #REF-2021</p>
+                                </div>
+                            </div>
+                            <p class="text-3xl font-mono font-bold text-white tracking-tight mt-2">$ 4,200.00</p>
+                        </div>
+                        <div class="lg:col-span-5 flex items-center justify-center px-2">
+                            <div class="w-full">
+                                <div class="bg-dark-950 rounded-xl p-4 border border-slate-700 text-center">
+                                    <p class="text-xs text-slate-500 mb-2 font-bold uppercase tracking-wider">Auto-Recommendation</p>
+                                    <div class="inline-flex items-center gap-2 bg-blue-900/30 text-blue-300 px-3 py-1.5 rounded-lg border border-blue-500/30 mb-2">
+                                        <i class="fa-solid fa-robot"></i>
+                                        <span class="text-sm font-bold">100% Convert Recommended</span>
+                                    </div>
+                                    <p class="text-xs text-slate-400">Reason: Amount too small for EEFC hedging benefits.</p>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="lg:col-span-3 flex flex-col justify-center border-t lg:border-t-0 lg:border-l border-slate-800 pt-6 lg:pt-0 lg:pl-6">
+                            <button onclick="executeDecision('txn-003')" class="w-full py-3 bg-brand-600 hover:bg-brand-500 text-white rounded-xl font-bold shadow-lg shadow-brand-500/30 transition-all transform active:scale-95 flex items-center justify-center gap-2">
+                                Convert All <i class="fa-solid fa-bolt"></i>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+
+            <!-- Empty State (Hidden by default) -->
+            <div id="all-cleared-msg" class="hidden h-64 flex flex-col items-center justify-center animate-fade-in text-center p-8">
+                <div class="w-20 h-20 bg-green-500/10 rounded-full flex items-center justify-center mb-6 animate-bounce-subtle">
+                    <i class="fa-solid fa-check text-4xl text-green-500"></i>
+                </div>
+                <h3 class="text-2xl font-bold text-white mb-2">All Caught Up!</h3>
+                <p class="text-slate-400 text-sm max-w-md mx-auto">No pending inflows requiring your decision. Your funds are processing on the GIFT City rail.</p>
+                <div class="flex gap-4 mt-8">
+                    <button onclick="window.location.href='client-dashboard.html'" class="px-6 py-3 bg-slate-800 hover:bg-slate-700 text-white rounded-xl font-bold text-sm transition border border-slate-700 hover:border-slate-500">
+                        Back to Dashboard
+                    </button>
+                    <button onclick="window.location.href='transaction-history.html'" class="px-6 py-3 bg-brand-600 hover:bg-brand-500 text-white rounded-xl font-bold text-sm transition shadow-lg shadow-brand-500/20">
+                        View Ledger
+                    </button>
+                </div>
+            </div>
+
+        </div>
+    </main>
+
+    <!-- ATLAS CHATBOT WIDGET -->
+    <div id="atlas-widget-container"></div>
+
+    <!-- SCRIPTS -->
+    <script src="backend.js"></script>
+    <script src="chatbot.js"></script>
+    <script>
+        // --- Data Store & State Management ---
+        const AppState = {
+            transactions: {
+                'txn-001': { 
+                    id: 'txn-001', 
+                    total: 12500, 
+                    rate: 83.60, 
+                    currency: 'USD',
+                    client: 'Zara International Ltd',
+                    type: 'Textile / Garments'
+                },
+                'txn-002': { 
+                    id: 'txn-002', 
+                    total: 18200, 
+                    rate: 83.60,
+                    currency: 'USD',
+                    client: 'H&M Global Sourcing',
+                    type: 'Apparel / Cotton'
+                },
+                'txn-003': { 
+                    id: 'txn-003', 
+                    total: 4200, 
+                    rate: 83.60,
+                    currency: 'USD',
+                    client: 'FedEx Global',
+                    type: 'Refund'
+                }
+            },
+            totalPending: 34900,
+            timers: {}
+        };
+
+        // --- Core Logic ---
+        document.addEventListener('DOMContentLoaded', () => {
+            // 1. Initialize Timers for Lock-in Rates
+            startTimer('timer-txn-001', 300); // 5 mins
+            startTimer('timer-txn-002', 600); // 10 mins
+            
+            // 2. Initialize Backend Sync
+            if(typeof SettleXBackend !== 'undefined') {
+                SettleXBackend.onUpdate(() => {
+                    const rate = SettleXBackend.getQuote(1, 'USD', 'OUTFLOW')?.rates.settlex;
+                    if(rate) {
+                        updateLiveRates(rate);
+                    }
+                });
+                // Initial fetch
+                const initialRate = SettleXBackend.getQuote(1, 'USD', 'OUTFLOW')?.rates.settlex;
+                if(initialRate) updateLiveRates(initialRate);
+            }
+
+            // 3. Initialize Chatbot
+            initChatbotWidget();
+            
+            // 4. Initial UI Update
+            updateTotalHeader();
+        });
+
+        // --- Helper Functions ---
+
+        function updateLiveRates(rate) {
+            document.getElementById('live-rate-usd').innerText = rate.toFixed(2);
+            // Update internal state
+            Object.keys(AppState.transactions).forEach(k => {
+                AppState.transactions[k].rate = rate;
+                // Trigger re-calc for current slider positions
+                const slider = document.getElementById(`slider-${k}`);
+                if(slider) updateSplit(k, slider.value);
+            });
+        }
+
+        function updateSplit(id, val) {
+            const txn = AppState.transactions[id];
+            if(!txn) return;
+
+            const total = txn.total;
+            const rate = txn.rate;
+            
+            // Calculate Splits
+            const convertAmt = Math.round(total * (val / 100));
+            const parkAmt = total - convertAmt;
+            const inrEst = Math.round(convertAmt * rate);
+
+            // Update UI Elements
+            const elConvert = document.getElementById(`convert-val-${id}`);
+            const elPark = document.getElementById(`park-val-${id}`);
+            const elEst = document.getElementById(`inr-est-${id}`);
+
+            if(elConvert) elConvert.innerText = `$ ${convertAmt.toLocaleString()}`;
+            if(elPark) elPark.innerText = `$ ${parkAmt.toLocaleString()}`;
+            if(elEst) elEst.innerText = inrEst.toLocaleString('en-IN');
+        }
+
+        function setPreset(id, val) {
+            const slider = document.getElementById(`slider-${id}`);
+            if(slider) {
+                slider.value = val;
+                updateSplit(id, val);
+            }
+        }
+
+        function executeDecision(id) {
+            const card = document.getElementById(`card-${id}`);
+            if(!card) return;
+
+            const btn = card.querySelector('button[onclick^="executeDecision"]');
+            
+            // Prevent double clicks
+            if(btn.disabled) return;
+            btn.disabled = true;
+            
+            // UI Feedback: Loading
+            const originalText = btn.innerHTML;
+            btn.innerHTML = '<i class="fa-solid fa-circle-notch fa-spin"></i> Processing with GIFT City...';
+            btn.classList.add('opacity-75', 'cursor-not-allowed');
+            
+            // Simulate API Latency (1.2s)
+            setTimeout(() => {
+                // UI Feedback: Success
+                btn.innerHTML = '<i class="fa-solid fa-check"></i> Decision Executed';
+                btn.classList.remove('bg-brand-600', 'hover:bg-brand-500');
+                btn.classList.add('bg-green-600');
+                
+                // Show Toast Notification (Mock)
+                showToast(`Transaction ${id} processed successfully via DBS Golden Rail.`);
+
+                // Animate Removal
+                setTimeout(() => {
+                    card.classList.add('animate-fade-out-up');
+                    
+                    // Actual DOM Removal
+                    setTimeout(() => {
+                        card.remove();
+                        // Update Logic
+                        delete AppState.transactions[id];
+                        checkEmptyState();
+                        updateTotalHeader();
+                    }, 500); // Wait for animation
+                }, 800);
+            }, 1200);
+        }
+
+        function checkEmptyState() {
+            const container = document.getElementById('decision-cards-container');
+            if (container.children.length === 0) {
+                document.getElementById('all-cleared-msg').classList.remove('hidden');
+                // Update Sidebar Badge
+                const badge = document.getElementById('sidebar-badge');
+                if(badge) badge.classList.add('hidden');
+            } else {
+                // Update Badge Count
+                const badge = document.getElementById('sidebar-badge');
+                if(badge) {
+                    badge.classList.remove('hidden');
+                    badge.innerText = container.children.length;
+                }
+            }
+        }
+
+        function updateTotalHeader() {
+            let total = 0;
+            Object.values(AppState.transactions).forEach(t => total += t.total);
+            
+            const el = document.getElementById('total-pending-value');
+            // Animate Number Change (Simple)
+            if(el) el.innerText = '$ ' + total.toLocaleString('en-US', {minimumFractionDigits: 2});
+        }
+
+        function startTimer(elementId, duration) {
+            let timer = duration, minutes, seconds;
+            const display = document.getElementById(elementId);
+            if(!display) return;
+
+            // Clear existing if re-initializing (safety)
+            if(AppState.timers[elementId]) clearInterval(AppState.timers[elementId]);
+
+            AppState.timers[elementId] = setInterval(function () {
+                minutes = parseInt(timer / 60, 10);
+                seconds = parseInt(timer % 60, 10);
+
+                minutes = minutes < 10 ? "0" + minutes : minutes;
+                seconds = seconds < 10 ? "0" + seconds : seconds;
+
+                display.textContent = minutes + ":" + seconds;
+
+                if (--timer < 0) {
+                    clearInterval(AppState.timers[elementId]);
+                    display.textContent = "Expired";
+                    display.classList.add('text-red-500', 'font-bold');
+                    // Disable button
+                    const card = display.closest('.glass-panel');
+                    const btn = card.querySelector('button[onclick^="executeDecision"]');
+                    if(btn) {
+                        btn.disabled = true;
+                        btn.classList.add('bg-slate-700', 'cursor-not-allowed');
+                        btn.classList.remove('bg-brand-600', 'hover:bg-brand-500');
+                        btn.innerHTML = 'Rate Expired - Refresh';
+                    }
+                }
+            }, 1000);
+        }
+
+        function showToast(message) {
+            // Create toast element on the fly
+            const toast = document.createElement('div');
+            toast.className = 'fixed top-6 right-6 bg-dark-900 border border-slate-700 text-white px-6 py-4 rounded-xl shadow-2xl flex items-center gap-3 z-50 animate-slide-in';
+            toast.innerHTML = `
+                <div class="w-8 h-8 bg-green-500/20 text-green-500 rounded-full flex items-center justify-center flex-shrink-0">
+                    <i class="fa-solid fa-check"></i>
+                </div>
+                <div>
+                    <h4 class="font-bold text-sm">Success</h4>
+                    <p class="text-xs text-slate-400">${message}</p>
+                </div>
+            `;
+            document.body.appendChild(toast);
+            
+            // Remove after 3s
+            setTimeout(() => {
+                toast.classList.add('opacity-0', 'translate-x-full', 'transition-all', 'duration-500');
+                setTimeout(() => toast.remove(), 500);
+            }, 3000);
+        }
+
+        // --- ATLAS CHATBOT (Embedded Version) ---
+        function initChatbotWidget() {
+            const container = document.getElementById('atlas-widget-container');
+            container.innerHTML = `
+                <div id="atlas-window" class="fixed bottom-20 right-6 w-[350px] bg-dark-900 border border-slate-700 rounded-2xl shadow-2xl hidden flex-col z-50 overflow-hidden transform transition-all duration-300 origin-bottom-right scale-95 opacity-0" style="height: 500px;">
+                     <div class="bg-slate-800 p-4 flex justify-between items-center border-b border-slate-700">
+                        <div class="flex items-center gap-2">
+                             <div class="w-8 h-8 rounded-full bg-brand-600 flex items-center justify-center text-white text-xs"><i class="fa-solid fa-robot"></i></div>
+                             <div>
+                                 <span class="font-bold text-white text-sm block">Atlas AI</span>
+                                 <span class="text-[10px] text-green-400 flex items-center gap-1"><span class="w-1.5 h-1.5 bg-green-500 rounded-full animate-pulse"></span> Online</span>
+                             </div>
+                        </div>
+                        <button onclick="toggleAtlas()" class="text-slate-400 hover:text-white"><i class="fa-solid fa-xmark"></i></button>
+                     </div>
+                     <div id="atlas-messages" class="flex-1 p-4 overflow-y-auto space-y-4 bg-dark-950 scroll-smooth">
+                        <div class="flex gap-3">
+                            <div class="w-8 h-8 rounded-full bg-slate-800 flex items-center justify-center shrink-0 text-slate-400 text-xs border border-slate-700"><i class="fa-solid fa-robot"></i></div>
+                            <div class="bg-slate-800 border border-slate-700 p-3 rounded-2xl rounded-tl-none text-sm text-slate-300 shadow-sm leading-relaxed">
+                                I see you have 3 pending inflows. Current market analysis suggests <strong>converting 60%</strong> of USD inflows today due to expected volatility in the Asian session.
+                            </div>
+                        </div>
+                     </div>
+                     <div class="p-3 bg-slate-800 border-t border-slate-700 flex gap-2">
+                        <input type="text" id="atlas-input" class="flex-1 bg-dark-950 border border-slate-700 rounded-lg px-3 py-2 text-sm text-white focus:border-brand-500 focus:outline-none placeholder-slate-600" placeholder="Type query..." onkeypress="handleAtlasEnter(event)">
+                        <button onclick="handleAtlasSubmit()" class="w-10 h-10 bg-brand-600 text-white rounded-lg hover:bg-brand-500 flex items-center justify-center transition active:scale-95"><i class="fa-solid fa-paper-plane"></i></button>
+                     </div>
+                </div>
+            `;
+        }
+
+        function toggleAtlas() {
+            const win = document.getElementById('atlas-window');
+            if (win.classList.contains('hidden')) {
+                win.classList.remove('hidden');
+                setTimeout(() => {
+                    win.classList.remove('scale-95', 'opacity-0');
+                    win.classList.add('scale-100', 'opacity-100');
+                    document.getElementById('atlas-input').focus();
+                }, 10);
+            } else {
+                win.classList.remove('scale-100', 'opacity-100');
+                win.classList.add('scale-95', 'opacity-0');
+                setTimeout(() => win.classList.add('hidden'), 300);
+            }
+        }
+
+        function handleAtlasEnter(e) { if(e.key==='Enter') handleAtlasSubmit(); }
+
+        async function handleAtlasSubmit() {
+            const inp = document.getElementById('atlas-input');
+            const msg = inp.value;
+            if(!msg) return;
+
+            addMsg(msg, 'user');
+            inp.value = '';
+
+            // Simulate typing
+            const loadingId = 'loading-' + Date.now();
+            const msgBox = document.getElementById('atlas-messages');
+            const loadingDiv = document.createElement('div');
+            loadingDiv.id = loadingId;
+            loadingDiv.className = 'flex gap-3';
+            loadingDiv.innerHTML = `<div class="w-8 h-8 rounded-full bg-slate-800 flex items-center justify-center shrink-0 text-slate-400 text-xs border border-slate-700"><i class="fa-solid fa-robot"></i></div><div class="bg-slate-800 border border-slate-700 p-3 rounded-2xl rounded-tl-none text-sm text-slate-400 shadow-sm"><i class="fa-solid fa-ellipsis fa-fade"></i></div>`;
+            msgBox.appendChild(loadingDiv);
+            msgBox.scrollTop = msgBox.scrollHeight;
+
+            setTimeout(() => {
+                document.getElementById(loadingId).remove();
+                if(typeof AtlasBackend !== 'undefined') {
+                    const reply = AtlasBackend.process(msg);
+                    addMsg(reply, 'bot');
+                } else {
+                    addMsg("I am currently offline. Please check connection.", 'bot');
+                }
+            }, 800);
+        }
+
+        function addMsg(text, type) {
+            const box = document.getElementById('atlas-messages');
+            const div = document.createElement('div');
+            div.className = type === 'bot' ? 'flex gap-3 animate-fade-in' : 'flex gap-3 justify-end animate-fade-in';
+            
+            const formatted = text.replace(/\*\*(.*?)\*\*/g, '<strong class="text-white">$1</strong>');
+
+            div.innerHTML = type === 'bot' 
+                ? `<div class="w-8 h-8 rounded-full bg-slate-800 flex items-center justify-center shrink-0 text-slate-400 text-xs border border-slate-700"><i class="fa-solid fa-robot"></i></div><div class="bg-slate-800 border border-slate-700 p-3 rounded-2xl rounded-tl-none text-sm text-slate-300 shadow-sm max-w-[85%] leading-relaxed">${formatted}</div>`
+                : `<div class="bg-brand-600 text-white p-3 rounded-2xl rounded-tr-none text-sm shadow-sm max-w-[85%] leading-relaxed">${formatted}</div>`;
+            box.appendChild(div);
+            box.scrollTop = box.scrollHeight;
+        }
+    </script>
+</body>
+</html>

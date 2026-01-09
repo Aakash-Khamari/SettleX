@@ -1,0 +1,1283 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SettleX Command Center | Treasury OS</title>
+    
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    
+    <!-- Fonts: Inter for UI, JetBrains Mono for Data -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600&family=Plus+Jakarta+Sans:wght@500;600;700;800&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet">
+    
+    <!-- Icons (FontAwesome 6 Free) -->
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+    
+    <!-- Chart.js for Professional Visuals -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+    <!-- Config -->
+    <script>
+        tailwind.config = {
+            darkMode: 'class',
+            theme: {
+                extend: {
+                    fontFamily: {
+                        sans: ['Inter', 'sans-serif'],
+                        display: ['Plus Jakarta Sans', 'sans-serif'],
+                        mono: ['JetBrains Mono', 'monospace'],
+                    },
+                    colors: {
+                        brand: {
+                            50: '#f0f9ff',
+                            100: '#e0f2fe',
+                            200: '#bae6fd',
+                            300: '#7dd3fc',
+                            400: '#38bdf8',
+                            500: '#0ea5e9',
+                            600: '#0284c7',
+                            700: '#0369a1',
+                            800: '#075985',
+                            900: '#0c4a6e',
+                            950: '#082f49',
+                        },
+                        dark: {
+                            800: '#1e293b',
+                            900: '#0f172a',
+                            950: '#020617',
+                        },
+                        // Trade-specific semantic colors
+                        trade: {
+                            up: '#10b981',   // Green for profit/inflow
+                            down: '#ef4444', // Red for loss/outflow
+                            warn: '#f59e0b', // Amber for compliance warning
+                            process: '#3b82f6' // Blue for processing
+                        }
+                    },
+                    animation: {
+                        'pulse-slow': 'pulse 4s cubic-bezier(0.4, 0, 0.6, 1) infinite',
+                        'flash': 'flash 1s ease-in-out',
+                        'slide-in': 'slideIn 0.3s ease-out forwards',
+                        'slide-out': 'slideOut 0.3s ease-in forwards',
+                        'fade-in': 'fadeIn 0.3s ease-out forwards',
+                        'spin-slow': 'spin 3s linear infinite',
+                    },
+                    keyframes: {
+                        flash: {
+                            '0%, 100%': { opacity: '1' },
+                            '50%': { opacity: '0.5' },
+                        },
+                        slideIn: {
+                            '0%': { transform: 'translateX(100%)' },
+                            '100%': { transform: 'translateX(0)' },
+                        },
+                        slideOut: {
+                            '0%': { transform: 'translateX(0)' },
+                            '100%': { transform: 'translateX(100%)' },
+                        },
+                        fadeIn: {
+                            '0%': { opacity: '0', transform: 'scale(0.95)' },
+                            '100%': { opacity: '1', transform: 'scale(1)' },
+                        }
+                    },
+                    boxShadow: {
+                        'neon': '0 0 10px rgba(14, 165, 233, 0.5), 0 0 20px rgba(14, 165, 233, 0.3)',
+                        'glass': '0 8px 32px 0 rgba(0, 0, 0, 0.37)',
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        /* Base Styles */
+        body {
+            background-color: #020617; /* dark-950 */
+            color: #cbd5e1; /* slate-300 */
+        }
+
+        /* Dark Mode Scrollbar */
+        ::-webkit-scrollbar { width: 6px; height: 6px; }
+        ::-webkit-scrollbar-track { background: #0f172a; }
+        ::-webkit-scrollbar-thumb { background: #334155; border-radius: 4px; }
+        ::-webkit-scrollbar-thumb:hover { background: #475569; }
+        
+        /* Glassmorphism Utilities */
+        .glass-panel {
+            background: rgba(15, 23, 42, 0.7);
+            backdrop-filter: blur(16px);
+            -webkit-backdrop-filter: blur(16px);
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+        }
+        
+        .glass-modal {
+            background: rgba(15, 23, 42, 0.95);
+            backdrop-filter: blur(24px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        /* Grid Pattern Background */
+        .bg-grid {
+            background-size: 40px 40px;
+            background-image: 
+                linear-gradient(to right, rgba(255, 255, 255, 0.03) 1px, transparent 1px),
+                linear-gradient(to bottom, rgba(255, 255, 255, 0.03) 1px, transparent 1px);
+        }
+
+        /* Utility Classes */
+        .no-scrollbar::-webkit-scrollbar { display: none; }
+        .no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
+        
+        /* Table Row Hover Effect */
+        tr.interactive-row {
+            transition: all 0.2s ease;
+            cursor: pointer;
+        }
+        tr.interactive-row:hover {
+            background-color: rgba(255, 255, 255, 0.03);
+            transform: translateX(4px);
+            border-left: 2px solid #0ea5e9;
+        }
+
+        /* Loading Skeleton Animation */
+        .skeleton {
+            background: linear-gradient(90deg, #1e293b 25%, #334155 50%, #1e293b 75%);
+            background-size: 200% 100%;
+            animation: loading 1.5s infinite;
+        }
+        @keyframes loading {
+            0% { background-position: 200% 0; }
+            100% { background-position: -200% 0; }
+        }
+    </style>
+</head>
+<body class="font-sans h-screen flex overflow-hidden selection:bg-brand-500 selection:text-white">
+
+    <!-- 1. PROFESSIONAL SIDEBAR -->
+    <aside class="w-20 lg:w-72 bg-dark-900 border-r border-slate-800 flex flex-col flex-shrink-0 transition-all duration-300 z-50">
+        
+        <!-- Logo Area -->
+        <div class="h-20 flex items-center px-0 lg:px-6 justify-center lg:justify-start border-b border-slate-800 relative group cursor-pointer" onclick="window.location.reload()">
+            <div class="w-10 h-10 bg-gradient-to-br from-brand-500 to-brand-700 rounded-xl flex items-center justify-center text-white font-bold text-xl shadow-lg shadow-brand-500/20 flex-shrink-0 transition-transform group-hover:scale-105">
+                S
+            </div>
+            <div class="hidden lg:block ml-3">
+                <h1 class="text-xl font-display font-bold text-white tracking-tight">Settle<span class="text-brand-400">X</span></h1>
+                <p class="text-[10px] text-slate-500 font-mono uppercase tracking-wider group-hover:text-brand-400 transition-colors">Treasury OS v2.4</p>
+            </div>
+        </div>
+
+        <!-- Main Navigation -->
+        <nav class="flex-1 overflow-y-auto py-6 px-3 space-y-1">
+            
+            <!-- Dashboard (Active) -->
+            <a href="#" class="flex items-center gap-3 px-3 py-3 bg-brand-900/30 text-white rounded-xl border border-brand-500/30 shadow-sm group relative overflow-hidden">
+                <div class="absolute inset-0 bg-brand-500/10 rounded-xl blur opacity-0 group-hover:opacity-100 transition-opacity"></div>
+                <div class="absolute left-0 top-0 bottom-0 w-1 bg-brand-500 rounded-l-xl"></div>
+                <!-- FIXED ICON: Using fa-border-all for Dashboard/Grid -->
+                <i class="fa-solid fa-border-all w-6 text-center text-brand-400 text-lg group-hover:scale-110 transition-transform"></i>
+                <span class="hidden lg:block font-medium tracking-wide">Command Center</span>
+            </a>
+
+            <div class="hidden lg:block px-3 mt-6 mb-2 flex items-center justify-between">
+                <p class="text-[10px] font-bold text-slate-500 uppercase tracking-widest">Global Money</p>
+                <i class="fa-solid fa-globe text-[10px] text-slate-600"></i>
+            </div>
+
+            <!-- Inflow -->
+            <a href="inflow-decision-gate.html" class="flex items-center gap-3 px-3 py-3 text-slate-400 hover:text-white hover:bg-slate-800 rounded-xl transition-all group">
+                <!-- FIXED ICON: Using fa-inbox for Inflow/Collections -->
+                <i class="fa-solid fa-inbox w-6 text-center group-hover:text-green-400 transition-colors group-hover:translate-y-[-2px]"></i>
+                <span class="hidden lg:block font-medium">Inflow (Collections)</span>
+                <span class="hidden lg:flex ml-auto bg-brand-500 text-white text-[10px] font-bold px-2 py-0.5 rounded-full shadow-lg shadow-brand-500/40 animate-pulse-slow">3</span>
+            </a>
+
+            <!-- Outflow -->
+            <a href="outflow-transfer.html" class="flex items-center gap-3 px-3 py-3 text-slate-400 hover:text-white hover:bg-slate-800 rounded-xl transition-all group">
+                <i class="fa-solid fa-paper-plane w-6 text-center group-hover:text-red-400 transition-colors group-hover:translate-x-[2px]"></i>
+                <span class="hidden lg:block font-medium">Outflow (Payments)</span>
+            </a>
+
+            <!-- Virtual Accounts -->
+            <a href="virtual-accounts.html" class="flex items-center gap-3 px-3 py-3 text-slate-400 hover:text-white hover:bg-slate-800 rounded-xl transition-all group">
+                <i class="fa-solid fa-wallet w-6 text-center group-hover:text-purple-400 transition-colors"></i>
+                <span class="hidden lg:block font-medium">Virtual Accounts</span>
+            </a>
+
+            <div class="hidden lg:block px-3 mt-6 mb-2 flex items-center justify-between">
+                <p class="text-[10px] font-bold text-slate-500 uppercase tracking-widest">Compliance</p>
+                <i class="fa-solid fa-shield-halved text-[10px] text-slate-600"></i>
+            </div>
+
+            <!-- Ledger -->
+            <a href="transaction-history.html" class="flex items-center gap-3 px-3 py-3 text-slate-400 hover:text-white hover:bg-slate-800 rounded-xl transition-all group">
+                <i class="fa-solid fa-book-open w-6 text-center group-hover:text-amber-400 transition-colors"></i>
+                <span class="hidden lg:block font-medium">Digital Ledger</span>
+            </a>
+
+            <!-- Docs -->
+            <a href="compliance-vault.html" class="flex items-center gap-3 px-3 py-3 text-slate-400 hover:text-white hover:bg-slate-800 rounded-xl transition-all group">
+                <i class="fa-solid fa-file-shield w-6 text-center group-hover:text-blue-400 transition-colors"></i>
+                <span class="hidden lg:block font-medium">BoE & e-FIRA Vault</span>
+            </a>
+        </nav>
+
+        <!-- User Profile Widget -->
+        <div class="p-4 border-t border-slate-800 bg-dark-900/50">
+            <div class="flex items-center gap-3 cursor-pointer hover:bg-slate-800 p-2 rounded-xl transition-colors group" onclick="toggleModal('settings-modal')">
+                <div class="relative">
+                    <div class="w-10 h-10 rounded-full bg-slate-700 flex items-center justify-center border border-slate-600 group-hover:border-brand-500 transition-colors">
+                        <span class="font-bold text-white group-hover:text-brand-200">TE</span>
+                    </div>
+                    <div class="absolute -bottom-1 -right-1 w-3 h-3 bg-green-500 border-2 border-dark-900 rounded-full animate-pulse"></div>
+                </div>
+                <div class="hidden lg:block min-w-0">
+                    <p class="text-sm font-bold text-white truncate group-hover:text-brand-400 transition-colors">Tex Exports Pvt Ltd</p>
+                    <p class="text-[10px] text-slate-500 font-mono truncate">ID: IND-TN-8821</p>
+                </div>
+                <div class="hidden lg:block ml-auto text-slate-500 group-hover:text-white transition-colors">
+                    <i class="fa-solid fa-gear text-xs"></i>
+                </div>
+            </div>
+        </div>
+    </aside>
+
+    <!-- 2. MAIN WORKSPACE -->
+    <main class="flex-1 flex flex-col h-screen relative overflow-hidden bg-grid">
+        
+        <!-- Top Bar (Sticky) -->
+        <header class="h-16 bg-dark-900/80 backdrop-blur-md border-b border-slate-800 flex items-center justify-between px-6 z-40 sticky top-0 transition-all duration-300" id="topbar">
+            
+            <!-- Context: Active Entity -->
+            <div class="flex items-center gap-4">
+                <div class="hidden md:flex items-center gap-2 px-3 py-1.5 bg-slate-800/50 rounded-lg border border-slate-700 hover:border-brand-500/50 transition-colors cursor-help group">
+                    <span class="w-2 h-2 rounded-full bg-brand-500 animate-pulse"></span>
+                    <span class="text-xs font-mono text-brand-300 group-hover:text-white transition-colors">GIFT CITY: ACTIVE</span>
+                </div>
+                <div class="h-4 w-px bg-slate-700 hidden md:block"></div>
+                <p class="text-sm text-slate-400 hidden md:flex items-center gap-2">
+                    <i class="fa-regular fa-clock text-brand-500"></i> 
+                    <span id="market-clock">Market Open • Closes in 4h 20m</span>
+                </p>
+            </div>
+
+            <!-- Global Search & Actions -->
+            <div class="flex items-center gap-4">
+                <!-- Search Bar -->
+                <div class="relative hidden md:block w-96 group">
+                    <i class="fa-solid fa-magnifying-glass absolute left-3 top-2.5 text-slate-500 text-xs group-hover:text-brand-400 transition-colors"></i>
+                    <input type="text" id="global-search" class="w-full bg-dark-800 border border-slate-700 rounded-lg pl-9 pr-12 py-2 text-sm text-white placeholder-slate-500 focus:outline-none focus:border-brand-500 focus:ring-1 focus:ring-brand-500/50 transition-all shadow-sm" placeholder="Search invoices, amounts, or regulatory codes..." onkeyup="handleSearch(event)">
+                    <div class="absolute right-2 top-2 text-[10px] text-slate-600 bg-slate-800 px-1.5 py-0.5 rounded border border-slate-700 font-mono">⌘K</div>
+                </div>
+
+                <div class="h-6 w-px bg-slate-700"></div>
+
+                <!-- Notifications -->
+                <button class="relative p-2 text-slate-400 hover:text-white transition-colors hover:bg-slate-800 rounded-lg" onclick="toggleNotificationPanel()">
+                    <i class="fa-regular fa-bell"></i>
+                    <span class="absolute top-1.5 right-1.5 w-2 h-2 bg-red-500 rounded-full border border-dark-900 animate-ping"></span>
+                    <span class="absolute top-1.5 right-1.5 w-2 h-2 bg-red-500 rounded-full border border-dark-900"></span>
+                </button>
+                
+                <!-- Support -->
+                <button class="relative p-2 text-slate-400 hover:text-white transition-colors hover:bg-slate-800 rounded-lg" onclick="toggleAtlas()">
+                    <i class="fa-solid fa-headset"></i>
+                </button>
+            </div>
+        </header>
+
+        <!-- Dashboard Content -->
+        <div class="flex-1 overflow-y-auto p-6 scroll-smooth" id="main-content">
+            
+            <!-- A. HEADS-UP DISPLAY (KPIs) -->
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
+                
+                <!-- KPI 1: Total Liquidity (Aggregated) -->
+                <div class="glass-panel p-5 rounded-2xl relative overflow-hidden group cursor-pointer hover:border-brand-500/30 transition-all duration-300" onclick="alert('Opening Consolidated Liquidity View...')">
+                    <div class="absolute inset-0 bg-gradient-to-br from-brand-500/5 to-transparent opacity-0 group-hover:opacity-100 transition-opacity"></div>
+                    <div class="relative z-10">
+                        <div class="flex justify-between items-start mb-2">
+                            <p class="text-xs font-bold text-slate-500 uppercase tracking-wider group-hover:text-brand-300 transition-colors">Total Liquidity</p>
+                            <span class="bg-green-500/10 text-green-400 border border-green-500/20 text-[10px] font-bold px-1.5 py-0.5 rounded flex items-center gap-1">
+                                <i class="fa-solid fa-arrow-trend-up"></i> 12.5%
+                            </span>
+                        </div>
+                        <h3 class="text-2xl font-display font-bold text-white tracking-tight">₹ 1.42 Cr</h3>
+                        <p class="text-[10px] text-slate-400 mt-1 font-mono">Includes INR + EEFC (USD/SGD)</p>
+                    </div>
+                    <!-- Interactive Chart Container -->
+                    <div class="absolute bottom-0 left-0 w-full h-16 opacity-30 group-hover:opacity-60 transition-opacity pointer-events-none">
+                        <canvas id="liquidityChart"></canvas>
+                    </div>
+                </div>
+
+                <!-- KPI 2: EEFC Balance (USD) -->
+                <div class="glass-panel p-5 rounded-2xl relative overflow-hidden group border-l-4 border-l-brand-500 hover:shadow-neon transition-shadow duration-300">
+                    <div class="relative z-10">
+                        <div class="flex justify-between items-start mb-2">
+                            <p class="text-xs font-bold text-slate-500 uppercase tracking-wider group-hover:text-brand-300">GIFT City EEFC</p>
+                            <div class="bg-slate-800 p-1.5 rounded-lg group-hover:bg-brand-900 transition-colors">
+                                <i class="fa-solid fa-dollar-sign text-slate-400 group-hover:text-brand-400"></i>
+                            </div>
+                        </div>
+                        <h3 class="text-2xl font-display font-bold text-white tracking-tight">$ 84,500.00</h3>
+                        <div class="flex gap-2 mt-3">
+                            <button class="flex-1 text-[10px] bg-brand-600 hover:bg-brand-500 text-white px-3 py-1.5 rounded-lg font-bold transition shadow-md hover:shadow-lg active:scale-95" onclick="openConvertModal('USD')">
+                                Convert
+                            </button>
+                            <button class="flex-1 text-[10px] bg-slate-800 hover:bg-slate-700 text-slate-300 px-3 py-1.5 rounded-lg font-bold transition shadow-sm border border-slate-700 hover:border-slate-600" onclick="openTransferModal()">
+                                Transfer
+                            </button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- KPI 3: Compliance Score -->
+                <div class="glass-panel p-5 rounded-2xl relative overflow-hidden group hover:border-green-500/30 transition-all cursor-pointer" onclick="toggleModal('compliance-detail-modal')">
+                    <div class="flex justify-between items-start mb-2">
+                        <p class="text-xs font-bold text-slate-500 uppercase tracking-wider group-hover:text-green-400 transition-colors">Regulatory Health</p>
+                        <i class="fa-solid fa-shield-halved text-green-500 animate-pulse-slow"></i>
+                    </div>
+                    <div class="flex items-end gap-2">
+                        <h3 class="text-3xl font-display font-bold text-white">98<span class="text-lg text-slate-500">/100</span></h3>
+                    </div>
+                    <div class="w-full bg-slate-800 h-1.5 rounded-full mt-3 overflow-hidden">
+                        <div class="h-full bg-gradient-to-r from-green-600 to-green-400 w-[98%] rounded-full shadow-[0_0_10px_rgba(74,222,128,0.5)]"></div>
+                    </div>
+                    <p class="text-[10px] text-green-400 mt-2 font-bold flex items-center gap-1">
+                        <i class="fa-solid fa-check-circle"></i> EDPMS Sync Active (T+0)
+                    </p>
+                </div>
+
+                <!-- KPI 4: Pending Action -->
+                <div class="bg-gradient-to-br from-amber-500/20 to-amber-700/10 border border-amber-500/30 p-5 rounded-2xl relative overflow-hidden cursor-pointer hover:border-amber-500/60 hover:shadow-[0_0_20px_rgba(245,158,11,0.2)] transition-all duration-300 group" onclick="window.location.href='inflow-decision-gate.html'">
+                    <div class="absolute -right-4 -top-4 w-16 h-16 bg-amber-500/20 rounded-full blur-xl group-hover:bg-amber-500/30 transition-all"></div>
+                    <div class="flex justify-between items-start mb-2">
+                        <p class="text-xs font-bold text-amber-200 uppercase tracking-wider animate-pulse">Action Required</p>
+                        <div class="relative">
+                            <i class="fa-solid fa-bell text-amber-400 text-lg group-hover:rotate-12 transition-transform"></i>
+                            <span class="absolute -top-1 -right-1 w-2.5 h-2.5 bg-red-500 rounded-full border border-dark-900"></span>
+                        </div>
+                    </div>
+                    <h3 class="text-2xl font-display font-bold text-white">3 Inflows</h3>
+                    <p class="text-xs text-amber-200/70 mt-1 font-mono">Pending Decision: $12,500</p>
+                    <div class="mt-3 flex items-center gap-2 text-[10px] font-bold text-amber-300 group-hover:translate-x-1 transition-transform">
+                        <span>Review Now</span> <i class="fa-solid fa-arrow-right"></i>
+                    </div>
+                </div>
+            </div>
+
+            <!-- B. MAIN WORKSPACE GRID -->
+            <div class="grid lg:grid-cols-3 gap-8">
+                
+                <!-- COL 1 & 2: ACTION CENTER -->
+                <div class="lg:col-span-2 space-y-6">
+                    
+                    <!-- 1. LIVE RATES FEED (Bloomberg Style) -->
+                    <div class="glass-panel rounded-2xl p-0 overflow-hidden border-t-2 border-t-brand-500">
+                        <div class="px-6 py-4 border-b border-slate-800 flex justify-between items-center bg-dark-900/50">
+                            <h3 class="text-sm font-bold text-white flex items-center gap-2">
+                                <span class="w-2 h-2 rounded-full bg-green-500 animate-pulse"></span> 
+                                Live Interbank Rates (GIFT IBU)
+                            </h3>
+                            <div class="flex gap-3">
+                                <span class="text-[10px] text-slate-500 font-mono self-center">Updated: <span id="last-updated-time">Just now</span></span>
+                                <button class="text-xs text-brand-400 font-bold hover:text-white transition" onclick="toggleModal('market-depth-modal')">
+                                    Full Depth <i class="fa-solid fa-up-right-from-square ml-1"></i>
+                                </button>
+                            </div>
+                        </div>
+                        
+                        <div class="grid grid-cols-1 md:grid-cols-3 divide-y md:divide-y-0 md:divide-x divide-slate-800">
+                            <!-- USD -->
+                            <div class="p-6 group hover:bg-white/5 transition-colors cursor-pointer relative" onclick="openConvertModal('USD')">
+                                <div class="absolute top-2 right-2 opacity-0 group-hover:opacity-100 transition-opacity">
+                                    <i class="fa-solid fa-arrow-right-arrow-left text-slate-500 text-xs"></i>
+                                </div>
+                                <div class="flex justify-between items-center mb-2">
+                                    <div class="flex items-center gap-2">
+                                        <img src="https://flagcdn.com/w20/us.png" class="rounded-sm w-5 shadow-sm">
+                                        <span class="font-bold text-white">USD/INR</span>
+                                    </div>
+                                    <span class="text-xs font-mono text-green-400 bg-green-900/30 px-1.5 py-0.5 rounded border border-green-500/20">+0.05%</span>
+                                </div>
+                                <div class="flex items-baseline gap-2">
+                                    <span class="text-3xl font-mono font-bold text-white tracking-tighter" id="rate-usd">83.60</span>
+                                    <span class="text-xs text-slate-500 line-through">84.50</span>
+                                </div>
+                                <p class="text-[10px] text-brand-400 mt-1 font-bold uppercase tracking-wide">Wholesale Spread: 0.20%</p>
+                                <!-- Mini Sparkline -->
+                                <div class="h-8 mt-2 opacity-50">
+                                    <canvas id="sparkline-usd"></canvas>
+                                </div>
+                            </div>
+
+                            <!-- SGD -->
+                            <div class="p-6 group hover:bg-white/5 transition-colors cursor-pointer relative" onclick="openConvertModal('SGD')">
+                                <div class="absolute top-2 right-2 opacity-0 group-hover:opacity-100 transition-opacity">
+                                    <i class="fa-solid fa-arrow-right-arrow-left text-slate-500 text-xs"></i>
+                                </div>
+                                <div class="flex justify-between items-center mb-2">
+                                    <div class="flex items-center gap-2">
+                                        <img src="https://flagcdn.com/w20/sg.png" class="rounded-sm w-5 shadow-sm">
+                                        <span class="font-bold text-white">SGD/INR</span>
+                                    </div>
+                                    <span class="text-xs font-mono text-red-400 bg-red-900/30 px-1.5 py-0.5 rounded border border-red-500/20">-0.12%</span>
+                                </div>
+                                <div class="flex items-baseline gap-2">
+                                    <span class="text-3xl font-mono font-bold text-white tracking-tighter" id="rate-sgd">62.40</span>
+                                    <span class="text-xs text-slate-500 line-through">63.20</span>
+                                </div>
+                                <p class="text-[10px] text-brand-400 mt-1 font-bold uppercase tracking-wide">Wholesale Spread: 0.20%</p>
+                                <div class="h-8 mt-2 opacity-50">
+                                    <canvas id="sparkline-sgd"></canvas>
+                                </div>
+                            </div>
+
+                            <!-- GBP -->
+                            <div class="p-6 group hover:bg-white/5 transition-colors cursor-pointer relative" onclick="openConvertModal('GBP')">
+                                <div class="absolute top-2 right-2 opacity-0 group-hover:opacity-100 transition-opacity">
+                                    <i class="fa-solid fa-arrow-right-arrow-left text-slate-500 text-xs"></i>
+                                </div>
+                                <div class="flex justify-between items-center mb-2">
+                                    <div class="flex items-center gap-2">
+                                        <img src="https://flagcdn.com/w20/gb.png" class="rounded-sm w-5 shadow-sm">
+                                        <span class="font-bold text-white">GBP/INR</span>
+                                    </div>
+                                    <span class="text-xs font-mono text-green-400 bg-green-900/30 px-1.5 py-0.5 rounded border border-green-500/20">+0.01%</span>
+                                </div>
+                                <div class="flex items-baseline gap-2">
+                                    <span class="text-3xl font-mono font-bold text-white tracking-tighter" id="rate-gbp">106.40</span>
+                                    <span class="text-xs text-slate-500 line-through">108.10</span>
+                                </div>
+                                <p class="text-[10px] text-brand-400 mt-1 font-bold uppercase tracking-wide">Wholesale Spread: 0.20%</p>
+                                <div class="h-8 mt-2 opacity-50">
+                                    <canvas id="sparkline-gbp"></canvas>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- 2. RECENT ACTIVITY LEDGER -->
+                    <div class="glass-panel rounded-2xl p-0 overflow-hidden flex flex-col h-[400px]">
+                        <div class="px-6 py-4 border-b border-slate-800 flex justify-between items-center bg-dark-900/80 sticky top-0 z-10 backdrop-blur-md">
+                            <h3 class="text-sm font-bold text-white flex items-center gap-2">
+                                <i class="fa-solid fa-list-ul text-brand-500"></i> Live Transaction Stream
+                            </h3>
+                            <div class="flex gap-2">
+                                <button class="p-1.5 text-slate-400 hover:text-white hover:bg-slate-700 rounded transition-colors" title="Filter"><i class="fa-solid fa-filter text-xs"></i></button>
+                                <button class="p-1.5 text-slate-400 hover:text-white hover:bg-slate-700 rounded transition-colors" title="Download CSV"><i class="fa-solid fa-download text-xs"></i></button>
+                            </div>
+                        </div>
+                        
+                        <div class="overflow-y-auto flex-1 custom-scrollbar">
+                            <table class="w-full text-sm text-left border-collapse">
+                                <thead class="text-xs text-slate-500 uppercase bg-dark-900/50 sticky top-0 z-10 backdrop-blur-md border-b border-slate-800">
+                                    <tr>
+                                        <th class="px-6 py-3 font-semibold w-24">Time</th>
+                                        <th class="px-6 py-3 font-semibold">Counterparty</th>
+                                        <th class="px-6 py-3 font-semibold">Amount</th>
+                                        <th class="px-6 py-3 font-semibold">Type</th>
+                                        <th class="px-6 py-3 font-semibold">Compliance</th>
+                                        <th class="px-6 py-3 font-semibold text-right">Action</th>
+                                    </tr>
+                                </thead>
+                                <tbody class="divide-y divide-slate-800/50" id="transaction-table-body">
+                                    <!-- Populated via JS -->
+                                    <tr class="animate-pulse">
+                                        <td colspan="6" class="px-6 py-8 text-center text-slate-500">Loading live data...</td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- COL 3: WIDGETS -->
+                <div class="space-y-6">
+                    
+                    <!-- 1. AI ASSISTANT (Atlas) - Pro Mode -->
+                    <div class="glass-panel p-5 rounded-2xl relative overflow-hidden bg-gradient-to-b from-brand-900/20 to-transparent border-brand-500/20 shadow-lg shadow-brand-900/20">
+                        <div class="absolute top-0 right-0 p-4 opacity-10">
+                            <i class="fa-solid fa-robot text-6xl text-white"></i>
+                        </div>
+                        <div class="flex items-center gap-3 mb-4 relative z-10">
+                            <div class="w-8 h-8 rounded-full bg-gradient-to-br from-brand-400 to-brand-600 flex items-center justify-center shadow-lg shadow-brand-500/40 animate-pulse-slow">
+                                <i class="fa-solid fa-robot text-white text-xs"></i>
+                            </div>
+                            <div>
+                                <h4 class="text-sm font-bold text-white">Atlas AI</h4>
+                                <p class="text-[10px] text-brand-300 flex items-center gap-1">
+                                    <span class="w-1.5 h-1.5 bg-green-500 rounded-full animate-pulse"></span> Live Assistant
+                                </p>
+                            </div>
+                        </div>
+                        
+                        <div class="bg-dark-900/50 rounded-xl p-3 mb-4 border border-slate-800/50 backdrop-blur-sm relative z-10">
+                            <p class="text-xs text-slate-300 leading-relaxed" id="atlas-pro-tip">
+                                <span class="text-brand-400 font-bold"><i class="fa-solid fa-lightbulb"></i> Tip:</span> The USD rate has improved by <strong>15 pips</strong>. Convert your pending Zara inflow now to gain ~₹2,400.
+                            </p>
+                        </div>
+                        
+                        <div class="grid grid-cols-2 gap-2 relative z-10">
+                            <button onclick="toggleAtlas()" class="text-[10px] font-bold bg-white text-dark-950 py-2 rounded-lg hover:bg-slate-200 transition shadow-sm flex items-center justify-center gap-1">
+                                <i class="fa-regular fa-comment-dots"></i> Ask
+                            </button>
+                            <button onclick="window.location.href='inflow-decision-gate.html'" class="text-[10px] font-bold bg-brand-600 text-white py-2 rounded-lg hover:bg-brand-500 transition shadow-sm flex items-center justify-center gap-1">
+                                Go to Inflow <i class="fa-solid fa-arrow-right"></i>
+                            </button>
+                        </div>
+                    </div>
+
+                    <!-- 2. QUICK TRANSFER -->
+                    <div class="glass-panel p-5 rounded-2xl">
+                        <div class="flex justify-between items-center mb-4">
+                            <h4 class="text-xs font-bold text-slate-500 uppercase tracking-wider">Quick Pay</h4>
+                            <button class="text-slate-500 hover:text-white transition"><i class="fa-solid fa-ellipsis"></i></button>
+                        </div>
+                        
+                        <div class="flex gap-3 overflow-x-auto pb-2 mb-4 no-scrollbar">
+                            <!-- Add New -->
+                            <div class="flex flex-col items-center gap-1 cursor-pointer group min-w-[50px]" onclick="openTransferModal()">
+                                <div class="w-10 h-10 rounded-full border-2 border-dashed border-slate-600 flex items-center justify-center text-slate-500 hover:border-brand-500 hover:text-brand-400 transition-colors bg-slate-800/50">
+                                    <i class="fa-solid fa-plus"></i>
+                                </div>
+                                <span class="text-[10px] text-slate-500 group-hover:text-brand-400 transition-colors">New</span>
+                            </div>
+                            <!-- Avatar 1 -->
+                            <div class="flex flex-col items-center gap-1 cursor-pointer group min-w-[50px]" onclick="prefillTransfer('Maersk')">
+                                <div class="w-10 h-10 rounded-full bg-slate-700 border-2 border-transparent group-hover:border-brand-500 transition-colors flex items-center justify-center text-xs font-bold text-white shadow-sm relative">
+                                    M
+                                    <div class="absolute bottom-0 right-0 w-2.5 h-2.5 bg-green-500 border border-dark-900 rounded-full"></div>
+                                </div>
+                                <span class="text-[10px] text-slate-400 group-hover:text-white truncate max-w-[50px]">Maersk</span>
+                            </div>
+                            <!-- Avatar 2 -->
+                            <div class="flex flex-col items-center gap-1 cursor-pointer group min-w-[50px]" onclick="prefillTransfer('FedEx')">
+                                <div class="w-10 h-10 rounded-full bg-slate-700 border-2 border-transparent group-hover:border-brand-500 transition-colors flex items-center justify-center text-xs font-bold text-white shadow-sm">
+                                    F
+                                </div>
+                                <span class="text-[10px] text-slate-400 group-hover:text-white truncate max-w-[50px]">FedEx</span>
+                            </div>
+                             <!-- Avatar 3 -->
+                             <div class="flex flex-col items-center gap-1 cursor-pointer group min-w-[50px]" onclick="prefillTransfer('AWS')">
+                                <div class="w-10 h-10 rounded-full bg-slate-700 border-2 border-transparent group-hover:border-brand-500 transition-colors flex items-center justify-center text-xs font-bold text-white shadow-sm">
+                                    A
+                                </div>
+                                <span class="text-[10px] text-slate-400 group-hover:text-white truncate max-w-[50px]">AWS</span>
+                            </div>
+                        </div>
+
+                        <div class="relative mb-3">
+                            <span class="absolute left-3 top-2.5 text-slate-500 text-xs font-bold">$</span>
+                            <input type="number" id="quick-pay-amount" class="w-full bg-dark-900 border border-slate-700 rounded-lg py-2 pl-6 pr-3 text-sm text-white focus:border-brand-500 focus:outline-none focus:ring-1 focus:ring-brand-500 transition-all font-mono placeholder-slate-600" placeholder="0.00">
+                        </div>
+                        <button class="w-full py-2 bg-brand-600 hover:bg-brand-500 text-white text-xs font-bold rounded-lg transition shadow-lg shadow-brand-500/20 active:scale-95 flex items-center justify-center gap-2" onclick="processQuickPay()">
+                            Send Now <i class="fa-solid fa-paper-plane"></i>
+                        </button>
+                    </div>
+
+                    <!-- 3. COMPLIANCE STATUS BREAKDOWN -->
+                    <div class="glass-panel p-5 rounded-2xl">
+                        <div class="flex justify-between items-center mb-4">
+                            <h4 class="text-xs font-bold text-slate-500 uppercase tracking-wider">Doc Status</h4>
+                            <span class="text-[10px] text-slate-400 flex items-center gap-1"><i class="fa-solid fa-sync fa-spin"></i> Syncing...</span>
+                        </div>
+                        
+                        <div class="space-y-4">
+                            <!-- e-FIRA -->
+                            <div>
+                                <div class="flex items-center justify-between text-xs mb-1">
+                                    <span class="text-slate-400">e-FIRAs Generated</span>
+                                    <span class="text-white font-bold font-mono">142/145</span>
+                                </div>
+                                <div class="w-full bg-slate-800 h-1.5 rounded-full overflow-hidden">
+                                    <div class="bg-brand-500 h-full w-[98%] rounded-full"></div>
+                                </div>
+                            </div>
+                            
+                            <!-- BoE -->
+                            <div>
+                                <div class="flex items-center justify-between text-xs mb-1">
+                                    <span class="text-slate-400">Bill of Entry Mapped</span>
+                                    <span class="text-white font-bold font-mono">98%</span>
+                                </div>
+                                <div class="w-full bg-slate-800 h-1.5 rounded-full overflow-hidden">
+                                    <div class="bg-green-500 h-full w-[98%] rounded-full"></div>
+                                </div>
+                            </div>
+
+                            <!-- Outstanding -->
+                            <div>
+                                <div class="flex items-center justify-between text-xs mb-1">
+                                    <span class="text-slate-400">Pending EDPMS</span>
+                                    <span class="text-amber-400 font-bold font-mono">3 Actions</span>
+                                </div>
+                                <div class="w-full bg-slate-800 h-1.5 rounded-full overflow-hidden">
+                                    <div class="bg-amber-500 h-full w-[15%] rounded-full"></div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                </div>
+
+            </div>
+
+        </div>
+    </main>
+
+    <!-- === MODALS & SLIDE-OVERS === -->
+
+    <!-- 1. NOTIFICATION PANEL (Slide-Over) -->
+    <div id="notification-panel" class="fixed inset-y-0 right-0 w-80 bg-dark-900 border-l border-slate-800 shadow-2xl transform translate-x-full transition-transform duration-300 z-50 flex flex-col">
+        <div class="p-4 border-b border-slate-800 flex justify-between items-center bg-dark-900/95 backdrop-blur">
+            <h3 class="font-bold text-white text-sm"><i class="fa-regular fa-bell mr-2"></i> Notifications</h3>
+            <button onclick="toggleNotificationPanel()" class="text-slate-400 hover:text-white"><i class="fa-solid fa-xmark"></i></button>
+        </div>
+        <div class="flex-1 overflow-y-auto p-4 space-y-3">
+            <!-- Alert Item -->
+            <div class="bg-slate-800/50 p-3 rounded-xl border-l-2 border-brand-500 relative group cursor-pointer hover:bg-slate-800 transition-colors">
+                <div class="flex justify-between items-start">
+                    <h4 class="text-xs font-bold text-white">Funds Received</h4>
+                    <span class="text-[10px] text-slate-500">2m ago</span>
+                </div>
+                <p class="text-xs text-slate-400 mt-1">Zara Intl sent <strong>$12,500</strong> via PayNow.</p>
+                <div class="mt-2">
+                    <button class="text-[10px] bg-brand-600/20 text-brand-400 px-2 py-1 rounded font-bold hover:bg-brand-600 hover:text-white transition">View</button>
+                </div>
+            </div>
+            <!-- Alert Item -->
+            <div class="bg-slate-800/50 p-3 rounded-xl border-l-2 border-green-500 relative group cursor-pointer hover:bg-slate-800 transition-colors">
+                <div class="flex justify-between items-start">
+                    <h4 class="text-xs font-bold text-white">e-FIRA Generated</h4>
+                    <span class="text-[10px] text-slate-500">1h ago</span>
+                </div>
+                <p class="text-xs text-slate-400 mt-1">Document #FIRA-8821 is ready for download.</p>
+            </div>
+             <!-- Alert Item -->
+             <div class="bg-slate-800/50 p-3 rounded-xl border-l-2 border-amber-500 relative group cursor-pointer hover:bg-slate-800 transition-colors">
+                <div class="flex justify-between items-start">
+                    <h4 class="text-xs font-bold text-white">Rate Alert</h4>
+                    <span class="text-[10px] text-slate-500">3h ago</span>
+                </div>
+                <p class="text-xs text-slate-400 mt-1">USD/INR crossed 83.60 target.</p>
+            </div>
+        </div>
+        <div class="p-4 border-t border-slate-800">
+            <button class="w-full py-2 text-xs font-bold text-slate-400 hover:text-white border border-slate-700 rounded-lg hover:bg-slate-800 transition">Mark All Read</button>
+        </div>
+    </div>
+
+    <!-- 2. TRANSFER MODAL -->
+    <div id="transfer-modal" class="fixed inset-0 bg-black/80 backdrop-blur-sm hidden items-center justify-center z-50 transition-opacity opacity-0 pointer-events-none">
+        <div class="bg-dark-900 border border-slate-700 rounded-2xl w-full max-w-lg shadow-2xl transform scale-95 transition-transform duration-300 m-4 flex flex-col max-h-[90vh]">
+            <!-- Header -->
+            <div class="p-5 border-b border-slate-800 flex justify-between items-center bg-dark-900 sticky top-0 rounded-t-2xl">
+                <h3 class="font-display font-bold text-white text-lg"><i class="fa-solid fa-paper-plane text-brand-500 mr-2"></i> New Outflow Transfer</h3>
+                <button onclick="closeTransferModal()" class="text-slate-400 hover:text-white w-8 h-8 rounded-full hover:bg-slate-800 flex items-center justify-center transition"><i class="fa-solid fa-xmark"></i></button>
+            </div>
+            
+            <!-- Body -->
+            <div class="p-6 overflow-y-auto custom-scrollbar">
+                <!-- Beneficiary Select -->
+                <div class="mb-5">
+                    <label class="block text-xs font-bold text-slate-400 uppercase tracking-wider mb-2">Beneficiary</label>
+                    <div class="relative group">
+                        <select id="transfer-beneficiary" class="w-full bg-dark-950 border border-slate-700 rounded-xl px-4 py-3 text-sm text-white appearance-none focus:border-brand-500 focus:outline-none focus:ring-1 focus:ring-brand-500 transition-colors">
+                            <option value="" disabled selected>Select Partner...</option>
+                            <option value="Maersk">Maersk Logistics (Mumbai)</option>
+                            <option value="FedEx">FedEx Express (Global)</option>
+                            <option value="AWS">Amazon Web Services (US)</option>
+                            <option value="New">+ Add New Beneficiary</option>
+                        </select>
+                        <i class="fa-solid fa-chevron-down absolute right-4 top-3.5 text-slate-500 pointer-events-none"></i>
+                    </div>
+                </div>
+
+                <!-- Amount & Currency -->
+                <div class="grid grid-cols-3 gap-4 mb-5">
+                    <div class="col-span-2">
+                        <label class="block text-xs font-bold text-slate-400 uppercase tracking-wider mb-2">Amount</label>
+                        <input type="number" id="transfer-amount" class="w-full bg-dark-950 border border-slate-700 rounded-xl px-4 py-3 text-white font-mono text-lg focus:border-brand-500 focus:outline-none" placeholder="0.00">
+                    </div>
+                    <div>
+                        <label class="block text-xs font-bold text-slate-400 uppercase tracking-wider mb-2">Currency</label>
+                        <select class="w-full bg-dark-950 border border-slate-700 rounded-xl px-4 py-3 text-sm text-white focus:border-brand-500 focus:outline-none">
+                            <option>USD</option>
+                            <option>SGD</option>
+                            <option>EUR</option>
+                        </select>
+                    </div>
+                </div>
+
+                <!-- Purpose Code -->
+                <div class="mb-5">
+                    <label class="block text-xs font-bold text-slate-400 uppercase tracking-wider mb-2">Purpose Code (FEMA)</label>
+                    <div class="relative">
+                        <select class="w-full bg-dark-950 border border-slate-700 rounded-xl px-4 py-3 text-sm text-white appearance-none focus:border-brand-500 focus:outline-none">
+                            <option value="S0101">S0101 - Import of Goods (Advance)</option>
+                            <option value="S0102">S0102 - Import of Goods (Settlement)</option>
+                            <option value="S1007">S1007 - Advertising / Marketing</option>
+                            <option value="S1107">S1107 - Software Consultancy</option>
+                        </select>
+                        <i class="fa-solid fa-chevron-down absolute right-4 top-3.5 text-slate-500 pointer-events-none"></i>
+                    </div>
+                </div>
+
+                <!-- Doc Upload -->
+                <div class="border-2 border-dashed border-slate-700 rounded-xl p-6 text-center hover:border-brand-500 hover:bg-brand-900/10 transition-colors cursor-pointer group">
+                    <i class="fa-solid fa-cloud-arrow-up text-2xl text-slate-500 group-hover:text-brand-400 mb-2"></i>
+                    <p class="text-xs font-bold text-white">Upload Invoice / BoE</p>
+                    <p class="text-[10px] text-slate-500 mt-1">PDF, JPG (Max 5MB)</p>
+                </div>
+            </div>
+
+            <!-- Footer -->
+            <div class="p-5 border-t border-slate-800 flex justify-between items-center bg-dark-900 rounded-b-2xl">
+                <div class="text-xs">
+                    <span class="text-slate-500">Fee:</span> <span class="text-white font-bold">$0.00 (Promo)</span>
+                </div>
+                <div class="flex gap-3">
+                    <button onclick="closeTransferModal()" class="px-4 py-2 text-sm font-bold text-slate-400 hover:text-white transition">Cancel</button>
+                    <button onclick="submitTransfer()" class="px-6 py-2 bg-brand-600 hover:bg-brand-500 text-white rounded-lg font-bold shadow-lg shadow-brand-500/20 transition transform active:scale-95 flex items-center gap-2">
+                        Review & Send <i class="fa-solid fa-arrow-right"></i>
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- 3. CONVERT MODAL -->
+    <div id="convert-modal" class="fixed inset-0 bg-black/80 backdrop-blur-sm hidden items-center justify-center z-50 transition-opacity opacity-0 pointer-events-none">
+        <div class="bg-dark-900 border border-slate-700 rounded-2xl w-full max-w-md shadow-2xl transform scale-95 transition-transform duration-300">
+            <div class="p-6">
+                <div class="flex justify-between items-center mb-6">
+                    <h3 class="font-bold text-white text-lg">Convert Currency</h3>
+                    <button onclick="closeConvertModal()" class="text-slate-400 hover:text-white"><i class="fa-solid fa-xmark"></i></button>
+                </div>
+
+                <div class="space-y-4 relative">
+                    <!-- From -->
+                    <div class="bg-dark-950 border border-slate-700 rounded-xl p-4">
+                        <div class="flex justify-between text-xs text-slate-500 mb-1">
+                            <span>Selling</span>
+                            <span>Balance: $84,500.00</span>
+                        </div>
+                        <div class="flex justify-between items-center">
+                            <input type="number" id="convert-from-amount" class="bg-transparent text-2xl font-mono text-white font-bold w-full focus:outline-none" placeholder="0.00" oninput="calculateConversion()">
+                            <div class="flex items-center gap-2 bg-slate-800 px-2 py-1 rounded-lg">
+                                <img src="https://flagcdn.com/w20/us.png" class="w-5 rounded-sm">
+                                <span class="text-white font-bold text-sm">USD</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Swap Icon -->
+                    <div class="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 w-8 h-8 bg-brand-600 rounded-full flex items-center justify-center border-4 border-dark-900 shadow-xl z-10">
+                        <i class="fa-solid fa-arrow-down text-white text-xs"></i>
+                    </div>
+
+                    <!-- To -->
+                    <div class="bg-dark-950 border border-slate-700 rounded-xl p-4">
+                        <div class="flex justify-between text-xs text-slate-500 mb-1">
+                            <span>Buying</span>
+                            <span>Rate: 83.60</span>
+                        </div>
+                        <div class="flex justify-between items-center">
+                            <input type="text" id="convert-to-amount" class="bg-transparent text-2xl font-mono text-brand-400 font-bold w-full focus:outline-none" placeholder="0.00" readonly>
+                            <div class="flex items-center gap-2 bg-slate-800 px-2 py-1 rounded-lg">
+                                <img src="https://flagcdn.com/w20/in.png" class="w-5 rounded-sm">
+                                <span class="text-white font-bold text-sm">INR</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="mt-6 space-y-3">
+                    <div class="flex justify-between text-xs">
+                        <span class="text-slate-500">Wholesale Rate</span>
+                        <span class="text-white font-mono">83.60</span>
+                    </div>
+                    <div class="flex justify-between text-xs">
+                        <span class="text-slate-500">Bank Rate</span>
+                        <span class="text-slate-400 line-through font-mono">82.10</span>
+                    </div>
+                    <div class="flex justify-between text-xs">
+                        <span class="text-green-400 font-bold">Total Savings</span>
+                        <span class="text-green-400 font-bold font-mono" id="convert-savings">₹ 0.00</span>
+                    </div>
+                </div>
+
+                <button class="w-full mt-6 py-3 bg-brand-600 hover:bg-brand-500 text-white rounded-xl font-bold shadow-lg shadow-brand-500/20 transition active:scale-95">
+                    Confirm Conversion
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- 4. TRANSACTION DETAIL MODAL -->
+    <div id="transaction-detail-modal" class="fixed inset-0 bg-black/80 backdrop-blur-sm hidden items-center justify-center z-50">
+        <div class="bg-white rounded-2xl w-full max-w-2xl shadow-2xl overflow-hidden animate-fade-in relative text-slate-900">
+            <!-- Receipt Header -->
+            <div class="bg-slate-50 p-6 border-b border-slate-200 flex justify-between items-start">
+                <div class="flex items-center gap-4">
+                    <div class="w-12 h-12 bg-green-100 rounded-full flex items-center justify-center text-green-600 text-xl">
+                        <i class="fa-solid fa-arrow-down-long"></i>
+                    </div>
+                    <div>
+                        <h3 class="font-bold text-xl text-slate-900">Inflow Received</h3>
+                        <p class="text-sm text-slate-500">Transaction ID: #txn_8821_sg</p>
+                    </div>
+                </div>
+                <div class="text-right">
+                    <p class="text-2xl font-mono font-bold text-slate-900">$12,500.00</p>
+                    <span class="bg-green-100 text-green-700 text-xs font-bold px-2 py-1 rounded-full">Completed</span>
+                </div>
+            </div>
+
+            <!-- Receipt Body -->
+            <div class="p-8 grid grid-cols-2 gap-8">
+                <!-- Col 1 -->
+                <div class="space-y-6">
+                    <div>
+                        <p class="text-xs font-bold text-slate-400 uppercase tracking-wider mb-1">Sender</p>
+                        <p class="font-bold text-slate-800">Zara International Ltd</p>
+                        <p class="text-xs text-slate-500">Singapore • DBS Bank</p>
+                    </div>
+                    <div>
+                        <p class="text-xs font-bold text-slate-400 uppercase tracking-wider mb-1">Payment Method</p>
+                        <div class="flex items-center gap-2">
+                            <img src="https://upload.wikimedia.org/wikipedia/commons/e/e4/PayNow_Logo.png" class="h-4 grayscale opacity-70">
+                            <span class="text-sm font-medium">PayNow Instant</span>
+                        </div>
+                    </div>
+                    <div>
+                        <p class="text-xs font-bold text-slate-400 uppercase tracking-wider mb-1">Timeline</p>
+                        <ul class="relative border-l-2 border-slate-200 ml-1 space-y-4">
+                            <li class="pl-4 relative">
+                                <span class="absolute -left-[5px] top-1.5 w-2 h-2 bg-green-500 rounded-full"></span>
+                                <p class="text-xs text-slate-800 font-bold">Funds Received</p>
+                                <p class="text-[10px] text-slate-500">Today, 10:42 AM</p>
+                            </li>
+                            <li class="pl-4 relative">
+                                <span class="absolute -left-[5px] top-1.5 w-2 h-2 bg-green-500 rounded-full"></span>
+                                <p class="text-xs text-slate-800 font-bold">e-FIRA Generated</p>
+                                <p class="text-[10px] text-slate-500">Today, 11:15 AM</p>
+                            </li>
+                        </ul>
+                    </div>
+                </div>
+
+                <!-- Col 2 -->
+                <div class="space-y-6">
+                    <div>
+                        <p class="text-xs font-bold text-slate-400 uppercase tracking-wider mb-1">Exchange Rate</p>
+                        <p class="text-sm font-mono font-bold">1 USD = 83.60 INR</p>
+                        <p class="text-[10px] text-green-600 font-bold">Wholesale Applied</p>
+                    </div>
+                    <div>
+                        <p class="text-xs font-bold text-slate-400 uppercase tracking-wider mb-1">Documents</p>
+                        <div class="space-y-2">
+                            <button class="w-full flex items-center justify-between p-3 border border-slate-200 rounded-lg hover:bg-slate-50 transition">
+                                <div class="flex items-center gap-2">
+                                    <i class="fa-solid fa-file-pdf text-red-500"></i>
+                                    <span class="text-xs font-bold">e-FIRA Certificate</span>
+                                </div>
+                                <i class="fa-solid fa-download text-slate-400 text-xs"></i>
+                            </button>
+                            <button class="w-full flex items-center justify-between p-3 border border-slate-200 rounded-lg hover:bg-slate-50 transition">
+                                <div class="flex items-center gap-2">
+                                    <i class="fa-solid fa-file-lines text-blue-500"></i>
+                                    <span class="text-xs font-bold">Credit Advice</span>
+                                </div>
+                                <i class="fa-solid fa-download text-slate-400 text-xs"></i>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Footer -->
+            <div class="bg-slate-50 p-4 flex justify-end border-t border-slate-200">
+                <button onclick="document.getElementById('transaction-detail-modal').classList.add('hidden')" class="px-6 py-2 bg-white border border-slate-300 text-slate-700 font-bold rounded-lg hover:bg-slate-100 transition shadow-sm">Close</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- ATLAS CHATBOT WIDGET (Embedded) -->
+    <div id="atlas-widget-container"></div>
+
+    <!-- SCRIPTS -->
+    <script src="backend.js"></script>
+    <script src="chatbot.js"></script>
+    <script>
+        // --- MOCK DATA STORE ---
+        const MockStore = {
+            transactions: [
+                { id: 'txn_001', time: '10:42 AM', party: 'Zara Intl Ltd', location: 'Singapore', amount: 12500, currency: 'USD', type: 'INFLOW', status: 'pending', compliance: 'action_required' },
+                { id: 'txn_002', time: '09:15 AM', party: 'Maersk Logistics', location: 'Mumbai', amount: 2100, currency: 'USD', type: 'OUTFLOW', status: 'completed', compliance: 'verified' },
+                { id: 'txn_003', time: 'Yesterday', party: 'Uniqlo Japan', location: 'Tokyo', amount: 45000, currency: 'JPY', type: 'INFLOW', status: 'completed', compliance: 'verified' },
+                { id: 'txn_004', time: 'Yesterday', party: 'FedEx Express', location: 'Global', amount: 450, currency: 'USD', type: 'OUTFLOW', status: 'completed', compliance: 'verified' },
+                { id: 'txn_005', time: '2 days ago', party: 'H&M Sourcing', location: 'Sweden', amount: 18200, currency: 'EUR', type: 'INFLOW', status: 'completed', compliance: 'verified' },
+            ],
+            rates: { USD: 83.60, SGD: 62.40, GBP: 106.40, EUR: 90.50 }
+        };
+
+        // --- DASHBOARD LOGIC ---
+        document.addEventListener('DOMContentLoaded', () => {
+            
+            // 1. Render Transaction Table
+            renderTransactionTable(MockStore.transactions);
+
+            // 2. Initialize Charts (Chart.js)
+            initCharts();
+
+            // 3. Initialize Backend Listener
+            if(typeof SettleXBackend !== 'undefined') {
+                SettleXBackend.onUpdate(() => {
+                    updateDashboardRates();
+                });
+                updateDashboardRates();
+            }
+
+            // 4. Initialize Chatbot
+            initChatbotWidget();
+
+            // 5. Update Clock
+            setInterval(updateMarketClock, 60000);
+        });
+
+        // --- UI FUNCTIONS ---
+
+        function renderTransactionTable(data) {
+            const tbody = document.getElementById('transaction-table-body');
+            tbody.innerHTML = ''; // Clear skeleton
+
+            data.forEach((txn, index) => {
+                const isPositive = txn.type === 'INFLOW';
+                const amountClass = isPositive ? 'text-green-400' : 'text-slate-300';
+                const amountPrefix = isPositive ? '+ ' : '';
+                
+                let complianceBadge = '';
+                if(txn.compliance === 'action_required') {
+                    complianceBadge = `<span class="flex items-center gap-1 text-[10px] text-amber-400 font-bold bg-amber-900/20 px-2 py-1 rounded w-fit"><i class="fa-solid fa-circle-exclamation"></i> Decision Pending</span>`;
+                } else {
+                    complianceBadge = `<span class="flex items-center gap-1 text-[10px] text-green-400 font-bold bg-green-900/20 px-2 py-1 rounded w-fit"><i class="fa-solid fa-check"></i> Verified</span>`;
+                }
+
+                const row = document.createElement('tr');
+                row.className = 'hover:bg-white/[0.02] transition-colors group interactive-row border-b border-slate-800/50';
+                row.onclick = () => toggleModal('transaction-detail-modal');
+                row.innerHTML = `
+                    <td class="px-6 py-4 font-mono text-xs text-slate-400">${txn.time}</td>
+                    <td class="px-6 py-4">
+                        <div class="flex items-center gap-3">
+                            <div class="w-8 h-8 rounded bg-slate-800 flex items-center justify-center font-bold text-xs text-white border border-slate-700">${txn.party.charAt(0)}</div>
+                            <div>
+                                <p class="font-bold text-slate-200 text-xs">${txn.party}</p>
+                                <p class="text-[10px] text-slate-500">${txn.location}</p>
+                            </div>
+                        </div>
+                    </td>
+                    <td class="px-6 py-4 font-mono ${amountClass} font-bold text-xs">${amountPrefix}${txn.currency} ${txn.amount.toLocaleString()}</td>
+                    <td class="px-6 py-4"><span class="bg-slate-800 text-slate-400 border border-slate-700 text-[10px] px-2 py-1 rounded font-bold">${txn.type}</span></td>
+                    <td class="px-6 py-4">${complianceBadge}</td>
+                    <td class="px-6 py-4 text-right">
+                        ${txn.compliance === 'action_required' 
+                            ? `<button onclick="event.stopPropagation(); window.location.href='inflow-decision-gate.html'" class="text-xs bg-brand-600 hover:bg-brand-500 text-white px-3 py-1.5 rounded font-bold transition shadow-sm">Review</button>` 
+                            : `<button class="text-slate-500 hover:text-white transition"><i class="fa-solid fa-ellipsis"></i></button>`}
+                    </td>
+                `;
+                
+                // Add delay for stagger effect
+                row.style.animation = `fadeIn 0.3s ease-out forwards ${index * 0.05}s`;
+                row.style.opacity = '0'; // Start hidden
+                
+                tbody.appendChild(row);
+            });
+        }
+
+        function handleSearch(e) {
+            const term = e.target.value.toLowerCase();
+            const filtered = MockStore.transactions.filter(t => 
+                t.party.toLowerCase().includes(term) || 
+                t.amount.toString().includes(term) ||
+                t.type.toLowerCase().includes(term)
+            );
+            renderTransactionTable(filtered);
+        }
+
+        function updateMarketClock() {
+            // Simplified clock logic for demo
+            const now = new Date();
+            const close = new Date(); close.setHours(17,0,0);
+            const diffMs = close - now;
+            const diffHrs = Math.floor((diffMs % 86400000) / 3600000);
+            const diffMins = Math.round(((diffMs % 86400000) % 3600000) / 60000);
+            
+            if(diffMs > 0) {
+                document.getElementById('market-clock').innerText = `Market Open • Closes in ${diffHrs}h ${diffMins}m`;
+            } else {
+                document.getElementById('market-clock').innerText = `Market Closed • Opens in 14h`;
+            }
+        }
+
+        // --- CHART JS SETUP ---
+        function initCharts() {
+            // 1. Liquidity Chart (Area)
+            const ctxLiquidity = document.getElementById('liquidityChart').getContext('2d');
+            new Chart(ctxLiquidity, {
+                type: 'line',
+                data: {
+                    labels: ['M','T','W','T','F','S','S'],
+                    datasets: [{
+                        data: [120, 132, 125, 142, 138, 150, 142],
+                        borderColor: '#0ea5e9',
+                        backgroundColor: (context) => {
+                            const ctx = context.chart.ctx;
+                            const gradient = ctx.createLinearGradient(0, 0, 0, 200);
+                            gradient.addColorStop(0, 'rgba(14, 165, 233, 0.5)');
+                            gradient.addColorStop(1, 'rgba(14, 165, 233, 0)');
+                            return gradient;
+                        },
+                        borderWidth: 2,
+                        tension: 0.4,
+                        pointRadius: 0
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: { legend: { display: false } },
+                    scales: { x: { display: false }, y: { display: false } }
+                }
+            });
+
+            // 2. Sparklines for Rates
+            createSparkline('sparkline-usd', [83.4, 83.5, 83.45, 83.55, 83.60], '#10b981');
+            createSparkline('sparkline-sgd', [62.8, 62.7, 62.6, 62.5, 62.4], '#ef4444');
+            createSparkline('sparkline-gbp', [106.1, 106.2, 106.3, 106.35, 106.4], '#10b981');
+        }
+
+        function createSparkline(id, data, color) {
+            const ctx = document.getElementById(id).getContext('2d');
+            new Chart(ctx, {
+                type: 'line',
+                data: {
+                    labels: [1,2,3,4,5],
+                    datasets: [{
+                        data: data,
+                        borderColor: color,
+                        borderWidth: 1.5,
+                        tension: 0.3,
+                        pointRadius: 0
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: { legend: { display: false } },
+                    scales: { x: { display: false }, y: { display: false } }
+                }
+            });
+        }
+
+        // --- MODAL & PANEL LOGIC ---
+
+        function toggleModal(modalId) {
+            const modal = document.getElementById(modalId);
+            const overlay = modal;
+            const card = modal.firstElementChild;
+
+            if (modal.classList.contains('hidden')) {
+                // Open
+                modal.classList.remove('hidden', 'pointer-events-none');
+                // Small delay to allow display:block to apply before transition
+                setTimeout(() => {
+                    modal.classList.remove('opacity-0');
+                    card.classList.remove('scale-95');
+                    card.classList.add('scale-100');
+                }, 10);
+            } else {
+                // Close
+                modal.classList.add('opacity-0');
+                card.classList.remove('scale-100');
+                card.classList.add('scale-95');
+                setTimeout(() => {
+                    modal.classList.add('hidden', 'pointer-events-none');
+                }, 300);
+            }
+        }
+
+        // -- Notification Panel --
+        function toggleNotificationPanel() {
+            const panel = document.getElementById('notification-panel');
+            if (panel.classList.contains('translate-x-full')) {
+                panel.classList.remove('translate-x-full');
+            } else {
+                panel.classList.add('translate-x-full');
+            }
+        }
+
+        // -- Transfer Modal Logic --
+        function openTransferModal() { toggleModal('transfer-modal'); }
+        function closeTransferModal() { toggleModal('transfer-modal'); }
+        function prefillTransfer(name) {
+            openTransferModal();
+            document.getElementById('transfer-beneficiary').value = name;
+        }
+        function submitTransfer() {
+            const btn = event.currentTarget;
+            btn.innerHTML = '<i class="fa-solid fa-circle-notch fa-spin"></i> Processing...';
+            setTimeout(() => {
+                closeTransferModal();
+                btn.innerHTML = 'Review & Send <i class="fa-solid fa-arrow-right"></i>';
+                // Show success toast (mock)
+                alert("Transfer initiated successfully!");
+            }, 1500);
+        }
+
+        // -- Convert Modal Logic --
+        function openConvertModal(currency) {
+            toggleModal('convert-modal');
+            // Mock fetching current rate
+            const rate = MockStore.rates[currency] || 83.60;
+            // Set rate in UI logic here if needed
+        }
+        function closeConvertModal() { toggleModal('convert-modal'); }
+        function calculateConversion() {
+            const amount = parseFloat(document.getElementById('convert-from-amount').value) || 0;
+            const rate = 83.60; // Mock USD rate
+            const result = amount * rate;
+            document.getElementById('convert-to-amount').value = result.toLocaleString('en-IN', {maximumFractionDigits: 2});
+            
+            // Calculate Savings
+            const bankRate = 82.10;
+            const bankTotal = amount * bankRate;
+            const savings = result - bankTotal;
+            document.getElementById('convert-savings').innerText = '₹ ' + savings.toLocaleString('en-IN', {maximumFractionDigits: 2});
+        }
+
+        // --- BACKEND HOOKS ---
+        function updateDashboardRates() {
+            if(typeof SettleXBackend === 'undefined') return;
+            // Update UI with real data from backend.js
+            const usd = SettleXBackend.getQuote(1, 'USD', 'OUTFLOW')?.rates.settlex;
+            if(usd) document.getElementById('rate-usd').innerText = usd.toFixed(2);
+            document.getElementById('last-updated-time').innerText = new Date().toLocaleTimeString();
+        }
+
+        // --- ATLAS CHATBOT ---
+        function initChatbotWidget() {
+            const container = document.getElementById('atlas-widget-container');
+            container.innerHTML = `
+                <div id="atlas-window" class="fixed bottom-20 right-6 w-[350px] bg-dark-900 border border-slate-700 rounded-2xl shadow-2xl hidden flex-col z-50 overflow-hidden transform transition-all duration-300 origin-bottom-right scale-95 opacity-0" style="height: 500px;">
+                     <div class="bg-slate-800 p-4 flex justify-between items-center border-b border-slate-700">
+                        <div class="flex items-center gap-2">
+                             <div class="w-8 h-8 rounded-full bg-brand-600 flex items-center justify-center text-white text-xs"><i class="fa-solid fa-robot"></i></div>
+                             <div>
+                                 <span class="font-bold text-white text-sm block">Atlas AI</span>
+                                 <span class="text-[10px] text-green-400 flex items-center gap-1"><span class="w-1.5 h-1.5 bg-green-500 rounded-full animate-pulse"></span> Online</span>
+                             </div>
+                        </div>
+                        <button onclick="toggleAtlas()" class="text-slate-400 hover:text-white"><i class="fa-solid fa-xmark"></i></button>
+                     </div>
+                     <div id="atlas-messages" class="flex-1 p-4 overflow-y-auto space-y-4 bg-dark-950 scroll-smooth">
+                        <div class="flex gap-3">
+                            <div class="w-8 h-8 rounded-full bg-slate-800 flex items-center justify-center shrink-0 text-slate-400 text-xs border border-slate-700"><i class="fa-solid fa-robot"></i></div>
+                            <div class="bg-slate-800 border border-slate-700 p-3 rounded-2xl rounded-tl-none text-sm text-slate-300 shadow-sm leading-relaxed">
+                                Welcome back. I'm monitoring <strong>USD/INR</strong> volatility. Would you like a forecast?
+                            </div>
+                        </div>
+                     </div>
+                     <div class="p-3 bg-slate-800 border-t border-slate-700 flex gap-2">
+                        <input type="text" id="atlas-input" class="flex-1 bg-dark-950 border border-slate-700 rounded-lg px-3 py-2 text-sm text-white focus:border-brand-500 focus:outline-none placeholder-slate-600" placeholder="Type query..." onkeypress="handleAtlasEnter(event)">
+                        <button onclick="handleAtlasSubmit()" class="w-10 h-10 bg-brand-600 text-white rounded-lg hover:bg-brand-500 flex items-center justify-center transition active:scale-95"><i class="fa-solid fa-paper-plane"></i></button>
+                     </div>
+                </div>
+            `;
+        }
+
+        function toggleAtlas() {
+            const win = document.getElementById('atlas-window');
+            if (win.classList.contains('hidden')) {
+                win.classList.remove('hidden');
+                setTimeout(() => {
+                    win.classList.remove('scale-95', 'opacity-0');
+                    win.classList.add('scale-100', 'opacity-100');
+                    document.getElementById('atlas-input').focus();
+                }, 10);
+            } else {
+                win.classList.remove('scale-100', 'opacity-100');
+                win.classList.add('scale-95', 'opacity-0');
+                setTimeout(() => win.classList.add('hidden'), 300);
+            }
+        }
+
+        function handleAtlasEnter(e) { if(e.key==='Enter') handleAtlasSubmit(); }
+
+        async function handleAtlasSubmit() {
+            const inp = document.getElementById('atlas-input');
+            const msg = inp.value;
+            if(!msg) return;
+
+            addMsg(msg, 'user');
+            inp.value = '';
+
+            // Loading indicator
+            const loadingId = 'loading-' + Date.now();
+            const msgBox = document.getElementById('atlas-messages');
+            const loadingDiv = document.createElement('div');
+            loadingDiv.id = loadingId;
+            loadingDiv.className = 'flex gap-3';
+            loadingDiv.innerHTML = `<div class="w-8 h-8 rounded-full bg-slate-800 flex items-center justify-center shrink-0 text-slate-400 text-xs border border-slate-700"><i class="fa-solid fa-robot"></i></div><div class="bg-slate-800 border border-slate-700 p-3 rounded-2xl rounded-tl-none text-sm text-slate-400 shadow-sm"><i class="fa-solid fa-ellipsis fa-fade"></i></div>`;
+            msgBox.appendChild(loadingDiv);
+            msgBox.scrollTop = msgBox.scrollHeight;
+
+            setTimeout(() => {
+                document.getElementById(loadingId).remove();
+                if(typeof AtlasBackend !== 'undefined') {
+                    const reply = AtlasBackend.process(msg);
+                    addMsg(reply, 'bot');
+                } else {
+                    addMsg("I am currently offline. Please check connection.", 'bot');
+                }
+            }, 800);
+        }
+
+        function addMsg(text, type) {
+            const box = document.getElementById('atlas-messages');
+            const div = document.createElement('div');
+            div.className = type === 'bot' ? 'flex gap-3 animate-fade-in' : 'flex gap-3 justify-end animate-fade-in';
+            
+            const formatted = text.replace(/\*\*(.*?)\*\*/g, '<strong class="text-white">$1</strong>');
+
+            div.innerHTML = type === 'bot' 
+                ? `<div class="w-8 h-8 rounded-full bg-slate-800 flex items-center justify-center shrink-0 text-slate-400 text-xs border border-slate-700"><i class="fa-solid fa-robot"></i></div><div class="bg-slate-800 border border-slate-700 p-3 rounded-2xl rounded-tl-none text-sm text-slate-300 shadow-sm max-w-[85%] leading-relaxed">${formatted}</div>`
+                : `<div class="bg-brand-600 text-white p-3 rounded-2xl rounded-tr-none text-sm shadow-sm max-w-[85%] leading-relaxed">${formatted}</div>`;
+            box.appendChild(div);
+            box.scrollTop = box.scrollHeight;
+        }
+        
+        // --- QUICK PAY ---
+        function processQuickPay() {
+            const btn = event.currentTarget;
+            const amt = document.getElementById('quick-pay-amount').value;
+            if(!amt) return alert("Please enter an amount.");
+            
+            btn.innerHTML = '<i class="fa-solid fa-circle-notch fa-spin"></i> Sending...';
+            setTimeout(() => {
+                btn.innerHTML = 'Sent Successfully <i class="fa-solid fa-check"></i>';
+                btn.classList.add('bg-green-600', 'hover:bg-green-500');
+                setTimeout(() => {
+                    btn.innerHTML = 'Send Now <i class="fa-solid fa-paper-plane"></i>';
+                    btn.classList.remove('bg-green-600', 'hover:bg-green-500');
+                    document.getElementById('quick-pay-amount').value = '';
+                }, 2000);
+            }, 1500);
+        }
+    </script>
+</body>
+</html>
