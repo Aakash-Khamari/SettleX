@@ -8,7 +8,7 @@
     <!-- Tailwind CSS -->
     <script src="https://cdn.tailwindcss.com"></script>
     
-    <!-- Fonts -->
+    <!-- Fonts: Inter & Plus Jakarta Sans -->
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Plus+Jakarta+Sans:wght@500;600;700;800&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet">
     
     <!-- Icons -->
@@ -42,17 +42,21 @@
                             900: '#0c4a6e',
                             950: '#082f49',
                         },
-                        dark: {
-                            800: '#1e293b',
-                            900: '#0f172a',
-                            950: '#020617',
+                        // Semantic Colors
+                        trade: {
+                            up: '#10b981',   
+                            down: '#ef4444', 
+                            warn: '#f59e0b', 
+                            info: '#3b82f6' 
                         }
                     },
                     animation: {
                         'pulse-slow': 'pulse 3s cubic-bezier(0.4, 0, 0.6, 1) infinite',
                         'slide-in': 'slideIn 0.4s ease-out forwards',
-                        'fade-in': 'fadeIn 0.3s ease-out forwards',
+                        'fade-in': 'fadeIn 0.5s ease-out forwards',
                         'spin-slow': 'spin 3s linear infinite',
+                        'bounce-subtle': 'bounceSubtle 2s infinite',
+                        'width-expand': 'widthExpand 1s ease-out forwards',
                     },
                     keyframes: {
                         slideIn: {
@@ -62,51 +66,56 @@
                         fadeIn: {
                             '0%': { opacity: '0' },
                             '100%': { opacity: '1' }
+                        },
+                        bounceSubtle: {
+                            '0%, 100%': { transform: 'translateY(-2px)' },
+                            '50%': { transform: 'translateY(2px)' },
+                        },
+                        widthExpand: {
+                            '0%': { width: '0%' },
+                            '100%': { width: '100%' }
                         }
                     },
                     boxShadow: {
-                        'glass': '0 8px 32px 0 rgba(0, 0, 0, 0.37)',
-                        'neon': '0 0 10px rgba(14, 165, 233, 0.5), 0 0 20px rgba(14, 165, 233, 0.3)',
+                        'glass': '0 8px 32px 0 rgba(0, 0, 0, 0.05)',
+                        'card-hover': '0 15px 30px -5px rgba(0, 0, 0, 0.1)',
+                        'input-focus': '0 0 0 4px rgba(14, 165, 233, 0.1)',
                     }
                 }
             }
         }
     </script>
     <style>
-        /* Base */
+        /* Base Styles - Light Theme */
         body {
-            background-color: #020617;
-            color: #cbd5e1;
+            background-color: #f8fafc; /* slate-50 */
+            color: #0f172a; /* slate-900 */
         }
 
-        /* Glassmorphism */
+        /* Light Mode Scrollbar */
+        ::-webkit-scrollbar { width: 6px; height: 6px; }
+        ::-webkit-scrollbar-track { background: #f1f5f9; }
+        ::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 4px; }
+        ::-webkit-scrollbar-thumb:hover { background: #94a3b8; }
+
+        /* Glassmorphism Utilities - Light Mode */
         .glass-panel {
-            background: rgba(15, 23, 42, 0.6);
+            background: rgba(255, 255, 255, 0.9);
             backdrop-filter: blur(12px);
             -webkit-backdrop-filter: blur(12px);
-            border: 1px solid rgba(255, 255, 255, 0.08);
-            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+            border: 1px solid rgba(226, 232, 240, 0.8);
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05), 0 2px 4px -1px rgba(0, 0, 0, 0.03);
         }
 
-        /* Custom Scrollbar */
-        ::-webkit-scrollbar { width: 6px; height: 6px; }
-        ::-webkit-scrollbar-track { background: #0f172a; }
-        ::-webkit-scrollbar-thumb { background: #334155; border-radius: 4px; }
-        ::-webkit-scrollbar-thumb:hover { background: #475569; }
-
-        /* Grid */
+        /* Grid Pattern */
         .bg-grid {
             background-size: 40px 40px;
             background-image: 
-                linear-gradient(to right, rgba(255, 255, 255, 0.03) 1px, transparent 1px),
-                linear-gradient(to bottom, rgba(255, 255, 255, 0.03) 1px, transparent 1px);
+                linear-gradient(to right, rgba(0, 0, 0, 0.03) 1px, transparent 1px),
+                linear-gradient(to bottom, rgba(0, 0, 0, 0.03) 1px, transparent 1px);
         }
 
-        /* Utilities */
-        .no-scrollbar::-webkit-scrollbar { display: none; }
-        .no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
-        
-        /* Stepper */
+        /* Stepper Styles */
         .step-circle {
             width: 2.5rem;
             height: 2.5rem;
@@ -117,95 +126,131 @@
             font-weight: 700;
             font-size: 0.875rem;
             transition: all 0.3s ease;
+            position: relative;
+            z-index: 10;
         }
         .step-active {
             background-color: #0ea5e9;
             color: white;
-            box-shadow: 0 0 15px rgba(14, 165, 233, 0.4);
+            box-shadow: 0 0 0 4px rgba(14, 165, 233, 0.2);
+            border: 2px solid #0ea5e9;
         }
         .step-inactive {
-            background-color: #1e293b;
-            color: #64748b;
-            border: 2px solid #334155;
+            background-color: #ffffff;
+            color: #94a3b8;
+            border: 2px solid #e2e8f0;
         }
         .step-completed {
             background-color: #10b981;
             color: white;
+            border: 2px solid #10b981;
+        }
+
+        /* Utilities */
+        .no-scrollbar::-webkit-scrollbar { display: none; }
+        .no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
+        
+        /* Drag Zone Animation */
+        .drag-active {
+            border-color: #0ea5e9 !important;
+            background-color: #f0f9ff !important;
+            transform: scale(1.02);
+        }
+        
+        /* Checkbox Animation */
+        .checkbox-wrapper input:checked + div {
+            background-color: #0ea5e9;
+            border-color: #0ea5e9;
+        }
+        .checkbox-wrapper input:checked + div svg {
+            display: block;
         }
     </style>
 </head>
 <body class="font-sans h-screen flex overflow-hidden selection:bg-brand-500 selection:text-white">
 
-    <!-- 1. SIDEBAR (Consistent) -->
-    <aside class="w-20 lg:w-72 bg-dark-900 border-r border-slate-800 flex flex-col flex-shrink-0 transition-all duration-300 z-50">
-        <!-- Logo -->
-        <div class="h-20 flex items-center px-0 lg:px-6 justify-center lg:justify-start border-b border-slate-800 cursor-pointer group" onclick="window.location.href='client-dashboard.html'">
-            <div class="w-10 h-10 bg-gradient-to-br from-brand-500 to-brand-700 rounded-xl flex items-center justify-center text-white font-bold text-xl shadow-lg shadow-brand-500/20 flex-shrink-0 transition-transform group-hover:scale-105">S</div>
+    <!-- 1. PROFESSIONAL SIDEBAR (Light Theme) -->
+    <aside class="w-20 lg:w-72 bg-white border-r border-slate-200 flex flex-col flex-shrink-0 transition-all duration-300 z-50">
+        
+        <!-- Logo Area -->
+        <div class="h-20 flex items-center px-0 lg:px-6 justify-center lg:justify-start border-b border-slate-200 relative group cursor-pointer" onclick="window.location.href='client-dashboard.html'">
+            <div class="w-10 h-10 bg-gradient-to-br from-brand-500 to-brand-700 rounded-xl flex items-center justify-center text-white font-bold text-xl shadow-lg shadow-brand-500/20 flex-shrink-0 transition-transform group-hover:scale-105">
+                S
+            </div>
             <div class="hidden lg:block ml-3">
-                <h1 class="text-xl font-display font-bold text-white tracking-tight">Settle<span class="text-brand-400">X</span></h1>
-                <p class="text-[10px] text-slate-500 font-mono uppercase tracking-wider group-hover:text-brand-400 transition-colors">Treasury OS v2.4</p>
+                <h1 class="text-xl font-display font-bold text-slate-900 tracking-tight">Settle<span class="text-brand-600">X</span></h1>
+                <p class="text-[10px] text-slate-500 font-mono uppercase tracking-wider group-hover:text-brand-600 transition-colors">Treasury OS v2.4</p>
             </div>
         </div>
 
-        <!-- Nav -->
+        <!-- Main Navigation -->
         <nav class="flex-1 overflow-y-auto py-6 px-3 space-y-1">
-            <a href="client-dashboard.html" class="flex items-center gap-3 px-3 py-3 text-slate-400 hover:text-white hover:bg-slate-800 rounded-xl transition-all group">
-                <i class="fa-solid fa-border-all w-6 text-center group-hover:text-brand-400 transition-colors"></i>
+            
+            <!-- Dashboard -->
+            <a href="client-dashboard.html" class="flex items-center gap-3 px-3 py-3 text-slate-500 hover:text-slate-900 hover:bg-slate-50 rounded-xl transition-all group">
+                <i class="fa-solid fa-border-all w-6 text-center group-hover:text-brand-600 transition-colors"></i>
                 <span class="hidden lg:block font-medium">Command Center</span>
             </a>
 
             <div class="hidden lg:block px-3 mt-6 mb-2 flex items-center justify-between">
-                <p class="text-[10px] font-bold text-slate-500 uppercase tracking-widest">Global Money</p>
-                <i class="fa-solid fa-globe text-[10px] text-slate-600"></i>
+                <p class="text-[10px] font-bold text-slate-400 uppercase tracking-widest">Global Money</p>
+                <i class="fa-solid fa-globe text-[10px] text-slate-400"></i>
             </div>
 
-            <a href="inflow-decision-gate.html" class="flex items-center gap-3 px-3 py-3 text-slate-400 hover:text-white hover:bg-slate-800 rounded-xl transition-all group">
-                <i class="fa-solid fa-inbox w-6 text-center group-hover:text-green-400 transition-colors"></i>
+            <!-- Inflow -->
+            <a href="inflow-decision-gate.html" class="flex items-center gap-3 px-3 py-3 text-slate-500 hover:text-slate-900 hover:bg-slate-50 rounded-xl transition-all group">
+                <i class="fa-solid fa-inbox w-6 text-center group-hover:text-green-600 transition-colors"></i>
                 <span class="hidden lg:block font-medium">Inflow (Collections)</span>
                 <span class="hidden lg:flex ml-auto bg-brand-500 text-white text-[10px] font-bold px-2 py-0.5 rounded-full shadow-lg shadow-brand-500/40 animate-pulse-slow">3</span>
             </a>
 
-            <!-- Active: Outflow -->
-            <a href="#" class="flex items-center gap-3 px-3 py-3 bg-brand-900/30 text-white rounded-xl border border-brand-500/30 shadow-sm group relative overflow-hidden">
-                <div class="absolute inset-0 bg-brand-500/10 rounded-xl blur opacity-0 group-hover:opacity-100 transition-opacity"></div>
+            <!-- Outflow (Active) -->
+            <a href="#" class="flex items-center gap-3 px-3 py-3 bg-brand-50 text-brand-900 rounded-xl border border-brand-200 shadow-sm group relative overflow-hidden">
+                <div class="absolute inset-0 bg-brand-100 rounded-xl blur opacity-0 group-hover:opacity-100 transition-opacity"></div>
                 <div class="absolute left-0 top-0 bottom-0 w-1 bg-brand-500 rounded-l-xl"></div>
-                <i class="fa-solid fa-paper-plane w-6 text-center text-red-400 text-lg group-hover:scale-110 transition-transform"></i>
+                <i class="fa-solid fa-paper-plane w-6 text-center text-red-500 text-lg group-hover:scale-110 transition-transform"></i>
                 <span class="hidden lg:block font-medium tracking-wide">Outflow (Payments)</span>
             </a>
 
-            <a href="virtual-accounts.html" class="flex items-center gap-3 px-3 py-3 text-slate-400 hover:text-white hover:bg-slate-800 rounded-xl transition-all group">
-                <i class="fa-solid fa-wallet w-6 text-center group-hover:text-purple-400 transition-colors"></i>
+            <!-- Virtual Accounts -->
+            <a href="virtual-accounts.html" class="flex items-center gap-3 px-3 py-3 text-slate-500 hover:text-slate-900 hover:bg-slate-50 rounded-xl transition-all group">
+                <i class="fa-solid fa-wallet w-6 text-center group-hover:text-purple-500 transition-colors"></i>
                 <span class="hidden lg:block font-medium">Virtual Accounts</span>
             </a>
 
             <div class="hidden lg:block px-3 mt-6 mb-2 flex items-center justify-between">
-                <p class="text-[10px] font-bold text-slate-500 uppercase tracking-widest">Compliance</p>
-                <i class="fa-solid fa-shield-halved text-[10px] text-slate-600"></i>
+                <p class="text-[10px] font-bold text-slate-400 uppercase tracking-widest">Compliance</p>
+                <i class="fa-solid fa-shield-halved text-[10px] text-slate-400"></i>
             </div>
 
-            <a href="transaction-history.html" class="flex items-center gap-3 px-3 py-3 text-slate-400 hover:text-white hover:bg-slate-800 rounded-xl transition-all group">
-                <i class="fa-solid fa-book-open w-6 text-center group-hover:text-amber-400 transition-colors"></i>
+            <!-- Ledger -->
+            <a href="transaction-history.html" class="flex items-center gap-3 px-3 py-3 text-slate-500 hover:text-slate-900 hover:bg-slate-50 rounded-xl transition-all group">
+                <i class="fa-solid fa-book-open w-6 text-center group-hover:text-amber-500 transition-colors"></i>
                 <span class="hidden lg:block font-medium">Digital Ledger</span>
             </a>
 
-            <a href="compliance-vault.html" class="flex items-center gap-3 px-3 py-3 text-slate-400 hover:text-white hover:bg-slate-800 rounded-xl transition-all group">
-                <i class="fa-solid fa-file-shield w-6 text-center group-hover:text-blue-400 transition-colors"></i>
+            <!-- Docs -->
+            <a href="compliance-vault.html" class="flex items-center gap-3 px-3 py-3 text-slate-500 hover:text-slate-900 hover:bg-slate-50 rounded-xl transition-all group">
+                <i class="fa-solid fa-file-shield w-6 text-center group-hover:text-blue-500 transition-colors"></i>
                 <span class="hidden lg:block font-medium">BoE & e-FIRA Vault</span>
             </a>
         </nav>
         
         <!-- Profile -->
-        <div class="p-4 border-t border-slate-800 bg-dark-900/50">
-            <div class="flex items-center gap-3 cursor-pointer hover:bg-slate-800 p-2 rounded-xl transition-colors group">
+        <div class="p-4 border-t border-slate-200 bg-slate-50/50">
+            <div class="flex items-center gap-3 cursor-pointer hover:bg-slate-100 p-2 rounded-xl transition-colors group" onclick="toggleModal('settings-modal')">
                 <div class="relative">
-                    <div class="w-10 h-10 rounded-full bg-slate-700 flex items-center justify-center border border-slate-600 group-hover:border-brand-500 transition-colors">
-                        <span class="font-bold text-white group-hover:text-brand-200">TE</span>
+                    <div class="w-10 h-10 rounded-full bg-slate-200 flex items-center justify-center border border-slate-300 group-hover:border-brand-300 transition-colors">
+                        <span class="font-bold text-slate-700 group-hover:text-brand-600">TE</span>
                     </div>
-                    <div class="absolute -bottom-1 -right-1 w-3 h-3 bg-green-500 border-2 border-dark-900 rounded-full animate-pulse"></div>
+                    <div class="absolute -bottom-1 -right-1 w-3 h-3 bg-green-500 border-2 border-white rounded-full animate-pulse"></div>
                 </div>
                 <div class="hidden lg:block min-w-0">
-                    <p class="text-sm font-bold text-white truncate group-hover:text-brand-400 transition-colors">Tex Exports Pvt Ltd</p>
+                    <p class="text-sm font-bold text-slate-900 truncate group-hover:text-brand-700 transition-colors">Tex Exports Pvt Ltd</p>
                     <p class="text-[10px] text-slate-500 font-mono truncate">ID: IND-TN-8821</p>
+                </div>
+                <div class="hidden lg:block ml-auto text-slate-400 group-hover:text-slate-600 transition-colors">
+                    <i class="fa-solid fa-gear text-xs"></i>
                 </div>
             </div>
         </div>
@@ -215,57 +260,63 @@
     <main class="flex-1 flex flex-col h-screen relative overflow-hidden bg-grid">
         
         <!-- Header -->
-        <header class="h-16 bg-dark-900/80 backdrop-blur-md border-b border-slate-800 flex items-center justify-between px-6 z-40 sticky top-0">
+        <header class="h-16 bg-white/80 backdrop-blur-md border-b border-slate-200 flex items-center justify-between px-6 z-40 sticky top-0">
             <div class="flex items-center gap-4">
-                <h2 class="text-lg font-bold text-white flex items-center gap-2">
-                    <i class="fa-solid fa-paper-plane text-red-500"></i> Outflow
+                <h2 class="text-lg font-bold text-slate-900 flex items-center gap-2">
+                    <i class="fa-solid fa-paper-plane text-brand-600"></i> New Outflow Transfer
                 </h2>
-                <div class="h-4 w-px bg-slate-700 hidden md:block"></div>
-                <div class="hidden md:flex items-center gap-2 px-3 py-1.5 bg-red-900/20 rounded-lg border border-red-500/20">
+                <div class="h-4 w-px bg-slate-300 hidden md:block"></div>
+                <div class="hidden md:flex items-center gap-2 px-3 py-1.5 bg-red-50 rounded-lg border border-red-200">
                     <span class="w-2 h-2 rounded-full bg-green-500 animate-pulse"></span>
-                    <span class="text-xs font-mono text-red-300">GIFT CITY RAIL ACTIVE</span>
+                    <span class="text-xs font-mono text-red-700 font-bold">GIFT CITY RAIL: ACTIVE</span>
                 </div>
             </div>
             
             <div class="flex items-center gap-4">
                 <div class="text-right hidden md:block">
-                    <p class="text-[10px] text-slate-500 uppercase tracking-wider">Available EEFC</p>
-                    <p class="text-sm font-bold text-white font-mono">$ 84,500.00</p>
+                    <p class="text-[10px] text-slate-500 uppercase tracking-wider">Available EEFC Balance</p>
+                    <p class="text-sm font-bold text-slate-900 font-mono">$ 84,500.00</p>
                 </div>
-                <div class="h-6 w-px bg-slate-700 hidden md:block"></div>
-                <button class="relative p-2 text-slate-400 hover:text-white transition-colors hover:bg-slate-800 rounded-lg" onclick="toggleAtlas()">
+                <div class="h-6 w-px bg-slate-300 hidden md:block"></div>
+                <!-- Notifications -->
+                <button class="relative p-2 text-slate-500 hover:text-slate-900 transition-colors hover:bg-slate-100 rounded-lg" onclick="toggleNotificationPanel()">
+                    <i class="fa-regular fa-bell"></i>
+                    <span class="absolute top-1.5 right-1.5 w-2 h-2 bg-red-500 rounded-full border border-white animate-ping"></span>
+                    <span class="absolute top-1.5 right-1.5 w-2 h-2 bg-red-500 rounded-full border border-white"></span>
+                </button>
+                <button class="relative p-2 text-slate-500 hover:text-slate-900 transition-colors hover:bg-slate-100 rounded-lg" onclick="toggleAtlas()" title="Ask Atlas AI">
                     <i class="fa-solid fa-headset"></i>
                 </button>
             </div>
         </header>
 
         <!-- Content -->
-        <div class="flex-1 overflow-y-auto p-6 scroll-smooth">
+        <div class="flex-1 overflow-y-auto p-6 scroll-smooth" id="scroll-container">
             
             <div class="max-w-5xl mx-auto">
                 
                 <!-- Progress Stepper -->
                 <div class="flex justify-between items-center mb-10 relative">
                     <!-- Lines -->
-                    <div class="absolute left-0 top-1/2 w-full h-0.5 bg-slate-800 -z-10"></div>
+                    <div class="absolute left-0 top-1/2 w-full h-0.5 bg-slate-200 -z-10"></div>
                     <div class="absolute left-0 top-1/2 h-0.5 bg-brand-500 transition-all duration-500 -z-10" style="width: 0%" id="progress-bar-line"></div>
 
                     <!-- Steps -->
                     <div class="flex flex-col items-center gap-2 group cursor-pointer" onclick="goToStep(1)">
                         <div class="step-circle step-active" id="step-1-circle">1</div>
-                        <p class="text-xs font-bold text-white" id="step-1-text">Beneficiary</p>
+                        <p class="text-xs font-bold text-slate-900" id="step-1-text">Beneficiary</p>
                     </div>
                     <div class="flex flex-col items-center gap-2 group cursor-pointer" onclick="goToStep(2)">
                         <div class="step-circle step-inactive" id="step-2-circle">2</div>
-                        <p class="text-xs font-bold text-slate-500" id="step-2-text">Payment</p>
+                        <p class="text-xs font-bold text-slate-400" id="step-2-text">Payment</p>
                     </div>
                     <div class="flex flex-col items-center gap-2 group cursor-pointer" onclick="goToStep(3)">
                         <div class="step-circle step-inactive" id="step-3-circle">3</div>
-                        <p class="text-xs font-bold text-slate-500" id="step-3-text">Compliance</p>
+                        <p class="text-xs font-bold text-slate-400" id="step-3-text">Compliance</p>
                     </div>
                     <div class="flex flex-col items-center gap-2 group cursor-pointer" onclick="goToStep(4)">
                         <div class="step-circle step-inactive" id="step-4-circle">4</div>
-                        <p class="text-xs font-bold text-slate-500" id="step-4-text">Review</p>
+                        <p class="text-xs font-bold text-slate-400" id="step-4-text">Review</p>
                     </div>
                 </div>
 
@@ -273,13 +324,19 @@
                 <form id="transfer-form" onsubmit="return false;">
                     
                     <!-- STEP 1: BENEFICIARY -->
-                    <div id="step-1-content" class="glass-panel p-8 rounded-2xl animate-fade-in relative">
-                        <h3 class="text-xl font-bold text-white mb-6">Who are you paying?</h3>
+                    <div id="step-1-content" class="glass-panel p-8 rounded-2xl animate-fade-in relative shadow-card-hover">
+                        <div class="flex justify-between items-center mb-6">
+                            <h3 class="text-xl font-bold text-slate-900">Who are you paying?</h3>
+                            <div class="flex items-center bg-slate-100 rounded-lg p-1 border border-slate-200">
+                                <button class="px-3 py-1 text-xs font-bold bg-white text-brand-600 shadow-sm rounded transition-all">Recent</button>
+                                <button class="px-3 py-1 text-xs font-bold text-slate-500 hover:text-slate-900 transition-all">All</button>
+                            </div>
+                        </div>
                         
                         <!-- Smart Search -->
-                        <div class="mb-6 relative">
-                            <i class="fa-solid fa-search absolute left-4 top-3.5 text-slate-500"></i>
-                            <input type="text" id="beneficiary-search" class="w-full bg-dark-950 border border-slate-700 rounded-xl pl-11 pr-4 py-3 text-white placeholder-slate-500 focus:border-brand-500 focus:outline-none transition-colors" placeholder="Search saved partners..." oninput="filterBeneficiaries()">
+                        <div class="mb-6 relative group">
+                            <i class="fa-solid fa-search absolute left-4 top-3.5 text-slate-400 group-hover:text-brand-500 transition-colors"></i>
+                            <input type="text" id="beneficiary-search" class="w-full bg-slate-50 border border-slate-200 rounded-xl pl-11 pr-4 py-3 text-slate-900 placeholder-slate-400 focus:border-brand-500 focus:ring-1 focus:ring-brand-500 focus:outline-none transition-all shadow-sm" placeholder="Search saved partners by name, country, or IBAN..." oninput="filterBeneficiaries()">
                         </div>
 
                         <!-- Recents Grid -->
@@ -288,193 +345,269 @@
                         </div>
 
                         <div class="text-center">
-                            <button class="text-brand-400 text-sm font-bold hover:text-white transition" onclick="toggleNewBeneficiaryForm()">
-                                + Add New Beneficiary
+                            <button class="text-brand-600 text-sm font-bold hover:text-brand-800 transition flex items-center justify-center gap-2 mx-auto py-2 px-4 rounded-lg hover:bg-brand-50" onclick="toggleNewBeneficiaryForm()">
+                                <i class="fa-solid fa-plus-circle"></i> Add New Beneficiary
                             </button>
                         </div>
 
                         <!-- New Beneficiary Form (Hidden) -->
-                        <div id="new-beneficiary-form" class="hidden mt-6 pt-6 border-t border-slate-800">
-                            <div class="grid md:grid-cols-2 gap-6">
-                                <div>
-                                    <label class="block text-xs font-bold text-slate-500 uppercase tracking-wider mb-2">Company Name</label>
-                                    <input type="text" class="w-full bg-dark-900 border border-slate-700 rounded-lg px-4 py-2.5 text-white focus:border-brand-500 focus:outline-none">
-                                </div>
-                                <div>
-                                    <label class="block text-xs font-bold text-slate-500 uppercase tracking-wider mb-2">Country</label>
-                                    <select class="w-full bg-dark-900 border border-slate-700 rounded-lg px-4 py-2.5 text-white focus:border-brand-500 focus:outline-none">
-                                        <option>United States</option>
-                                        <option>Singapore</option>
-                                        <option>United Kingdom</option>
-                                    </select>
-                                </div>
-                                <div class="md:col-span-2">
-                                    <label class="block text-xs font-bold text-slate-500 uppercase tracking-wider mb-2">Account Number / IBAN</label>
-                                    <input type="text" class="w-full bg-dark-900 border border-slate-700 rounded-lg px-4 py-2.5 text-white focus:border-brand-500 focus:outline-none font-mono">
-                                </div>
-                                <div>
-                                    <label class="block text-xs font-bold text-slate-500 uppercase tracking-wider mb-2">SWIFT / BIC</label>
-                                    <input type="text" class="w-full bg-dark-900 border border-slate-700 rounded-lg px-4 py-2.5 text-white focus:border-brand-500 focus:outline-none font-mono uppercase">
+                        <div id="new-beneficiary-form" class="hidden mt-6 pt-6 border-t border-slate-200 animate-slide-in">
+                            <div class="bg-slate-50 p-6 rounded-xl border border-slate-200">
+                                <h4 class="text-sm font-bold text-slate-900 mb-4 flex items-center gap-2"><i class="fa-solid fa-user-plus text-slate-500"></i> New Partner Details</h4>
+                                <div class="grid md:grid-cols-2 gap-6">
+                                    <div>
+                                        <label class="block text-xs font-bold text-slate-500 uppercase tracking-wider mb-2">Company Name</label>
+                                        <input type="text" id="new-bene-name" class="w-full bg-white border border-slate-300 rounded-lg px-4 py-2.5 text-slate-900 focus:border-brand-500 focus:outline-none shadow-sm placeholder-slate-300" placeholder="e.g. Acme Corp Inc.">
+                                    </div>
+                                    <div>
+                                        <label class="block text-xs font-bold text-slate-500 uppercase tracking-wider mb-2">Country</label>
+                                        <select id="new-bene-country" class="w-full bg-white border border-slate-300 rounded-lg px-4 py-2.5 text-slate-900 focus:border-brand-500 focus:outline-none shadow-sm">
+                                            <option>United States</option>
+                                            <option>Singapore</option>
+                                            <option>United Kingdom</option>
+                                            <option>Germany</option>
+                                            <option>China</option>
+                                        </select>
+                                    </div>
+                                    <div class="md:col-span-2">
+                                        <label class="block text-xs font-bold text-slate-500 uppercase tracking-wider mb-2">Account Number / IBAN</label>
+                                        <input type="text" id="new-bene-iban" class="w-full bg-white border border-slate-300 rounded-lg px-4 py-2.5 text-slate-900 focus:border-brand-500 focus:outline-none font-mono shadow-sm placeholder-slate-300" placeholder="US12 3456 7890 ...">
+                                    </div>
+                                    <div>
+                                        <label class="block text-xs font-bold text-slate-500 uppercase tracking-wider mb-2">SWIFT / BIC</label>
+                                        <input type="text" id="new-bene-swift" class="w-full bg-white border border-slate-300 rounded-lg px-4 py-2.5 text-slate-900 focus:border-brand-500 focus:outline-none font-mono uppercase shadow-sm placeholder-slate-300" placeholder="BOFAUS3N">
+                                    </div>
+                                    <div class="flex items-end">
+                                        <button onclick="saveNewBeneficiary()" class="w-full py-2.5 bg-slate-900 hover:bg-slate-800 text-white font-bold rounded-lg transition shadow-md">Save & Select</button>
+                                    </div>
                                 </div>
                             </div>
                         </div>
 
                         <div class="mt-8 flex justify-end">
-                            <button onclick="nextStep(2)" class="px-8 py-3 bg-brand-600 hover:bg-brand-500 text-white rounded-xl font-bold shadow-lg shadow-brand-500/20 transition active:scale-95 flex items-center gap-2">
+                            <button onclick="nextStep(2)" class="px-8 py-3 bg-brand-600 hover:bg-brand-700 text-white rounded-xl font-bold shadow-lg shadow-brand-500/20 transition active:scale-95 flex items-center gap-2">
                                 Continue <i class="fa-solid fa-arrow-right"></i>
                             </button>
                         </div>
                     </div>
 
                     <!-- STEP 2: PAYMENT DETAILS -->
-                    <div id="step-2-content" class="glass-panel p-8 rounded-2xl hidden animate-fade-in relative">
+                    <div id="step-2-content" class="glass-panel p-8 rounded-2xl hidden animate-fade-in relative shadow-card-hover">
                         <div class="flex justify-between items-center mb-6">
-                            <h3 class="text-xl font-bold text-white">How much?</h3>
+                            <h3 class="text-xl font-bold text-slate-900">How much?</h3>
                             <div class="text-right">
-                                <p class="text-[10px] text-slate-500 uppercase">Live Rate (USD/INR)</p>
-                                <p class="text-lg font-mono font-bold text-white">83.60 <span class="text-green-400 text-xs ml-1">+0.05%</span></p>
+                                <p class="text-[10px] text-slate-500 uppercase font-bold">Live Rate (USD/INR)</p>
+                                <p class="text-lg font-mono font-bold text-slate-900">83.60 <span class="text-green-600 text-xs ml-1 bg-green-100 px-1.5 py-0.5 rounded">+0.05%</span></p>
                             </div>
                         </div>
 
-                        <!-- Amount Input -->
-                        <div class="bg-dark-950 border border-slate-700 rounded-xl p-6 mb-6">
-                            <div class="flex justify-between text-xs text-slate-500 mb-2">
-                                <span>You Send</span>
-                                <span class="text-brand-400">Balance: $84,500.00</span>
-                            </div>
-                            <div class="flex gap-4 items-center">
-                                <div class="relative flex-1">
-                                    <span class="absolute left-0 top-1 text-2xl text-slate-600 font-light">$</span>
-                                    <input type="number" id="send-amount" class="w-full bg-transparent border-none text-4xl font-bold text-white focus:ring-0 p-0 pl-6 placeholder-slate-700" placeholder="0.00" oninput="calculateFees()">
+                        <div class="grid lg:grid-cols-2 gap-8 mb-8">
+                            <!-- Input Section -->
+                            <div class="space-y-6">
+                                <!-- Amount Input -->
+                                <div class="bg-white border border-slate-200 rounded-xl p-6 shadow-sm focus-within:shadow-input-focus focus-within:border-brand-300 transition-all">
+                                    <div class="flex justify-between text-xs text-slate-500 mb-2">
+                                        <span>You Send</span>
+                                        <span class="text-brand-600 font-bold">Balance: $84,500.00</span>
+                                    </div>
+                                    <div class="flex gap-4 items-center">
+                                        <div class="relative flex-1">
+                                            <span class="absolute left-0 top-1 text-2xl text-slate-400 font-light">$</span>
+                                            <input type="number" id="send-amount" class="w-full bg-transparent border-none text-4xl font-bold text-slate-900 focus:ring-0 p-0 pl-6 placeholder-slate-200" placeholder="0.00" oninput="calculateFees()">
+                                        </div>
+                                        <div class="bg-slate-100 px-3 py-1.5 rounded-lg flex items-center gap-2 border border-slate-200">
+                                            <img src="https://flagcdn.com/w40/us.png" class="w-6 rounded-sm shadow-sm">
+                                            <span class="font-bold text-slate-900">USD</span>
+                                            <i class="fa-solid fa-chevron-down text-xs text-slate-500"></i>
+                                        </div>
+                                    </div>
                                 </div>
-                                <div class="bg-slate-800 px-3 py-1.5 rounded-lg flex items-center gap-2 border border-slate-700">
-                                    <img src="https://flagcdn.com/w40/us.png" class="w-6 rounded-sm">
-                                    <span class="font-bold text-white">USD</span>
-                                    <i class="fa-solid fa-chevron-down text-xs text-slate-500"></i>
-                                </div>
-                            </div>
-                        </div>
 
-                        <!-- Fee Breakdown -->
-                        <div class="space-y-3 mb-8 border-l-2 border-slate-700 pl-4 py-2">
-                            <div class="flex justify-between text-sm">
-                                <span class="text-slate-400">Wholesale Rate</span>
-                                <span class="text-white font-mono">83.60</span>
+                                <!-- Fee Breakdown -->
+                                <div class="bg-slate-50 rounded-xl p-4 border border-slate-200 space-y-3">
+                                    <div class="flex justify-between text-sm">
+                                        <span class="text-slate-500">Wholesale Rate</span>
+                                        <span class="text-slate-900 font-mono font-medium">83.60</span>
+                                    </div>
+                                    <div class="flex justify-between text-sm">
+                                        <span class="text-slate-500">Platform Fee (0.20%)</span>
+                                        <span class="text-slate-900 font-mono font-medium" id="fee-display">$ 0.00</span>
+                                    </div>
+                                    <div class="flex justify-between text-sm">
+                                        <span class="text-slate-500">TCS (Tax Collected at Source)</span>
+                                        <span class="text-slate-900 font-mono font-medium" id="tcs-display">₹ 0.00</span>
+                                    </div>
+                                    <div class="h-px bg-slate-200 my-2"></div>
+                                    <div class="flex justify-between text-sm">
+                                        <span class="text-slate-700 font-bold">Total Cost</span>
+                                        <span class="text-brand-600 font-bold font-mono text-lg" id="total-cost-display">$ 0.00</span>
+                                    </div>
+                                </div>
                             </div>
-                            <div class="flex justify-between text-sm">
-                                <span class="text-slate-400">Fee (0.20%)</span>
-                                <span class="text-white font-mono" id="fee-display">$ 0.00</span>
-                            </div>
-                            <div class="flex justify-between text-sm">
-                                <span class="text-slate-400">Total Cost</span>
-                                <span class="text-brand-400 font-bold font-mono" id="total-cost-display">$ 0.00</span>
+
+                            <!-- Chart Section -->
+                            <div class="bg-white rounded-xl p-4 border border-slate-200 shadow-sm flex flex-col">
+                                <div class="flex justify-between items-center mb-2">
+                                    <h4 class="text-xs font-bold text-slate-500 uppercase">Rate Trend (24h)</h4>
+                                    <span class="text-[10px] text-green-600 bg-green-50 px-2 py-1 rounded-full font-bold">Low Volatility</span>
+                                </div>
+                                <div class="flex-1 relative w-full h-40">
+                                    <canvas id="rateChartSmall"></canvas>
+                                </div>
+                                <div class="mt-2 text-center">
+                                    <p class="text-[10px] text-slate-400">Rate is locked for 60 mins upon confirmation.</p>
+                                </div>
                             </div>
                         </div>
 
                         <!-- Quote Timer -->
-                        <div class="flex items-center gap-2 text-xs text-amber-400 bg-amber-900/20 p-3 rounded-lg border border-amber-500/20 mb-6">
+                        <div class="flex items-center gap-2 text-xs text-amber-600 bg-amber-50 p-3 rounded-lg border border-amber-200 mb-6">
                             <i class="fa-solid fa-clock"></i>
-                            <span>Quote valid for <span class="font-mono font-bold" id="quote-timer">60:00</span></span>
+                            <span>Preliminary Quote valid for <span class="font-mono font-bold" id="quote-timer">60:00</span></span>
                         </div>
 
                         <div class="flex justify-between">
-                            <button onclick="goToStep(1)" class="px-6 py-3 text-slate-400 hover:text-white font-bold transition">Back</button>
-                            <button onclick="nextStep(3)" class="px-8 py-3 bg-brand-600 hover:bg-brand-500 text-white rounded-xl font-bold shadow-lg shadow-brand-500/20 transition active:scale-95 flex items-center gap-2">
+                            <button onclick="goToStep(1)" class="px-6 py-3 text-slate-500 hover:text-slate-900 font-bold transition">Back</button>
+                            <button onclick="nextStep(3)" class="px-8 py-3 bg-brand-600 hover:bg-brand-700 text-white rounded-xl font-bold shadow-lg shadow-brand-500/20 transition active:scale-95 flex items-center gap-2">
                                 Continue <i class="fa-solid fa-arrow-right"></i>
                             </button>
                         </div>
                     </div>
 
                     <!-- STEP 3: COMPLIANCE -->
-                    <div id="step-3-content" class="glass-panel p-8 rounded-2xl hidden animate-fade-in relative">
-                        <h3 class="text-xl font-bold text-white mb-6">Compliance Check</h3>
+                    <div id="step-3-content" class="glass-panel p-8 rounded-2xl hidden animate-fade-in relative shadow-card-hover">
+                        <h3 class="text-xl font-bold text-slate-900 mb-6">Compliance Check</h3>
 
-                        <div class="space-y-6">
-                            <!-- Purpose Code -->
-                            <div>
-                                <label class="block text-xs font-bold text-slate-400 uppercase tracking-wider mb-2">Purpose of Payment (FEMA)</label>
-                                <select class="w-full bg-dark-950 border border-slate-700 rounded-xl px-4 py-3 text-white focus:border-brand-500 focus:outline-none appearance-none">
-                                    <option value="S0101" selected>S0101 - Advance Payment against Imports</option>
-                                    <option value="S0102">S0102 - Payment towards Imports (Settlement)</option>
-                                    <option value="S1007">S1007 - Advertising Services</option>
-                                    <option value="S1107">S1107 - Software Consultancy</option>
-                                </select>
-                            </div>
-
-                            <!-- Document Upload -->
-                            <div class="border-2 border-dashed border-slate-700 rounded-xl p-8 text-center hover:bg-slate-800/50 hover:border-brand-500 transition-all cursor-pointer group relative">
-                                <input type="file" class="absolute inset-0 opacity-0 cursor-pointer" onchange="handleFileUpload(this)">
-                                <div id="upload-placeholder">
-                                    <div class="w-12 h-12 bg-slate-800 rounded-full flex items-center justify-center mx-auto mb-3 group-hover:bg-brand-600 transition-colors">
-                                        <i class="fa-solid fa-cloud-arrow-up text-slate-400 group-hover:text-white"></i>
-                                    </div>
-                                    <p class="font-bold text-white">Upload Invoice / Bill of Entry</p>
-                                    <p class="text-xs text-slate-500 mt-1">PDF, JPG (Max 5MB)</p>
-                                </div>
-                                <div id="upload-success" class="hidden">
-                                    <div class="w-12 h-12 bg-green-500/20 rounded-full flex items-center justify-center mx-auto mb-3">
-                                        <i class="fa-solid fa-check text-green-500"></i>
-                                    </div>
-                                    <p class="font-bold text-white" id="file-name">invoice.pdf</p>
-                                    <p class="text-xs text-green-400 mt-1">Ready for validation</p>
-                                </div>
-                            </div>
-
-                            <div class="flex items-start gap-3 bg-blue-900/20 p-4 rounded-xl border border-blue-500/20">
-                                <i class="fa-solid fa-robot text-blue-400 mt-1"></i>
+                        <div class="grid lg:grid-cols-2 gap-8">
+                            <div class="space-y-6">
+                                <!-- Purpose Code -->
                                 <div>
-                                    <p class="text-sm font-bold text-white">AI Validation Active</p>
-                                    <p class="text-xs text-slate-400">Our OCR engine will verify beneficiary details against the uploaded invoice in approx 15 seconds.</p>
+                                    <label class="block text-xs font-bold text-slate-500 uppercase tracking-wider mb-2">Purpose of Payment (FEMA)</label>
+                                    <div class="relative">
+                                        <select class="w-full bg-white border border-slate-300 rounded-xl px-4 py-3 text-slate-900 focus:border-brand-500 focus:outline-none appearance-none shadow-sm transition-shadow">
+                                            <option value="S0101" selected>S0101 - Advance Payment against Imports</option>
+                                            <option value="S0102">S0102 - Payment towards Imports (Settlement)</option>
+                                            <option value="S1007">S1007 - Advertising Services</option>
+                                            <option value="S1107">S1107 - Software Consultancy</option>
+                                        </select>
+                                        <i class="fa-solid fa-chevron-down absolute right-4 top-4 text-slate-400 pointer-events-none"></i>
+                                    </div>
+                                </div>
+
+                                <!-- Document Upload -->
+                                <div class="border-2 border-dashed border-slate-300 rounded-xl p-8 text-center hover:bg-slate-50 hover:border-brand-500 transition-all cursor-pointer group relative" id="upload-zone">
+                                    <input type="file" class="absolute inset-0 opacity-0 cursor-pointer" onchange="handleFileUpload(this)" ondragenter="this.parentElement.classList.add('drag-active')" ondragleave="this.parentElement.classList.remove('drag-active')" ondrop="this.parentElement.classList.remove('drag-active')">
+                                    <div id="upload-placeholder">
+                                        <div class="w-12 h-12 bg-slate-100 rounded-full flex items-center justify-center mx-auto mb-3 group-hover:bg-brand-100 transition-colors">
+                                            <i class="fa-solid fa-cloud-arrow-up text-slate-400 group-hover:text-brand-600"></i>
+                                        </div>
+                                        <p class="font-bold text-slate-700 group-hover:text-brand-700 transition-colors">Upload Invoice / Bill of Entry</p>
+                                        <p class="text-xs text-slate-400 mt-1">PDF, JPG (Max 5MB)</p>
+                                    </div>
+                                    <div id="upload-success" class="hidden">
+                                        <div class="w-12 h-12 bg-green-100 rounded-full flex items-center justify-center mx-auto mb-3">
+                                            <i class="fa-solid fa-check text-green-600"></i>
+                                        </div>
+                                        <p class="font-bold text-slate-900" id="file-name">invoice.pdf</p>
+                                        <p class="text-xs text-green-600 mt-1 font-bold">Ready for scan</p>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Risk Scan Simulation -->
+                            <div class="bg-slate-50 rounded-xl p-5 border border-slate-200">
+                                <h4 class="text-sm font-bold text-slate-900 mb-4">Real-time Risk Scan</h4>
+                                <div class="space-y-4">
+                                    <!-- Scan Item 1 -->
+                                    <div>
+                                        <div class="flex justify-between text-xs mb-1">
+                                            <span class="text-slate-500">OFAC / Sanctions Check</span>
+                                            <span class="text-slate-400" id="scan-status-1">Pending</span>
+                                        </div>
+                                        <div class="w-full bg-slate-200 h-1.5 rounded-full overflow-hidden">
+                                            <div class="h-full bg-slate-400 w-0 transition-all duration-1000" id="scan-bar-1"></div>
+                                        </div>
+                                    </div>
+                                    <!-- Scan Item 2 -->
+                                    <div>
+                                        <div class="flex justify-between text-xs mb-1">
+                                            <span class="text-slate-500">Beneficiary IBAN Validation</span>
+                                            <span class="text-slate-400" id="scan-status-2">Pending</span>
+                                        </div>
+                                        <div class="w-full bg-slate-200 h-1.5 rounded-full overflow-hidden">
+                                            <div class="h-full bg-slate-400 w-0 transition-all duration-1000 delay-500" id="scan-bar-2"></div>
+                                        </div>
+                                    </div>
+                                    <!-- Scan Item 3 -->
+                                    <div>
+                                        <div class="flex justify-between text-xs mb-1">
+                                            <span class="text-slate-500">Invoice OCR Match</span>
+                                            <span class="text-slate-400" id="scan-status-3">Pending</span>
+                                        </div>
+                                        <div class="w-full bg-slate-200 h-1.5 rounded-full overflow-hidden">
+                                            <div class="h-full bg-slate-400 w-0 transition-all duration-1000 delay-1000" id="scan-bar-3"></div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div id="scan-complete-msg" class="hidden mt-4 p-3 bg-green-50 border border-green-200 rounded-lg flex items-center gap-2">
+                                    <i class="fa-solid fa-shield-check text-green-600"></i>
+                                    <span class="text-xs font-bold text-green-700">All Checks Passed</span>
                                 </div>
                             </div>
                         </div>
 
                         <div class="mt-8 flex justify-between">
-                            <button onclick="goToStep(2)" class="px-6 py-3 text-slate-400 hover:text-white font-bold transition">Back</button>
-                            <button onclick="nextStep(4)" class="px-8 py-3 bg-brand-600 hover:bg-brand-500 text-white rounded-xl font-bold shadow-lg shadow-brand-500/20 transition active:scale-95 flex items-center gap-2">
-                                Review <i class="fa-solid fa-arrow-right"></i>
+                            <button onclick="goToStep(2)" class="px-6 py-3 text-slate-500 hover:text-slate-900 font-bold transition">Back</button>
+                            <button onclick="startRiskScan()" id="btn-scan-compliance" class="px-8 py-3 bg-slate-900 hover:bg-slate-800 text-white rounded-xl font-bold shadow-md transition active:scale-95 flex items-center gap-2">
+                                Run Checks & Continue
                             </button>
                         </div>
                     </div>
 
                     <!-- STEP 4: REVIEW -->
-                    <div id="step-4-content" class="glass-panel p-8 rounded-2xl hidden animate-fade-in relative">
+                    <div id="step-4-content" class="glass-panel p-8 rounded-2xl hidden animate-fade-in relative shadow-card-hover">
                         <div class="text-center mb-8">
-                            <div class="w-16 h-16 bg-brand-500/10 rounded-full flex items-center justify-center mx-auto mb-4 border border-brand-500/30">
-                                <i class="fa-solid fa-paper-plane text-2xl text-brand-400"></i>
+                            <div class="w-16 h-16 bg-brand-50 rounded-full flex items-center justify-center mx-auto mb-4 border border-brand-200 shadow-sm">
+                                <i class="fa-solid fa-paper-plane text-2xl text-brand-600"></i>
                             </div>
-                            <h3 class="text-2xl font-bold text-white">Confirm Transfer</h3>
-                            <p class="text-slate-400 text-sm mt-1">Please review details carefully</p>
+                            <h3 class="text-2xl font-bold text-slate-900">Confirm Transfer</h3>
+                            <p class="text-slate-500 text-sm mt-1">Please review details carefully before authorizing.</p>
                         </div>
 
-                        <div class="bg-dark-950 rounded-xl border border-slate-700 overflow-hidden mb-8">
-                            <div class="p-4 border-b border-slate-800 flex justify-between items-center">
-                                <span class="text-slate-400 text-xs uppercase tracking-wider font-bold">Total Amount</span>
-                                <span class="text-xl font-mono font-bold text-white" id="review-total">$ 0.00</span>
+                        <div class="bg-white rounded-xl border border-slate-200 overflow-hidden mb-8 shadow-sm">
+                            <div class="p-4 border-b border-slate-100 flex justify-between items-center bg-slate-50">
+                                <span class="text-slate-500 text-xs uppercase tracking-wider font-bold">Total Amount</span>
+                                <span class="text-xl font-mono font-bold text-slate-900" id="review-total">$ 0.00</span>
                             </div>
-                            <div class="p-4 space-y-3">
+                            <div class="p-4 space-y-4">
                                 <div class="flex justify-between text-sm">
                                     <span class="text-slate-500">To</span>
-                                    <span class="text-white font-bold" id="review-beneficiary">...</span>
+                                    <div class="text-right">
+                                        <p class="text-slate-900 font-bold" id="review-beneficiary">...</p>
+                                        <p class="text-xs text-slate-400" id="review-iban">...</p>
+                                    </div>
                                 </div>
                                 <div class="flex justify-between text-sm">
                                     <span class="text-slate-500">Bank</span>
-                                    <span class="text-white">Citibank NA, New York</span>
+                                    <span class="text-slate-900">Citibank NA, New York</span>
                                 </div>
                                 <div class="flex justify-between text-sm">
-                                    <span class="text-slate-500">Fee</span>
-                                    <span class="text-green-400 font-mono">$ 5.00 (Golden Rail)</span>
+                                    <span class="text-slate-500">Fee Breakdown</span>
+                                    <div class="text-right">
+                                        <p class="text-slate-900 font-mono">$ 5.00 <span class="text-xs text-slate-400">(Fixed)</span></p>
+                                        <p class="text-slate-900 font-mono">0.20% <span class="text-xs text-slate-400">(FX Margin)</span></p>
+                                    </div>
                                 </div>
                                 <div class="flex justify-between text-sm">
                                     <span class="text-slate-500">Value Date</span>
-                                    <span class="text-white">T+0 (Today)</span>
+                                    <span class="text-slate-900 font-bold">T+0 (Today)</span>
                                 </div>
                             </div>
                         </div>
 
                         <div class="flex justify-between">
-                            <button onclick="goToStep(3)" class="px-6 py-3 text-slate-400 hover:text-white font-bold transition">Edit</button>
-                            <button onclick="submitTransfer()" class="px-8 py-3 bg-green-600 hover:bg-green-500 text-white rounded-xl font-bold shadow-lg shadow-green-500/20 transition active:scale-95 flex items-center gap-2 w-full justify-center ml-4">
+                            <button onclick="goToStep(3)" class="px-6 py-3 text-slate-500 hover:text-slate-900 font-bold transition">Edit</button>
+                            <button onclick="submitTransfer()" class="px-8 py-3 bg-green-600 hover:bg-green-700 text-white rounded-xl font-bold shadow-lg shadow-green-500/30 transition active:scale-95 flex items-center gap-2 w-full justify-center ml-4">
                                 Confirm & Pay <i class="fa-solid fa-check-circle"></i>
                             </button>
                         </div>
@@ -482,17 +615,17 @@
 
                     <!-- SUCCESS SCREEN -->
                     <div id="success-screen" class="hidden text-center py-12 animate-fade-in">
-                        <div class="w-24 h-24 bg-green-500/10 rounded-full flex items-center justify-center mx-auto mb-6 border border-green-500/30 shadow-neon">
-                            <i class="fa-solid fa-check text-5xl text-green-500"></i>
+                        <div class="w-24 h-24 bg-green-100 rounded-full flex items-center justify-center mx-auto mb-6 border border-green-200 shadow-lg">
+                            <i class="fa-solid fa-check text-5xl text-green-600 animate-bounce-subtle"></i>
                         </div>
-                        <h2 class="text-3xl font-display font-bold text-white mb-4">Transfer Initiated!</h2>
-                        <p class="text-slate-400 text-lg mb-8">Transaction ID: <span class="text-brand-400 font-mono">#OUT-8821-X9</span></p>
+                        <h2 class="text-3xl font-display font-bold text-slate-900 mb-4">Transfer Initiated!</h2>
+                        <p class="text-slate-500 text-lg mb-8">Transaction ID: <span class="text-brand-600 font-mono font-bold">#OUT-8821-X9</span></p>
                         
                         <div class="flex justify-center gap-4">
-                            <button onclick="window.location.href='client-dashboard.html'" class="px-6 py-3 bg-slate-800 hover:bg-slate-700 text-white rounded-xl font-bold transition border border-slate-600">
+                            <button onclick="window.location.href='client-dashboard.html'" class="px-6 py-3 bg-white border border-slate-200 hover:bg-slate-50 text-slate-700 rounded-xl font-bold transition">
                                 Return to Dashboard
                             </button>
-                            <button onclick="window.location.href='transaction-history.html'" class="px-6 py-3 bg-brand-600 hover:bg-brand-500 text-white rounded-xl font-bold transition shadow-lg">
+                            <button onclick="window.location.href='transaction-history.html'" class="px-6 py-3 bg-brand-600 hover:bg-brand-700 text-white rounded-xl font-bold transition shadow-lg shadow-brand-500/20">
                                 Track Status
                             </button>
                         </div>
@@ -505,6 +638,64 @@
         </div>
     </main>
 
+    <!-- === MODALS === -->
+
+    <!-- 1. NOTIFICATION PANEL -->
+    <div id="notification-panel" class="fixed inset-y-0 right-0 w-80 bg-white border-l border-slate-200 shadow-2xl transform translate-x-full transition-transform duration-300 z-50 flex flex-col">
+        <div class="p-4 border-b border-slate-200 flex justify-between items-center bg-white/95 backdrop-blur">
+            <h3 class="font-bold text-slate-900 text-sm"><i class="fa-regular fa-bell mr-2"></i> Notifications</h3>
+            <button onclick="toggleNotificationPanel()" class="text-slate-400 hover:text-slate-900"><i class="fa-solid fa-xmark"></i></button>
+        </div>
+        <div class="flex-1 overflow-y-auto p-4 space-y-3">
+            <div class="bg-slate-50 p-3 rounded-xl border-l-2 border-brand-500 relative group cursor-pointer hover:bg-slate-100 transition-colors">
+                <div class="flex justify-between items-start">
+                    <h4 class="text-xs font-bold text-slate-900">Funds Received</h4>
+                    <span class="text-[10px] text-slate-500">2m ago</span>
+                </div>
+                <p class="text-xs text-slate-600 mt-1">Zara Intl sent <strong>$12,500</strong> via PayNow.</p>
+            </div>
+            <div class="bg-slate-50 p-3 rounded-xl border-l-2 border-green-500 relative group cursor-pointer hover:bg-slate-100 transition-colors">
+                <div class="flex justify-between items-start">
+                    <h4 class="text-xs font-bold text-slate-900">e-FIRA Generated</h4>
+                    <span class="text-[10px] text-slate-500">1h ago</span>
+                </div>
+                <p class="text-xs text-slate-600 mt-1">Document #FIRA-8821 is ready for download.</p>
+            </div>
+        </div>
+        <div class="p-4 border-t border-slate-200">
+            <button class="w-full py-2 text-xs font-bold text-slate-500 hover:text-slate-900 border border-slate-200 rounded-lg hover:bg-slate-50 transition">Mark All Read</button>
+        </div>
+    </div>
+
+    <!-- 2. SETTINGS MODAL -->
+    <div id="settings-modal" class="fixed inset-0 bg-slate-900/20 backdrop-blur-sm hidden items-center justify-center z-50 transition-opacity opacity-0 pointer-events-none">
+        <div class="bg-white border border-slate-200 rounded-2xl w-full max-w-lg shadow-2xl transform scale-95 transition-transform duration-300 m-4 flex flex-col max-h-[90vh]">
+            <div class="p-5 border-b border-slate-200 flex justify-between items-center bg-white rounded-t-2xl">
+                <h3 class="font-bold text-slate-900 text-lg"><i class="fa-solid fa-gear text-slate-500 mr-2"></i> Account Settings</h3>
+                <button onclick="toggleModal('settings-modal')" class="text-slate-400 hover:text-slate-800"><i class="fa-solid fa-xmark"></i></button>
+            </div>
+            <div class="flex-1 overflow-y-auto p-6 space-y-6">
+                <div>
+                    <h4 class="text-xs font-bold text-brand-600 uppercase tracking-wider mb-4 border-b border-slate-200 pb-2">Profile</h4>
+                    <div class="grid grid-cols-2 gap-4">
+                        <div>
+                            <label class="block text-xs text-slate-500 mb-1">Company</label>
+                            <input type="text" value="Tex Exports Pvt Ltd" class="w-full bg-slate-50 border border-slate-300 rounded-lg px-3 py-2 text-sm text-slate-900" disabled>
+                        </div>
+                        <div>
+                            <label class="block text-xs text-slate-500 mb-1">Default Currency</label>
+                            <input type="text" value="USD" class="w-full bg-slate-50 border border-slate-300 rounded-lg px-3 py-2 text-sm text-slate-900" disabled>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="p-5 border-t border-slate-200 bg-slate-50 rounded-b-2xl flex justify-end gap-3">
+                 <button onclick="toggleModal('settings-modal')" class="px-4 py-2 text-sm text-slate-500 hover:text-slate-900">Close</button>
+                 <button onclick="toggleModal('settings-modal')" class="px-4 py-2 bg-white text-slate-900 border border-slate-300 font-bold rounded-lg text-sm hover:bg-slate-100">Save</button>
+            </div>
+        </div>
+    </div>
+
     <!-- ATLAS CHATBOT WIDGET -->
     <div id="atlas-widget-container"></div>
 
@@ -514,40 +705,43 @@
     <script>
         // --- Mock Data ---
         const Beneficiaries = [
-            { id: 1, name: 'Maersk Logistics', bank: 'HDFC Bank, Mumbai', lastPaid: '2 days ago', avatar: 'M' },
-            { id: 2, name: 'FedEx Express', bank: 'Citibank NA, NY', lastPaid: '1 week ago', avatar: 'F' },
-            { id: 3, name: 'AWS Cloud', bank: 'JP Morgan, NY', lastPaid: '1 month ago', avatar: 'A' },
-            { id: 4, name: 'Meta Platforms', bank: 'Bank of America', lastPaid: '2 months ago', avatar: 'M' },
-            { id: 5, name: 'Google Ireland', bank: 'Citibank, Dublin', lastPaid: '3 months ago', avatar: 'G' },
+            { id: 1, name: 'Maersk Logistics', bank: 'HDFC Bank, Mumbai', lastPaid: '2 days ago', avatar: 'M', iban: 'IN22 HDFC 0000 1234 5678' },
+            { id: 2, name: 'FedEx Express', bank: 'Citibank NA, NY', lastPaid: '1 week ago', avatar: 'F', iban: 'US33 CITI 1234 5678 9012' },
+            { id: 3, name: 'AWS Cloud', bank: 'JP Morgan, NY', lastPaid: '1 month ago', avatar: 'A', iban: 'US44 CHAS 9876 5432 1098' },
+            { id: 4, name: 'Meta Platforms', bank: 'Bank of America', lastPaid: '2 months ago', avatar: 'M', iban: 'US55 BOFA 1122 3344 5566' },
+            { id: 5, name: 'Google Ireland', bank: 'Citibank, Dublin', lastPaid: '3 months ago', avatar: 'G', iban: 'IE66 CITI 9988 7766 5544' },
         ];
 
         let selectedBeneficiary = null;
+        let chartInstance = null;
 
         // --- Logic ---
         document.addEventListener('DOMContentLoaded', () => {
             renderBeneficiaries(Beneficiaries);
             initChatbotWidget();
             startQuoteTimer();
+            initRateChart();
         });
 
+        // --- Step 1: Beneficiary Logic ---
         function renderBeneficiaries(list) {
             const grid = document.getElementById('beneficiary-grid');
             grid.innerHTML = '';
             list.forEach(b => {
                 const el = document.createElement('div');
-                el.className = 'bg-slate-800/50 border border-slate-700 rounded-xl p-4 cursor-pointer hover:border-brand-500 hover:bg-slate-800 transition-all group';
+                el.className = 'bg-white border border-slate-200 rounded-xl p-4 cursor-pointer hover:border-brand-500 hover:shadow-md transition-all group relative';
                 el.onclick = () => selectBeneficiary(b.id, el);
                 el.innerHTML = `
                     <div class="flex items-center gap-3 mb-3">
-                        <div class="w-10 h-10 rounded-full bg-slate-700 flex items-center justify-center font-bold text-white group-hover:bg-brand-600 transition-colors">${b.avatar}</div>
+                        <div class="w-10 h-10 rounded-full bg-slate-100 flex items-center justify-center font-bold text-slate-700 group-hover:bg-brand-100 group-hover:text-brand-700 transition-colors">${b.avatar}</div>
                         <div>
-                            <h4 class="font-bold text-white text-sm">${b.name}</h4>
+                            <h4 class="font-bold text-slate-900 text-sm">${b.name}</h4>
                             <p class="text-[10px] text-slate-500">${b.bank}</p>
                         </div>
                     </div>
                     <div class="flex justify-between items-center text-xs">
-                        <span class="text-slate-500">Last: ${b.lastPaid}</span>
-                        <i class="fa-regular fa-circle text-slate-600 group-hover:text-brand-500 select-indicator"></i>
+                        <span class="text-slate-400">Last: ${b.lastPaid}</span>
+                        <i class="fa-regular fa-circle text-slate-300 group-hover:text-brand-500 select-indicator text-lg"></i>
                     </div>
                 `;
                 grid.appendChild(el);
@@ -556,37 +750,71 @@
 
         function filterBeneficiaries() {
             const term = document.getElementById('beneficiary-search').value.toLowerCase();
-            const filtered = Beneficiaries.filter(b => b.name.toLowerCase().includes(term));
+            const filtered = Beneficiaries.filter(b => b.name.toLowerCase().includes(term) || b.bank.toLowerCase().includes(term));
             renderBeneficiaries(filtered);
         }
 
         function toggleNewBeneficiaryForm() {
             const form = document.getElementById('new-beneficiary-form');
             form.classList.toggle('hidden');
+            if(!form.classList.contains('hidden')) {
+                form.scrollIntoView({ behavior: 'smooth' });
+            }
+        }
+
+        function saveNewBeneficiary() {
+            const name = document.getElementById('new-bene-name').value;
+            const bank = document.getElementById('new-bene-country').value + " Bank";
+            const iban = document.getElementById('new-bene-iban').value;
+            
+            if(!name || !iban) return alert("Please fill in required fields.");
+
+            const newId = Beneficiaries.length + 1;
+            const newBene = { id: newId, name: name, bank: bank, lastPaid: 'Never', avatar: name.charAt(0).toUpperCase(), iban: iban };
+            Beneficiaries.unshift(newBene);
+            
+            toggleNewBeneficiaryForm();
+            renderBeneficiaries(Beneficiaries);
+            
+            // Auto Select
+            const firstCard = document.getElementById('beneficiary-grid').firstChild;
+            selectBeneficiary(newId, firstCard);
         }
 
         function selectBeneficiary(id, el) {
-            // UI Selection
+            // UI Selection Reset
             document.querySelectorAll('#beneficiary-grid > div').forEach(div => {
-                div.classList.remove('border-brand-500', 'bg-slate-800');
-                div.querySelector('.select-indicator').classList.remove('fa-solid', 'fa-circle-check', 'text-brand-500');
-                div.querySelector('.select-indicator').classList.add('fa-regular', 'fa-circle', 'text-slate-600');
+                div.classList.remove('border-brand-500', 'ring-2', 'ring-brand-200');
+                div.querySelector('.select-indicator').classList.remove('fa-solid', 'fa-circle-check', 'text-brand-600');
+                div.querySelector('.select-indicator').classList.add('fa-regular', 'fa-circle');
             });
-            el.classList.add('border-brand-500', 'bg-slate-800');
+            
+            // Active State
+            el.classList.add('border-brand-500', 'ring-2', 'ring-brand-200');
             const icon = el.querySelector('.select-indicator');
-            icon.classList.remove('fa-regular', 'fa-circle', 'text-slate-600');
-            icon.classList.add('fa-solid', 'fa-circle-check', 'text-brand-500');
+            icon.classList.remove('fa-regular', 'fa-circle');
+            icon.classList.add('fa-solid', 'fa-circle-check', 'text-brand-600');
             
             selectedBeneficiary = Beneficiaries.find(b => b.id === id);
             
-            // Update Review Screen
+            // Update Review Screen Data
             document.getElementById('review-beneficiary').innerText = selectedBeneficiary.name;
+            document.getElementById('review-iban').innerText = selectedBeneficiary.iban;
         }
 
-        // --- Stepper Logic ---
+        // --- Stepper Navigation ---
         function goToStep(step) {
-            // Validation Logic (simplified)
+            // Validation
             if(step > 1 && !selectedBeneficiary) return alert("Please select a beneficiary first.");
+            if(step > 2) {
+                const amt = document.getElementById('send-amount').value;
+                if(!amt || amt <= 0) return alert("Please enter a valid amount.");
+            }
+            if(step > 3) {
+                const file = document.getElementById('file-name').innerText;
+                const status = document.getElementById('scan-status-1').innerText;
+                if(file === 'invoice.pdf' && status === 'Pending') return alert("Please run compliance checks first.");
+            }
             
             // Hide all
             for(let i=1; i<=4; i++) {
@@ -604,18 +832,21 @@
                 const circle = document.getElementById(`step-${i}-circle`);
                 const text = document.getElementById(`step-${i}-text`);
                 
+                // Reset basic classes
+                circle.className = "step-circle";
+                
                 if(i < step) {
-                    circle.className = "step-circle step-completed";
+                    circle.classList.add('step-completed');
                     circle.innerHTML = '<i class="fa-solid fa-check"></i>';
-                    text.className = "text-xs font-bold text-green-500";
+                    text.className = "text-xs font-bold text-green-600";
                 } else if(i === step) {
-                    circle.className = "step-circle step-active";
+                    circle.classList.add('step-active');
                     circle.innerHTML = i;
-                    text.className = "text-xs font-bold text-white";
+                    text.className = "text-xs font-bold text-slate-900";
                 } else {
-                    circle.className = "step-circle step-inactive";
+                    circle.classList.add('step-inactive');
                     circle.innerHTML = i;
-                    text.className = "text-xs font-bold text-slate-500";
+                    text.className = "text-xs font-bold text-slate-400";
                 }
             }
         }
@@ -624,17 +855,52 @@
             goToStep(current);
         }
 
-        // --- Calculation Logic ---
+        // --- Step 2: Amount Logic ---
         function calculateFees() {
             const amount = parseFloat(document.getElementById('send-amount').value) || 0;
-            const fee = amount * 0.002; // 0.20%
-            const total = amount + fee;
+            const feePercent = 0.002; // 0.20%
+            const fee = amount * feePercent; 
+            const tcs = amount * 83.60 * 0.05; // 5% TCS mock in INR
+            const total = amount + fee + 5.00; // + $5 fixed
             
             document.getElementById('fee-display').innerText = '$ ' + fee.toFixed(2);
+            document.getElementById('tcs-display').innerText = '₹ ' + tcs.toLocaleString('en-IN', {maximumFractionDigits: 0});
             document.getElementById('total-cost-display').innerText = '$ ' + total.toLocaleString('en-US', {minimumFractionDigits: 2});
             document.getElementById('review-total').innerText = '$ ' + total.toLocaleString('en-US', {minimumFractionDigits: 2});
         }
 
+        function initRateChart() {
+            const ctx = document.getElementById('rateChartSmall').getContext('2d');
+            chartInstance = new Chart(ctx, {
+                type: 'line',
+                data: {
+                    labels: ['09:00', '10:00', '11:00', '12:00', '13:00', '14:00'],
+                    datasets: [{
+                        data: [83.55, 83.58, 83.62, 83.60, 83.59, 83.60],
+                        borderColor: '#0ea5e9',
+                        borderWidth: 2,
+                        tension: 0.4,
+                        pointRadius: 0,
+                        fill: true,
+                        backgroundColor: (context) => {
+                            const ctx = context.chart.ctx;
+                            const gradient = ctx.createLinearGradient(0, 0, 0, 150);
+                            gradient.addColorStop(0, 'rgba(14, 165, 233, 0.2)');
+                            gradient.addColorStop(1, 'rgba(14, 165, 233, 0)');
+                            return gradient;
+                        }
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: { legend: { display: false } },
+                    scales: { x: { display: false }, y: { display: false } }
+                }
+            });
+        }
+
+        // --- Step 3: Compliance Logic ---
         function handleFileUpload(input) {
             if(input.files && input.files[0]) {
                 document.getElementById('upload-placeholder').classList.add('hidden');
@@ -643,9 +909,45 @@
             }
         }
 
+        function startRiskScan() {
+            const btn = document.getElementById('btn-scan-compliance');
+            btn.disabled = true;
+            btn.innerHTML = '<i class="fa-solid fa-circle-notch fa-spin"></i> Scanning Databases...';
+            
+            // Simulate 3 Check Steps
+            const steps = [
+                { id: 1, text: 'OFAC Passed' },
+                { id: 2, text: 'Valid IBAN' },
+                { id: 3, text: 'OCR Match' }
+            ];
+
+            steps.forEach((step, index) => {
+                setTimeout(() => {
+                    document.getElementById(`scan-bar-${step.id}`).style.width = '100%';
+                    document.getElementById(`scan-bar-${step.id}`).classList.replace('bg-slate-400', 'bg-green-500');
+                    const status = document.getElementById(`scan-status-${step.id}`);
+                    status.innerText = step.text;
+                    status.classList.replace('text-slate-400', 'text-green-600');
+                    status.classList.add('font-bold');
+                }, (index + 1) * 800);
+            });
+
+            setTimeout(() => {
+                document.getElementById('scan-complete-msg').classList.remove('hidden');
+                btn.innerHTML = 'Continue to Review <i class="fa-solid fa-arrow-right"></i>';
+                btn.disabled = false;
+                btn.classList.remove('bg-slate-900', 'hover:bg-slate-800');
+                btn.classList.add('bg-brand-600', 'hover:bg-brand-700');
+                
+                // Change button action to next step
+                btn.onclick = () => nextStep(4);
+            }, 3000);
+        }
+
+        // --- Step 4: Submission ---
         function submitTransfer() {
             const btn = event.currentTarget;
-            btn.innerHTML = '<i class="fa-solid fa-circle-notch fa-spin"></i> Processing Payment...';
+            btn.innerHTML = '<i class="fa-solid fa-circle-notch fa-spin"></i> Authorizing...';
             
             setTimeout(() => {
                 document.getElementById('step-4-content').classList.add('hidden');
@@ -666,32 +968,66 @@
             }, 1000);
         }
 
-        // --- ATLAS CHATBOT (Embedded) ---
+        // --- Modal Logic ---
+        function toggleModal(modalId) {
+            const modal = document.getElementById(modalId);
+            if(!modal) return;
+            const card = modal.firstElementChild;
+
+            if (modal.classList.contains('hidden')) {
+                // Open
+                modal.classList.remove('hidden', 'pointer-events-none');
+                setTimeout(() => {
+                    modal.classList.remove('opacity-0');
+                    card.classList.remove('scale-95');
+                    card.classList.add('scale-100');
+                }, 10);
+            } else {
+                // Close
+                modal.classList.add('opacity-0');
+                card.classList.remove('scale-100');
+                card.classList.add('scale-95');
+                setTimeout(() => {
+                    modal.classList.add('hidden', 'pointer-events-none');
+                }, 300);
+            }
+        }
+
+        function toggleNotificationPanel() {
+            const panel = document.getElementById('notification-panel');
+            if (panel.classList.contains('translate-x-full')) {
+                panel.classList.remove('translate-x-full');
+            } else {
+                panel.classList.add('translate-x-full');
+            }
+        }
+
+        // --- ATLAS CHATBOT ---
         function initChatbotWidget() {
             const container = document.getElementById('atlas-widget-container');
             container.innerHTML = `
-                <div id="atlas-window" class="fixed bottom-20 right-6 w-[350px] bg-dark-900 border border-slate-700 rounded-2xl shadow-2xl hidden flex-col z-50 overflow-hidden transform transition-all duration-300 origin-bottom-right scale-95 opacity-0" style="height: 500px;">
-                     <div class="bg-slate-800 p-4 flex justify-between items-center border-b border-slate-700">
+                <div id="atlas-window" class="fixed bottom-20 right-6 w-[350px] bg-white border border-slate-200 rounded-2xl shadow-2xl hidden flex-col z-50 overflow-hidden transform transition-all duration-300 origin-bottom-right scale-95 opacity-0" style="height: 500px;">
+                     <div class="bg-slate-50 p-4 flex justify-between items-center border-b border-slate-200">
                         <div class="flex items-center gap-2">
                              <div class="w-8 h-8 rounded-full bg-brand-600 flex items-center justify-center text-white text-xs"><i class="fa-solid fa-robot"></i></div>
                              <div>
-                                 <span class="font-bold text-white text-sm block">Atlas AI</span>
-                                 <span class="text-[10px] text-green-400 flex items-center gap-1"><span class="w-1.5 h-1.5 bg-green-500 rounded-full animate-pulse"></span> Online</span>
+                                 <span class="font-bold text-slate-900 text-sm block">Atlas AI</span>
+                                 <span class="text-[10px] text-green-600 flex items-center gap-1"><span class="w-1.5 h-1.5 bg-green-500 rounded-full animate-pulse"></span> Online</span>
                              </div>
                         </div>
-                        <button onclick="toggleAtlas()" class="text-slate-400 hover:text-white"><i class="fa-solid fa-xmark"></i></button>
+                        <button onclick="toggleAtlas()" class="text-slate-400 hover:text-slate-800"><i class="fa-solid fa-xmark"></i></button>
                      </div>
-                     <div id="atlas-messages" class="flex-1 p-4 overflow-y-auto space-y-4 bg-dark-950 scroll-smooth">
+                     <div id="atlas-messages" class="flex-1 p-4 overflow-y-auto space-y-4 bg-slate-50 scroll-smooth">
                         <div class="flex gap-3">
-                            <div class="w-8 h-8 rounded-full bg-slate-800 flex items-center justify-center shrink-0 text-slate-400 text-xs border border-slate-700"><i class="fa-solid fa-robot"></i></div>
-                            <div class="bg-slate-800 border border-slate-700 p-3 rounded-2xl rounded-tl-none text-sm text-slate-300 shadow-sm leading-relaxed">
+                            <div class="w-8 h-8 rounded-full bg-slate-100 flex items-center justify-center shrink-0 text-slate-500 text-xs border border-slate-200"><i class="fa-solid fa-robot"></i></div>
+                            <div class="bg-white border border-slate-200 p-3 rounded-2xl rounded-tl-none text-sm text-slate-600 shadow-sm leading-relaxed">
                                 I can help check the IFSC or SWIFT code for your beneficiary. Just type the bank name.
                             </div>
                         </div>
                      </div>
-                     <div class="p-3 bg-slate-800 border-t border-slate-700 flex gap-2">
-                        <input type="text" id="atlas-input" class="flex-1 bg-dark-950 border border-slate-700 rounded-lg px-3 py-2 text-sm text-white focus:border-brand-500 focus:outline-none placeholder-slate-600" placeholder="Type query..." onkeypress="handleAtlasEnter(event)">
-                        <button onclick="handleAtlasSubmit()" class="w-10 h-10 bg-brand-600 text-white rounded-lg hover:bg-brand-500 flex items-center justify-center transition active:scale-95"><i class="fa-solid fa-paper-plane"></i></button>
+                     <div class="p-3 bg-slate-50 border-t border-slate-200 flex gap-2">
+                        <input type="text" id="atlas-input" class="flex-1 bg-white border border-slate-200 rounded-lg px-3 py-2 text-sm text-slate-900 focus:border-brand-500 focus:outline-none placeholder-slate-400" placeholder="Type query..." onkeypress="handleAtlasEnter(event)">
+                        <button onclick="handleAtlasSubmit()" class="w-10 h-10 bg-brand-600 text-white rounded-lg hover:bg-brand-700 flex items-center justify-center transition active:scale-95"><i class="fa-solid fa-paper-plane"></i></button>
                      </div>
                 </div>
             `;
@@ -728,7 +1064,7 @@
             const loadingDiv = document.createElement('div');
             loadingDiv.id = loadingId;
             loadingDiv.className = 'flex gap-3';
-            loadingDiv.innerHTML = `<div class="w-8 h-8 rounded-full bg-slate-800 flex items-center justify-center shrink-0 text-slate-400 text-xs border border-slate-700"><i class="fa-solid fa-robot"></i></div><div class="bg-slate-800 border border-slate-700 p-3 rounded-2xl rounded-tl-none text-sm text-slate-400 shadow-sm"><i class="fa-solid fa-ellipsis fa-fade"></i></div>`;
+            loadingDiv.innerHTML = `<div class="w-8 h-8 rounded-full bg-slate-100 flex items-center justify-center shrink-0 text-slate-500 text-xs border border-slate-200"><i class="fa-solid fa-robot"></i></div><div class="bg-white border border-slate-200 p-3 rounded-2xl rounded-tl-none text-sm text-slate-400 shadow-sm"><i class="fa-solid fa-ellipsis fa-fade"></i></div>`;
             msgBox.appendChild(loadingDiv);
             msgBox.scrollTop = msgBox.scrollHeight;
 
@@ -748,10 +1084,10 @@
             const div = document.createElement('div');
             div.className = type === 'bot' ? 'flex gap-3 animate-fade-in' : 'flex gap-3 justify-end animate-fade-in';
             
-            const formatted = text.replace(/\*\*(.*?)\*\*/g, '<strong class="text-white">$1</strong>');
+            const formatted = text.replace(/\*\*(.*?)\*\*/g, '<strong class="text-slate-900">$1</strong>');
 
             div.innerHTML = type === 'bot' 
-                ? `<div class="w-8 h-8 rounded-full bg-slate-800 flex items-center justify-center shrink-0 text-slate-400 text-xs border border-slate-700"><i class="fa-solid fa-robot"></i></div><div class="bg-slate-800 border border-slate-700 p-3 rounded-2xl rounded-tl-none text-sm text-slate-300 shadow-sm max-w-[85%] leading-relaxed">${formatted}</div>`
+                ? `<div class="w-8 h-8 rounded-full bg-slate-100 flex items-center justify-center shrink-0 text-slate-500 text-xs border border-slate-200"><i class="fa-solid fa-robot"></i></div><div class="bg-white border border-slate-200 p-3 rounded-2xl rounded-tl-none text-sm text-slate-600 shadow-sm max-w-[85%] leading-relaxed">${formatted}</div>`
                 : `<div class="bg-brand-600 text-white p-3 rounded-2xl rounded-tr-none text-sm shadow-sm max-w-[85%] leading-relaxed">${formatted}</div>`;
             box.appendChild(div);
             box.scrollTop = box.scrollHeight;

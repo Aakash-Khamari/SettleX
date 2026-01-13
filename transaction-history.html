@@ -8,13 +8,13 @@
     <!-- Tailwind CSS -->
     <script src="https://cdn.tailwindcss.com"></script>
     
-    <!-- Fonts -->
+    <!-- Fonts: Inter & JetBrains Mono -->
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Plus+Jakarta+Sans:wght@500;600;700;800&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet">
     
     <!-- Icons -->
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
     
-    <!-- Chart.js (Optional for future analytics expansion) -->
+    <!-- Chart.js -->
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 
     <!-- Config -->
@@ -42,17 +42,18 @@
                             900: '#0c4a6e',
                             950: '#082f49',
                         },
-                        dark: {
-                            800: '#1e293b',
-                            900: '#0f172a',
-                            950: '#020617',
+                        trade: {
+                            up: '#10b981',   
+                            down: '#ef4444', 
+                            warn: '#f59e0b', 
+                            info: '#3b82f6' 
                         }
                     },
                     animation: {
                         'pulse-slow': 'pulse 3s cubic-bezier(0.4, 0, 0.6, 1) infinite',
                         'slide-in': 'slideIn 0.4s ease-out forwards',
                         'fade-in': 'fadeIn 0.3s ease-out forwards',
-                        'spin-slow': 'spin 3s linear infinite',
+                        'width-expand': 'widthExpand 1s ease-out forwards',
                     },
                     keyframes: {
                         slideIn: {
@@ -62,44 +63,48 @@
                         fadeIn: {
                             '0%': { opacity: '0' },
                             '100%': { opacity: '1' }
+                        },
+                        widthExpand: {
+                            '0%': { width: '0%' },
+                            '100%': { width: '100%' }
                         }
                     },
                     boxShadow: {
-                        'glass': '0 8px 32px 0 rgba(0, 0, 0, 0.37)',
-                        'neon': '0 0 10px rgba(14, 165, 233, 0.5), 0 0 20px rgba(14, 165, 233, 0.3)',
+                        'glass': '0 8px 32px 0 rgba(0, 0, 0, 0.05)',
+                        'card-hover': '0 15px 30px -5px rgba(0, 0, 0, 0.1)',
                     }
                 }
             }
         }
     </script>
     <style>
-        /* Base */
+        /* Base Styles - Light Theme */
         body {
-            background-color: #020617;
-            color: #cbd5e1;
+            background-color: #f8fafc; /* slate-50 */
+            color: #0f172a; /* slate-900 */
         }
 
-        /* Glassmorphism */
+        /* Light Mode Scrollbar */
+        ::-webkit-scrollbar { width: 6px; height: 6px; }
+        ::-webkit-scrollbar-track { background: #f1f5f9; }
+        ::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 4px; }
+        ::-webkit-scrollbar-thumb:hover { background: #94a3b8; }
+
+        /* Glassmorphism Utilities - Light Mode */
         .glass-panel {
-            background: rgba(15, 23, 42, 0.6);
+            background: rgba(255, 255, 255, 0.9);
             backdrop-filter: blur(12px);
             -webkit-backdrop-filter: blur(12px);
-            border: 1px solid rgba(255, 255, 255, 0.08);
-            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+            border: 1px solid rgba(226, 232, 240, 0.8);
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05), 0 2px 4px -1px rgba(0, 0, 0, 0.03);
         }
 
-        /* Custom Scrollbar */
-        ::-webkit-scrollbar { width: 6px; height: 6px; }
-        ::-webkit-scrollbar-track { background: #0f172a; }
-        ::-webkit-scrollbar-thumb { background: #334155; border-radius: 4px; }
-        ::-webkit-scrollbar-thumb:hover { background: #475569; }
-
-        /* Grid */
+        /* Grid Pattern */
         .bg-grid {
             background-size: 40px 40px;
             background-image: 
-                linear-gradient(to right, rgba(255, 255, 255, 0.03) 1px, transparent 1px),
-                linear-gradient(to bottom, rgba(255, 255, 255, 0.03) 1px, transparent 1px);
+                linear-gradient(to right, rgba(0, 0, 0, 0.03) 1px, transparent 1px),
+                linear-gradient(to bottom, rgba(0, 0, 0, 0.03) 1px, transparent 1px);
         }
 
         /* Utilities */
@@ -107,118 +112,135 @@
         .no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
         
         /* Table Styles */
-        .txn-row:hover td {
-            background-color: rgba(255, 255, 255, 0.03);
+        .txn-row {
+            transition: all 0.2s ease;
         }
-        
-        /* Filter Badge */
+        .txn-row:hover {
+            transform: translateX(4px);
+            background-color: #f1f5f9;
+            border-left-color: #0ea5e9;
+        }
+        .txn-row td:first-child {
+            border-left: 2px solid transparent;
+            transition: border-color 0.2s ease;
+        }
+        .txn-row:hover td:first-child {
+            border-left-color: #0ea5e9;
+        }
+
+        /* Filter Badges */
         .filter-badge {
             display: inline-flex;
             align-items: center;
-            padding: 4px 12px;
-            border-radius: 6px;
-            background-color: #1e293b;
-            color: #94a3b8;
+            padding: 6px 14px;
+            border-radius: 8px;
+            background-color: #ffffff;
+            color: #64748b;
             font-size: 0.75rem;
-            font-weight: 600;
-            margin-right: 6px;
+            font-weight: 700;
+            margin-right: 8px;
             cursor: pointer;
-            border: 1px solid #334155;
+            border: 1px solid #e2e8f0;
             transition: all 0.2s;
+            box-shadow: 0 1px 2px rgba(0,0,0,0.05);
         }
         .filter-badge:hover {
-            border-color: #64748b;
-            color: #cbd5e1;
+            border-color: #94a3b8;
+            color: #334155;
+            background-color: #f8fafc;
         }
         .filter-badge.active {
             background-color: #0ea5e9;
             color: white;
             border-color: #0ea5e9;
-            box-shadow: 0 0 10px rgba(14, 165, 233, 0.3);
-        }
-
-        /* Status Indicators */
-        .status-dot {
-            width: 6px;
-            height: 6px;
-            border-radius: 50%;
-            display: inline-block;
-            margin-right: 6px;
+            box-shadow: 0 4px 6px -1px rgba(14, 165, 233, 0.3);
         }
     </style>
 </head>
 <body class="font-sans h-screen flex overflow-hidden selection:bg-brand-500 selection:text-white">
 
-    <!-- 1. SIDEBAR (Consistent Navigation) -->
-    <aside class="w-20 lg:w-72 bg-dark-900 border-r border-slate-800 flex flex-col flex-shrink-0 transition-all duration-300 z-50">
-        <!-- Logo -->
-        <div class="h-20 flex items-center px-0 lg:px-6 justify-center lg:justify-start border-b border-slate-800 cursor-pointer group" onclick="window.location.href='client-dashboard.html'">
-            <div class="w-10 h-10 bg-gradient-to-br from-brand-500 to-brand-700 rounded-xl flex items-center justify-center text-white font-bold text-xl shadow-lg shadow-brand-500/20 flex-shrink-0 transition-transform group-hover:scale-105">S</div>
+    <!-- 1. PROFESSIONAL SIDEBAR (Light Theme) -->
+    <aside class="w-20 lg:w-72 bg-white border-r border-slate-200 flex flex-col flex-shrink-0 transition-all duration-300 z-50">
+        
+        <!-- Logo Area -->
+        <div class="h-20 flex items-center px-0 lg:px-6 justify-center lg:justify-start border-b border-slate-200 relative group cursor-pointer" onclick="window.location.href='client-dashboard.html'">
+            <div class="w-10 h-10 bg-gradient-to-br from-brand-500 to-brand-700 rounded-xl flex items-center justify-center text-white font-bold text-xl shadow-lg shadow-brand-500/20 flex-shrink-0 transition-transform group-hover:scale-105">
+                S
+            </div>
             <div class="hidden lg:block ml-3">
-                <h1 class="text-xl font-display font-bold text-white tracking-tight">Settle<span class="text-brand-400">X</span></h1>
-                <p class="text-[10px] text-slate-500 font-mono uppercase tracking-wider group-hover:text-brand-400 transition-colors">Treasury OS v2.4</p>
+                <h1 class="text-xl font-display font-bold text-slate-900 tracking-tight">Settle<span class="text-brand-600">X</span></h1>
+                <p class="text-[10px] text-slate-500 font-mono uppercase tracking-wider group-hover:text-brand-600 transition-colors">Treasury OS v2.4</p>
             </div>
         </div>
 
-        <!-- Nav -->
+        <!-- Main Navigation -->
         <nav class="flex-1 overflow-y-auto py-6 px-3 space-y-1">
-            <a href="client-dashboard.html" class="flex items-center gap-3 px-3 py-3 text-slate-400 hover:text-white hover:bg-slate-800 rounded-xl transition-all group">
-                <i class="fa-solid fa-border-all w-6 text-center group-hover:text-brand-400 transition-colors"></i>
+            
+            <!-- Dashboard -->
+            <a href="client-dashboard.html" class="flex items-center gap-3 px-3 py-3 text-slate-500 hover:text-slate-900 hover:bg-slate-50 rounded-xl transition-all group">
+                <i class="fa-solid fa-border-all w-6 text-center group-hover:text-brand-600 transition-colors"></i>
                 <span class="hidden lg:block font-medium">Command Center</span>
             </a>
 
             <div class="hidden lg:block px-3 mt-6 mb-2 flex items-center justify-between">
-                <p class="text-[10px] font-bold text-slate-500 uppercase tracking-widest">Global Money</p>
-                <i class="fa-solid fa-globe text-[10px] text-slate-600"></i>
+                <p class="text-[10px] font-bold text-slate-400 uppercase tracking-widest">Global Money</p>
+                <i class="fa-solid fa-globe text-[10px] text-slate-400"></i>
             </div>
 
-            <a href="inflow-decision-gate.html" class="flex items-center gap-3 px-3 py-3 text-slate-400 hover:text-white hover:bg-slate-800 rounded-xl transition-all group">
-                <i class="fa-solid fa-inbox w-6 text-center group-hover:text-green-400 transition-colors"></i>
+            <!-- Inflow -->
+            <a href="inflow-decision-gate.html" class="flex items-center gap-3 px-3 py-3 text-slate-500 hover:text-slate-900 hover:bg-slate-50 rounded-xl transition-all group">
+                <i class="fa-solid fa-inbox w-6 text-center group-hover:text-green-600 transition-colors"></i>
                 <span class="hidden lg:block font-medium">Inflow (Collections)</span>
                 <span class="hidden lg:flex ml-auto bg-brand-500 text-white text-[10px] font-bold px-2 py-0.5 rounded-full shadow-lg shadow-brand-500/40 animate-pulse-slow">3</span>
             </a>
 
-            <a href="outflow-transfer.html" class="flex items-center gap-3 px-3 py-3 text-slate-400 hover:text-white hover:bg-slate-800 rounded-xl transition-all group">
-                <i class="fa-solid fa-paper-plane w-6 text-center group-hover:text-red-400 transition-colors"></i>
+            <!-- Outflow -->
+            <a href="outflow-transfer.html" class="flex items-center gap-3 px-3 py-3 text-slate-500 hover:text-slate-900 hover:bg-slate-50 rounded-xl transition-all group">
+                <i class="fa-solid fa-paper-plane w-6 text-center group-hover:text-red-500 transition-colors"></i>
                 <span class="hidden lg:block font-medium">Outflow (Payments)</span>
             </a>
 
-            <a href="virtual-accounts.html" class="flex items-center gap-3 px-3 py-3 text-slate-400 hover:text-white hover:bg-slate-800 rounded-xl transition-all group">
-                <i class="fa-solid fa-wallet w-6 text-center group-hover:text-purple-400 transition-colors"></i>
+            <!-- Virtual Accounts -->
+            <a href="virtual-accounts.html" class="flex items-center gap-3 px-3 py-3 text-slate-500 hover:text-slate-900 hover:bg-slate-50 rounded-xl transition-all group">
+                <i class="fa-solid fa-wallet w-6 text-center group-hover:text-purple-500 transition-colors"></i>
                 <span class="hidden lg:block font-medium">Virtual Accounts</span>
             </a>
 
             <div class="hidden lg:block px-3 mt-6 mb-2 flex items-center justify-between">
-                <p class="text-[10px] font-bold text-slate-500 uppercase tracking-widest">Compliance</p>
-                <i class="fa-solid fa-shield-halved text-[10px] text-slate-600"></i>
+                <p class="text-[10px] font-bold text-slate-400 uppercase tracking-widest">Compliance</p>
+                <i class="fa-solid fa-shield-halved text-[10px] text-slate-400"></i>
             </div>
 
             <!-- Active: Ledger -->
-            <a href="#" class="flex items-center gap-3 px-3 py-3 bg-brand-900/30 text-white rounded-xl border border-brand-500/30 shadow-sm group relative overflow-hidden">
-                <div class="absolute inset-0 bg-brand-500/10 rounded-xl blur opacity-0 group-hover:opacity-100 transition-opacity"></div>
+            <a href="#" class="flex items-center gap-3 px-3 py-3 bg-brand-50 text-brand-900 rounded-xl border border-brand-200 shadow-sm group relative overflow-hidden">
+                <div class="absolute inset-0 bg-brand-100 rounded-xl blur opacity-0 group-hover:opacity-100 transition-opacity"></div>
                 <div class="absolute left-0 top-0 bottom-0 w-1 bg-brand-500 rounded-l-xl"></div>
-                <i class="fa-solid fa-book-open w-6 text-center text-amber-400 text-lg group-hover:scale-110 transition-transform"></i>
+                <i class="fa-solid fa-book-open w-6 text-center text-amber-500 text-lg group-hover:scale-110 transition-transform"></i>
                 <span class="hidden lg:block font-medium tracking-wide">Digital Ledger</span>
             </a>
 
-            <a href="compliance-vault.html" class="flex items-center gap-3 px-3 py-3 text-slate-400 hover:text-white hover:bg-slate-800 rounded-xl transition-all group">
-                <i class="fa-solid fa-file-shield w-6 text-center group-hover:text-blue-400 transition-colors"></i>
+            <!-- Docs -->
+            <a href="compliance-vault.html" class="flex items-center gap-3 px-3 py-3 text-slate-500 hover:text-slate-900 hover:bg-slate-50 rounded-xl transition-all group">
+                <i class="fa-solid fa-file-shield w-6 text-center group-hover:text-blue-500 transition-colors"></i>
                 <span class="hidden lg:block font-medium">BoE & e-FIRA Vault</span>
             </a>
         </nav>
         
         <!-- Profile -->
-        <div class="p-4 border-t border-slate-800 bg-dark-900/50">
-            <div class="flex items-center gap-3 cursor-pointer hover:bg-slate-800 p-2 rounded-xl transition-colors group">
+        <div class="p-4 border-t border-slate-200 bg-slate-50/50">
+            <div class="flex items-center gap-3 cursor-pointer hover:bg-slate-100 p-2 rounded-xl transition-colors group" onclick="toggleModal('settings-modal')">
                 <div class="relative">
-                    <div class="w-10 h-10 rounded-full bg-slate-700 flex items-center justify-center border border-slate-600 group-hover:border-brand-500 transition-colors">
-                        <span class="font-bold text-white group-hover:text-brand-200">TE</span>
+                    <div class="w-10 h-10 rounded-full bg-slate-200 flex items-center justify-center border border-slate-300 group-hover:border-brand-300 transition-colors">
+                        <span class="font-bold text-slate-700 group-hover:text-brand-600">TE</span>
                     </div>
-                    <div class="absolute -bottom-1 -right-1 w-3 h-3 bg-green-500 border-2 border-dark-900 rounded-full animate-pulse"></div>
+                    <div class="absolute -bottom-1 -right-1 w-3 h-3 bg-green-500 border-2 border-white rounded-full animate-pulse"></div>
                 </div>
                 <div class="hidden lg:block min-w-0">
-                    <p class="text-sm font-bold text-white truncate group-hover:text-brand-400 transition-colors">Tex Exports Pvt Ltd</p>
+                    <p class="text-sm font-bold text-slate-900 truncate group-hover:text-brand-700 transition-colors">Tex Exports Pvt Ltd</p>
                     <p class="text-[10px] text-slate-500 font-mono truncate">ID: IND-TN-8821</p>
+                </div>
+                <div class="hidden lg:block ml-auto text-slate-400 group-hover:text-slate-600 transition-colors">
+                    <i class="fa-solid fa-gear text-xs"></i>
                 </div>
             </div>
         </div>
@@ -228,26 +250,34 @@
     <main class="flex-1 flex flex-col h-screen relative overflow-hidden bg-grid">
         
         <!-- Header -->
-        <header class="h-16 bg-dark-900/80 backdrop-blur-md border-b border-slate-800 flex items-center justify-between px-6 z-40 sticky top-0">
+        <header class="h-16 bg-white/80 backdrop-blur-md border-b border-slate-200 flex items-center justify-between px-6 z-40 sticky top-0 transition-all duration-300">
             <div class="flex items-center gap-4">
-                <h2 class="text-lg font-bold text-white flex items-center gap-2">
+                <h2 class="text-lg font-bold text-slate-900 flex items-center gap-2">
                     <i class="fa-solid fa-list-ul text-amber-500"></i> Transaction Ledger
                 </h2>
-                <div class="h-4 w-px bg-slate-700 hidden md:block"></div>
-                <div class="hidden md:flex items-center gap-2 px-3 py-1.5 bg-amber-900/20 rounded-lg border border-amber-500/20 shadow-sm">
+                <div class="h-4 w-px bg-slate-300 hidden md:block"></div>
+                <div class="hidden md:flex items-center gap-2 px-3 py-1.5 bg-amber-50 rounded-lg border border-amber-200 shadow-sm">
                     <span class="w-2 h-2 rounded-full bg-green-500 animate-pulse"></span>
-                    <span class="text-xs font-mono text-amber-300">RBI EDPMS: SYNCED (T+0)</span>
+                    <span class="text-xs font-mono text-amber-700 font-bold">RBI EDPMS: SYNCED (T+0)</span>
                 </div>
             </div>
             
             <div class="flex items-center gap-4">
                 <div class="relative hidden md:block w-72 group">
-                    <i class="fa-solid fa-search absolute left-3 top-2.5 text-slate-500 text-xs group-hover:text-brand-400 transition-colors"></i>
-                    <input type="text" id="ledger-search" class="w-full bg-dark-800 border border-slate-700 rounded-lg pl-9 pr-4 py-2 text-sm text-white placeholder-slate-500 focus:outline-none focus:border-brand-500 transition-all shadow-sm focus:shadow-md" placeholder="Search ID, Party, Amount..." onkeyup="filterTable()">
-                    <div class="absolute right-2 top-2 text-[10px] text-slate-600 border border-slate-700 rounded px-1 font-mono">/</div>
+                    <i class="fa-solid fa-search absolute left-3 top-2.5 text-slate-400 text-xs group-hover:text-brand-600 transition-colors"></i>
+                    <input type="text" id="ledger-search" class="w-full bg-slate-50 border border-slate-200 rounded-lg pl-9 pr-4 py-2 text-sm text-slate-900 placeholder-slate-400 focus:outline-none focus:border-brand-500 focus:ring-1 focus:ring-brand-500/50 transition-all shadow-sm focus:bg-white" placeholder="Search ID, Party, Amount..." onkeyup="filterTable()">
+                    <div class="absolute right-2 top-2 text-[10px] text-slate-500 border border-slate-200 bg-white rounded px-1.5 font-mono shadow-sm">/</div>
                 </div>
-                <div class="h-6 w-px bg-slate-700 hidden md:block"></div>
-                <button class="relative p-2 text-slate-400 hover:text-white transition-colors hover:bg-slate-800 rounded-lg" onclick="toggleAtlas()" title="Ask Atlas AI">
+                <div class="h-6 w-px bg-slate-300 hidden md:block"></div>
+                
+                <!-- Notifications -->
+                <button class="relative p-2 text-slate-500 hover:text-slate-900 transition-colors hover:bg-slate-100 rounded-lg" onclick="toggleNotificationPanel()">
+                    <i class="fa-regular fa-bell"></i>
+                    <span class="absolute top-1.5 right-1.5 w-2 h-2 bg-red-500 rounded-full border border-white animate-ping"></span>
+                    <span class="absolute top-1.5 right-1.5 w-2 h-2 bg-red-500 rounded-full border border-white"></span>
+                </button>
+
+                <button class="relative p-2 text-slate-500 hover:text-slate-900 transition-colors hover:bg-slate-100 rounded-lg" onclick="toggleAtlas()" title="Ask Atlas AI">
                     <i class="fa-solid fa-headset"></i>
                 </button>
             </div>
@@ -256,8 +286,39 @@
         <!-- Content -->
         <div class="flex-1 overflow-y-auto p-6 scroll-smooth">
             
-            <!-- Filters & Stats -->
-            <div class="flex flex-col md:flex-row justify-between items-start md:items-center gap-4 mb-6">
+            <!-- A. Analytics Header (New Addition) -->
+            <div class="mb-8 grid grid-cols-1 md:grid-cols-3 gap-6">
+                <!-- Chart Card -->
+                <div class="md:col-span-2 glass-panel p-5 rounded-2xl relative border border-slate-200 shadow-sm">
+                    <div class="flex justify-between items-center mb-2">
+                        <h4 class="font-bold text-slate-900 text-sm">Net Cash Flow (30 Days)</h4>
+                        <div class="flex gap-2">
+                            <span class="text-xs font-bold text-green-600 flex items-center gap-1"><span class="w-2 h-2 bg-green-500 rounded-full"></span> Inflow</span>
+                            <span class="text-xs font-bold text-red-500 flex items-center gap-1"><span class="w-2 h-2 bg-red-500 rounded-full"></span> Outflow</span>
+                        </div>
+                    </div>
+                    <div class="h-40 w-full">
+                        <canvas id="cashFlowChart"></canvas>
+                    </div>
+                </div>
+
+                <!-- Stats Card -->
+                <div class="glass-panel p-5 rounded-2xl border border-slate-200 shadow-sm flex flex-col justify-center space-y-4">
+                    <div>
+                        <p class="text-xs text-slate-500 uppercase font-bold tracking-wider">Total Inflow (MTD)</p>
+                        <p class="text-2xl font-mono font-bold text-slate-900">$ 142,500.00</p>
+                        <p class="text-xs text-green-600 font-bold bg-green-50 w-fit px-2 py-0.5 rounded mt-1">+12% vs last month</p>
+                    </div>
+                    <div class="h-px bg-slate-100 w-full"></div>
+                    <div>
+                        <p class="text-xs text-slate-500 uppercase font-bold tracking-wider">Total Outflow (MTD)</p>
+                        <p class="text-2xl font-mono font-bold text-slate-900">$ 34,200.00</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- B. Filters & Tools -->
+            <div class="flex flex-col md:flex-row justify-between items-start md:items-center gap-4 mb-6 sticky top-0 z-20 bg-f8fafc py-2 backdrop-blur-sm">
                 <!-- Filter Tabs -->
                 <div class="flex gap-2 flex-wrap" id="filter-tabs">
                     <span class="filter-badge active" onclick="setFilter('all', this)">All Transactions</span>
@@ -269,39 +330,47 @@
                 
                 <!-- Tools -->
                 <div class="flex gap-3">
-                    <button class="flex items-center gap-2 bg-slate-800 border border-slate-700 rounded-lg px-3 py-1.5 cursor-pointer hover:border-slate-500 hover:text-white text-slate-400 transition text-xs font-bold" onclick="simulateExport()">
-                        <i class="fa-solid fa-download"></i> Export CSV
+                    <button class="flex items-center gap-2 bg-white border border-slate-200 rounded-lg px-3 py-1.5 cursor-pointer hover:bg-slate-50 hover:border-slate-300 text-slate-600 transition text-xs font-bold shadow-sm" onclick="toggleModal('export-modal')">
+                        <i class="fa-solid fa-download"></i> Export
                     </button>
-                    <div class="flex items-center gap-2 bg-slate-800 border border-slate-700 rounded-lg px-3 py-1.5 cursor-pointer hover:border-slate-500 transition text-slate-400 hover:text-white">
+                    <div class="flex items-center gap-2 bg-white border border-slate-200 rounded-lg px-3 py-1.5 cursor-pointer hover:bg-slate-50 hover:border-slate-300 transition text-slate-600 shadow-sm relative group">
                         <i class="fa-regular fa-calendar text-xs"></i>
                         <span class="text-xs font-bold">This Month</span>
                         <i class="fa-solid fa-chevron-down text-[10px]"></i>
+                        <!-- Date Picker Tooltip (Mock) -->
+                        <div class="absolute top-full right-0 mt-2 w-48 bg-white border border-slate-200 rounded-xl shadow-xl p-2 hidden group-hover:block z-50">
+                            <div class="text-xs font-bold text-slate-900 p-2 hover:bg-slate-50 rounded cursor-pointer">Last 30 Days</div>
+                            <div class="text-xs text-slate-500 p-2 hover:bg-slate-50 rounded cursor-pointer">Last Quarter</div>
+                            <div class="text-xs text-slate-500 p-2 hover:bg-slate-50 rounded cursor-pointer">Custom Range...</div>
+                        </div>
                     </div>
                 </div>
             </div>
 
-            <!-- Ledger Table -->
-            <div class="glass-panel rounded-2xl overflow-hidden min-h-[600px] flex flex-col border border-slate-700 shadow-xl">
+            <!-- C. Ledger Table -->
+            <div class="glass-panel rounded-2xl overflow-hidden min-h-[600px] flex flex-col border border-slate-200 shadow-lg bg-white">
                 <div class="overflow-x-auto flex-1 custom-scrollbar">
                     <table class="w-full text-sm text-left border-collapse">
-                        <thead class="text-xs text-slate-500 uppercase bg-dark-900/80 border-b border-slate-800 sticky top-0 z-10 backdrop-blur-md">
+                        <thead class="text-xs text-slate-500 uppercase bg-slate-50 border-b border-slate-200 sticky top-0 z-10 backdrop-blur-md">
                             <tr>
-                                <th class="px-6 py-4 font-semibold w-32 cursor-pointer hover:text-white transition-colors" onclick="sortTable('date')">Date <i class="fa-solid fa-sort ml-1 text-[10px]"></i></th>
-                                <th class="px-6 py-4 font-semibold cursor-pointer hover:text-white transition-colors">Transaction ID</th>
-                                <th class="px-6 py-4 font-semibold cursor-pointer hover:text-white transition-colors">Counterparty</th>
-                                <th class="px-6 py-4 font-semibold cursor-pointer hover:text-white transition-colors">Type</th>
-                                <th class="px-6 py-4 font-semibold text-right cursor-pointer hover:text-white transition-colors">Amount</th>
-                                <th class="px-6 py-4 font-semibold text-center cursor-pointer hover:text-white transition-colors">Status</th>
+                                <th class="px-6 py-4 font-semibold w-32 cursor-pointer hover:text-brand-600 transition-colors group" onclick="sortTable('date')">
+                                    Date <i class="fa-solid fa-sort ml-1 text-[10px] text-slate-400 group-hover:text-brand-500"></i>
+                                </th>
+                                <th class="px-6 py-4 font-semibold cursor-pointer hover:text-brand-600 transition-colors">Transaction ID</th>
+                                <th class="px-6 py-4 font-semibold cursor-pointer hover:text-brand-600 transition-colors">Counterparty</th>
+                                <th class="px-6 py-4 font-semibold cursor-pointer hover:text-brand-600 transition-colors">Type</th>
+                                <th class="px-6 py-4 font-semibold text-right cursor-pointer hover:text-brand-600 transition-colors">Amount</th>
+                                <th class="px-6 py-4 font-semibold text-center cursor-pointer hover:text-brand-600 transition-colors">Status</th>
                                 <th class="px-6 py-4 font-semibold text-center">Docs</th>
                                 <th class="px-6 py-4 font-semibold text-right">Action</th>
                             </tr>
                         </thead>
-                        <tbody class="divide-y divide-slate-800/50" id="ledger-body">
+                        <tbody class="divide-y divide-slate-100" id="ledger-body">
                             <!-- Populated via JS -->
                             <tr>
                                 <td colspan="8" class="px-6 py-12 text-center text-slate-500">
                                     <div class="flex justify-center items-center gap-3">
-                                        <i class="fa-solid fa-circle-notch fa-spin"></i> Loading Ledger...
+                                        <i class="fa-solid fa-circle-notch fa-spin text-brand-500"></i> Loading Ledger...
                                     </div>
                                 </td>
                             </tr>
@@ -310,11 +379,11 @@
                 </div>
                 
                 <!-- Pagination -->
-                <div class="p-4 border-t border-slate-800 flex justify-between items-center bg-dark-900/50 backdrop-blur-md">
-                    <p class="text-xs text-slate-500">Showing <span class="text-white font-bold" id="page-start">1</span>-<span class="text-white font-bold" id="page-end">15</span> of <span class="text-white font-bold" id="total-count">54</span> transactions</p>
+                <div class="p-4 border-t border-slate-200 flex justify-between items-center bg-slate-50/80 backdrop-blur-md">
+                    <p class="text-xs text-slate-500">Showing <span class="text-slate-900 font-bold" id="page-start">1</span>-<span class="text-slate-900 font-bold" id="page-end">15</span> of <span class="text-slate-900 font-bold" id="total-count">54</span> transactions</p>
                     <div class="flex gap-2">
-                        <button class="px-3 py-1.5 text-xs font-bold text-slate-400 bg-slate-800 rounded hover:text-white hover:bg-slate-700 transition disabled:opacity-50 disabled:cursor-not-allowed" id="prev-btn" onclick="prevPage()">Previous</button>
-                        <button class="px-3 py-1.5 text-xs font-bold text-slate-400 bg-slate-800 rounded hover:text-white hover:bg-slate-700 transition disabled:opacity-50 disabled:cursor-not-allowed" id="next-btn" onclick="nextPage()">Next</button>
+                        <button class="px-3 py-1.5 text-xs font-bold text-slate-500 bg-white border border-slate-200 rounded hover:bg-slate-50 hover:text-slate-900 transition disabled:opacity-50 disabled:cursor-not-allowed shadow-sm" id="prev-btn" onclick="prevPage()">Previous</button>
+                        <button class="px-3 py-1.5 text-xs font-bold text-slate-500 bg-white border border-slate-200 rounded hover:bg-slate-50 hover:text-slate-900 transition disabled:opacity-50 disabled:cursor-not-allowed shadow-sm" id="next-btn" onclick="nextPage()">Next</button>
                     </div>
                 </div>
             </div>
@@ -323,31 +392,31 @@
     </main>
 
     <!-- DRAWER: TRANSACTION DETAILS -->
-    <div id="txn-drawer" class="fixed inset-y-0 right-0 w-[500px] bg-dark-900 border-l border-slate-700 shadow-2xl transform translate-x-full transition-transform duration-300 z-50 flex flex-col backdrop-blur-xl bg-opacity-95">
+    <div id="txn-drawer" class="fixed inset-y-0 right-0 w-[500px] bg-white border-l border-slate-200 shadow-2xl transform translate-x-full transition-transform duration-300 z-50 flex flex-col">
         <!-- Header -->
-        <div class="p-6 border-b border-slate-800 bg-dark-950/80 flex justify-between items-start sticky top-0 z-10">
+        <div class="p-6 border-b border-slate-200 bg-slate-50/80 backdrop-blur flex justify-between items-start sticky top-0 z-10">
             <div>
-                <h3 class="text-lg font-bold text-white mb-1 flex items-center gap-2">
+                <h3 class="text-lg font-bold text-slate-900 mb-1 flex items-center gap-2">
                     Transaction Details
-                    <span class="text-[10px] px-2 py-0.5 rounded bg-slate-800 text-slate-400 border border-slate-700">Read Only</span>
+                    <span class="text-[10px] px-2 py-0.5 rounded bg-slate-200 text-slate-600 border border-slate-300 font-bold">Audit Ready</span>
                 </h3>
-                <p class="text-xs text-slate-500 font-mono flex items-center gap-2">
+                <p class="text-xs text-slate-500 font-mono flex items-center gap-2 group cursor-pointer" onclick="copyText(document.getElementById('drawer-id').innerText)">
                     <span id="drawer-id">#TXN-8821-SG</span>
-                    <i class="fa-regular fa-copy cursor-pointer hover:text-brand-400 transition-colors" title="Copy ID" onclick="copyText(document.getElementById('drawer-id').innerText)"></i>
+                    <i class="fa-regular fa-copy hover:text-brand-600 transition-colors"></i>
                 </p>
             </div>
-            <button onclick="closeDrawer()" class="text-slate-400 hover:text-white transition p-2 hover:bg-slate-800 rounded-full"><i class="fa-solid fa-xmark text-lg"></i></button>
+            <button onclick="closeDrawer()" class="text-slate-400 hover:text-slate-900 transition p-2 hover:bg-slate-100 rounded-full"><i class="fa-solid fa-xmark text-lg"></i></button>
         </div>
 
         <!-- Scroll Content -->
-        <div class="flex-1 overflow-y-auto p-6 space-y-8 custom-scrollbar">
+        <div class="flex-1 overflow-y-auto p-6 space-y-8 custom-scrollbar bg-slate-50/30">
             
             <!-- Summary Card -->
-            <div class="bg-slate-800/30 rounded-xl p-6 border border-slate-700 text-center relative overflow-hidden group">
-                <div class="absolute inset-0 bg-gradient-to-b from-brand-500/5 to-transparent opacity-0 group-hover:opacity-100 transition-opacity"></div>
-                <div class="w-16 h-16 bg-slate-800 rounded-full flex items-center justify-center mx-auto mb-4 text-2xl font-bold text-white border-2 border-slate-700 shadow-lg relative z-10" id="drawer-icon">Z</div>
-                <h2 class="text-3xl font-mono font-bold text-white mb-1 tracking-tight relative z-10" id="drawer-amount">$ 12,500.00</h2>
-                <p class="text-sm text-slate-400 font-medium relative z-10" id="drawer-party">Zara International Ltd</p>
+            <div class="bg-white rounded-xl p-6 border border-slate-200 text-center relative overflow-hidden group shadow-sm">
+                <div class="absolute inset-0 bg-gradient-to-b from-slate-50 to-transparent opacity-50"></div>
+                <div class="w-16 h-16 bg-slate-100 rounded-full flex items-center justify-center mx-auto mb-4 text-2xl font-bold text-slate-700 border border-slate-200 shadow-sm relative z-10" id="drawer-icon">Z</div>
+                <h2 class="text-3xl font-mono font-bold text-slate-900 mb-1 tracking-tight relative z-10" id="drawer-amount">$ 12,500.00</h2>
+                <p class="text-sm text-slate-500 font-medium relative z-10" id="drawer-party">Zara International Ltd</p>
                 <div class="mt-4 flex justify-center gap-2 relative z-10" id="drawer-badges">
                     <!-- Badges injected here -->
                 </div>
@@ -355,18 +424,18 @@
 
             <!-- Timeline -->
             <div>
-                <h4 class="text-xs font-bold text-slate-500 uppercase tracking-wider mb-4 flex items-center gap-2">
-                    <i class="fa-solid fa-timeline"></i> Lifecycle
+                <h4 class="text-xs font-bold text-slate-500 uppercase tracking-wider mb-4 flex items-center gap-2 pl-2 border-l-4 border-brand-500">
+                    Lifecycle Timeline
                 </h4>
-                <div class="space-y-6 relative pl-2" id="drawer-timeline">
-                    <!-- Timeline injected here based on status -->
+                <div class="space-y-6 relative pl-4 border-l border-slate-200 ml-2" id="drawer-timeline">
+                    <!-- Timeline injected here -->
                 </div>
             </div>
 
             <!-- Documents -->
             <div>
-                <h4 class="text-xs font-bold text-slate-500 uppercase tracking-wider mb-4 flex items-center gap-2">
-                    <i class="fa-solid fa-folder-open"></i> The Digital Staple
+                <h4 class="text-xs font-bold text-slate-500 uppercase tracking-wider mb-4 flex items-center gap-2 pl-2 border-l-4 border-blue-500">
+                    The Digital Staple
                 </h4>
                 <div class="space-y-3" id="drawer-docs">
                     <!-- Docs injected here -->
@@ -374,23 +443,23 @@
             </div>
 
             <!-- Metadata Table -->
-            <div class="bg-dark-950 rounded-lg p-4 border border-slate-800 text-xs">
+            <div class="bg-white rounded-lg p-4 border border-slate-200 text-xs shadow-sm">
                 <div class="grid grid-cols-2 gap-4">
                     <div>
-                        <p class="text-slate-500 mb-1">Value Date</p>
-                        <p class="text-white font-mono">2026-01-14</p>
+                        <p class="text-slate-500 mb-1 font-bold">Value Date</p>
+                        <p class="text-slate-900 font-mono">2026-01-14</p>
                     </div>
                     <div>
-                        <p class="text-slate-500 mb-1">Bank Reference</p>
-                        <p class="text-white font-mono">DBS/GIFT/9921</p>
+                        <p class="text-slate-500 mb-1 font-bold">Bank Reference</p>
+                        <p class="text-slate-900 font-mono">DBS/GIFT/9921</p>
                     </div>
                     <div>
-                        <p class="text-slate-500 mb-1">Exchange Rate</p>
-                        <p class="text-white font-mono">83.6050</p>
+                        <p class="text-slate-500 mb-1 font-bold">Exchange Rate</p>
+                        <p class="text-slate-900 font-mono">83.6050</p>
                     </div>
                     <div>
-                        <p class="text-slate-500 mb-1">Fees</p>
-                        <p class="text-white font-mono">$ 0.00</p>
+                        <p class="text-slate-500 mb-1 font-bold">Fees</p>
+                        <p class="text-slate-900 font-mono">$ 0.00</p>
                     </div>
                 </div>
             </div>
@@ -398,13 +467,87 @@
         </div>
 
         <!-- Footer Actions -->
-        <div class="p-4 border-t border-slate-800 bg-dark-950 flex gap-3 sticky bottom-0 z-10">
-            <button class="flex-1 py-2.5 bg-slate-800 hover:bg-slate-700 text-white rounded-lg text-xs font-bold transition border border-slate-700 flex items-center justify-center gap-2" onclick="simulateEmail()">
+        <div class="p-4 border-t border-slate-200 bg-white flex gap-3 sticky bottom-0 z-10">
+            <button class="flex-1 py-2.5 bg-white hover:bg-slate-50 text-slate-700 rounded-lg text-xs font-bold transition border border-slate-200 flex items-center justify-center gap-2 shadow-sm" onclick="simulateEmail()">
                 <i class="fa-regular fa-envelope"></i> Email Receipt
             </button>
-            <button class="flex-1 py-2.5 bg-brand-600 hover:bg-brand-500 text-white rounded-lg text-xs font-bold transition shadow-lg shadow-brand-500/20 flex items-center justify-center gap-2" onclick="simulateDownload()">
+            <button class="flex-1 py-2.5 bg-brand-600 hover:bg-brand-700 text-white rounded-lg text-xs font-bold transition shadow-lg shadow-brand-500/20 flex items-center justify-center gap-2" onclick="simulateDownload()">
                 <i class="fa-solid fa-download"></i> Download Bundle
             </button>
+        </div>
+    </div>
+
+    <!-- === MODALS === -->
+
+    <!-- 1. NOTIFICATION PANEL -->
+    <div id="notification-panel" class="fixed inset-y-0 right-0 w-80 bg-white border-l border-slate-200 shadow-2xl transform translate-x-full transition-transform duration-300 z-50 flex flex-col">
+        <div class="p-4 border-b border-slate-200 flex justify-between items-center bg-white/95 backdrop-blur">
+            <h3 class="font-bold text-slate-900 text-sm"><i class="fa-regular fa-bell mr-2"></i> Notifications</h3>
+            <button onclick="toggleNotificationPanel()" class="text-slate-400 hover:text-slate-900"><i class="fa-solid fa-xmark"></i></button>
+        </div>
+        <div class="flex-1 overflow-y-auto p-4 space-y-3">
+            <div class="bg-slate-50 p-3 rounded-xl border-l-2 border-brand-500 relative group cursor-pointer hover:bg-slate-100 transition-colors">
+                <div class="flex justify-between items-start">
+                    <h4 class="text-xs font-bold text-slate-900">Funds Received</h4>
+                    <span class="text-[10px] text-slate-500">2m ago</span>
+                </div>
+                <p class="text-xs text-slate-600 mt-1">Zara Intl sent <strong>$12,500</strong> via PayNow.</p>
+            </div>
+        </div>
+        <div class="p-4 border-t border-slate-200">
+            <button class="w-full py-2 text-xs font-bold text-slate-500 hover:text-slate-900 border border-slate-200 rounded-lg hover:bg-slate-50 transition">Mark All Read</button>
+        </div>
+    </div>
+
+    <!-- 2. EXPORT MODAL -->
+    <div id="export-modal" class="fixed inset-0 bg-slate-900/20 backdrop-blur-sm hidden items-center justify-center z-50 transition-opacity opacity-0 pointer-events-none">
+        <div class="bg-white border border-slate-200 rounded-2xl w-full max-w-sm shadow-2xl transform scale-95 transition-transform duration-300">
+            <div class="p-5 border-b border-slate-200 flex justify-between items-center">
+                <h3 class="font-bold text-slate-900 text-lg">Export Ledger</h3>
+                <button onclick="toggleModal('export-modal')" class="text-slate-400 hover:text-slate-800"><i class="fa-solid fa-xmark"></i></button>
+            </div>
+            <div class="p-6 space-y-4">
+                <p class="text-sm text-slate-500">Select format for download:</p>
+                <div class="grid grid-cols-2 gap-3">
+                    <button class="p-3 border border-slate-200 rounded-xl hover:border-brand-500 hover:bg-brand-50 transition text-center group" onclick="simulateExport('CSV')">
+                        <i class="fa-solid fa-file-csv text-2xl text-slate-400 group-hover:text-brand-600 mb-2"></i>
+                        <p class="text-xs font-bold text-slate-700">CSV (Excel)</p>
+                    </button>
+                    <button class="p-3 border border-slate-200 rounded-xl hover:border-red-500 hover:bg-red-50 transition text-center group" onclick="simulateExport('PDF')">
+                        <i class="fa-solid fa-file-pdf text-2xl text-slate-400 group-hover:text-red-600 mb-2"></i>
+                        <p class="text-xs font-bold text-slate-700">PDF Report</p>
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- 3. SETTINGS MODAL -->
+    <div id="settings-modal" class="fixed inset-0 bg-slate-900/20 backdrop-blur-sm hidden items-center justify-center z-50 transition-opacity opacity-0 pointer-events-none">
+        <div class="bg-white border border-slate-200 rounded-2xl w-full max-w-lg shadow-2xl transform scale-95 transition-transform duration-300 m-4 flex flex-col max-h-[90vh]">
+            <div class="p-5 border-b border-slate-200 flex justify-between items-center bg-white rounded-t-2xl">
+                <h3 class="font-bold text-slate-900 text-lg"><i class="fa-solid fa-gear text-slate-500 mr-2"></i> Account Settings</h3>
+                <button onclick="toggleModal('settings-modal')" class="text-slate-400 hover:text-slate-800"><i class="fa-solid fa-xmark"></i></button>
+            </div>
+            <div class="flex-1 overflow-y-auto p-6 space-y-6">
+                <div>
+                    <h4 class="text-xs font-bold text-brand-600 uppercase tracking-wider mb-4 border-b border-slate-200 pb-2">Profile</h4>
+                    <div class="grid grid-cols-2 gap-4">
+                        <div>
+                            <label class="block text-xs text-slate-500 mb-1">Company</label>
+                            <input type="text" value="Tex Exports Pvt Ltd" class="w-full bg-slate-50 border border-slate-300 rounded-lg px-3 py-2 text-sm text-slate-900" disabled>
+                        </div>
+                        <div>
+                            <label class="block text-xs text-slate-500 mb-1">Default Currency</label>
+                            <input type="text" value="USD" class="w-full bg-slate-50 border border-slate-300 rounded-lg px-3 py-2 text-sm text-slate-900" disabled>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="p-5 border-t border-slate-200 bg-slate-50 rounded-b-2xl flex justify-end gap-3">
+                 <button onclick="toggleModal('settings-modal')" class="px-4 py-2 text-sm text-slate-500 hover:text-slate-900">Close</button>
+                 <button onclick="toggleModal('settings-modal')" class="px-4 py-2 bg-white text-slate-900 border border-slate-300 font-bold rounded-lg text-sm hover:bg-slate-100">Save</button>
+            </div>
         </div>
     </div>
 
@@ -509,6 +652,7 @@
         // --- Core Logic ---
         document.addEventListener('DOMContentLoaded', () => {
             renderTable();
+            initCharts();
             initChatbotWidget();
         });
 
@@ -521,53 +665,53 @@
             const pageData = filteredData.slice(start, end);
 
             if(pageData.length === 0) {
-                tbody.innerHTML = `<tr><td colspan="8" class="px-6 py-12 text-center text-slate-500"><div class="flex flex-col items-center justify-center gap-3"><i class="fa-solid fa-folder-open text-2xl text-slate-700"></i><p>No transactions found matching your criteria.</p></div></td></tr>`;
+                tbody.innerHTML = `<tr><td colspan="8" class="px-6 py-12 text-center text-slate-500"><div class="flex flex-col items-center justify-center gap-3"><i class="fa-solid fa-folder-open text-2xl text-slate-400"></i><p>No transactions found matching your criteria.</p></div></td></tr>`;
             } else {
                 pageData.forEach((txn, index) => {
                     const isInflow = txn.type === 'inflow';
-                    const color = isInflow ? 'text-green-400' : 'text-slate-300';
+                    const color = isInflow ? 'text-green-600' : 'text-slate-900';
                     const prefix = isInflow ? '+ ' : '- ';
                     
                     let badgeClass = '';
                     let statusIcon = '';
                     switch(txn.status) {
                         case 'completed': 
-                            badgeClass = 'bg-green-900/20 text-green-400 border-green-500/20'; 
+                            badgeClass = 'bg-green-50 text-green-700 border-green-200'; 
                             statusIcon = '<i class="fa-solid fa-check mr-1"></i>';
                             break;
                         case 'pending': 
-                            badgeClass = 'bg-amber-900/20 text-amber-400 border-amber-500/20'; 
+                            badgeClass = 'bg-amber-50 text-amber-700 border-amber-200'; 
                             statusIcon = '<i class="fa-solid fa-clock mr-1"></i>';
                             break;
                         case 'processing':
-                            badgeClass = 'bg-blue-900/20 text-blue-400 border-blue-500/20';
+                            badgeClass = 'bg-blue-50 text-blue-700 border-blue-200';
                             statusIcon = '<i class="fa-solid fa-spinner fa-spin mr-1"></i>';
                             break;
                         case 'failed': 
-                            badgeClass = 'bg-red-900/20 text-red-400 border-red-500/20'; 
+                            badgeClass = 'bg-red-50 text-red-700 border-red-200'; 
                             statusIcon = '<i class="fa-solid fa-circle-xmark mr-1"></i>';
                             break;
                     }
                     
-                    const docIcon = txn.docs ? '<i class="fa-solid fa-file-circle-check text-blue-400 cursor-pointer hover:text-white transition-colors" title="Download Bundle"></i>' : 
-                                               '<span class="text-slate-700 cursor-not-allowed text-xs">-</span>';
+                    const docIcon = txn.docs ? '<i class="fa-solid fa-file-circle-check text-brand-500 cursor-pointer hover:text-brand-700 transition-colors" title="Download Bundle"></i>' : 
+                                               '<span class="text-slate-400 cursor-not-allowed text-xs">-</span>';
 
                     const row = document.createElement('tr');
-                    row.className = 'txn-row border-b border-slate-800/50 cursor-pointer group animate-fade-in transition-all duration-200';
+                    row.className = 'txn-row border-b border-slate-100 cursor-pointer group animate-fade-in transition-all duration-200 bg-white';
                     row.style.animationDelay = `${index * 0.03}s`;
                     row.onclick = () => openDrawer(txn);
 
                     row.innerHTML = `
-                        <td class="px-6 py-4 text-xs font-mono text-slate-400 whitespace-nowrap">${txn.date}</td>
-                        <td class="px-6 py-4 text-xs font-mono text-white font-bold group-hover:text-brand-400 transition-colors">${txn.id}</td>
+                        <td class="px-6 py-4 text-xs font-mono text-slate-500 whitespace-nowrap">${txn.date}</td>
+                        <td class="px-6 py-4 text-xs font-mono text-slate-900 font-bold group-hover:text-brand-600 transition-colors">${txn.id}</td>
                         <td class="px-6 py-4">
                             <div class="flex items-center gap-3">
-                                <div class="w-8 h-8 rounded bg-slate-800 flex items-center justify-center font-bold text-xs text-white border border-slate-700 shadow-sm">${txn.party.charAt(0)}</div>
-                                <span class="font-bold text-slate-200 text-sm">${txn.party}</span>
+                                <div class="w-8 h-8 rounded bg-slate-100 flex items-center justify-center font-bold text-xs text-slate-600 border border-slate-200 shadow-sm">${txn.party.charAt(0)}</div>
+                                <span class="font-bold text-slate-700 text-sm">${txn.party}</span>
                             </div>
                         </td>
                         <td class="px-6 py-4">
-                            <span class="text-[10px] uppercase font-bold px-2 py-1 rounded bg-slate-800 border border-slate-700 text-slate-400 tracking-wider">${txn.type}</span>
+                            <span class="text-[10px] uppercase font-bold px-2 py-1 rounded bg-slate-50 border border-slate-200 text-slate-500 tracking-wider">${txn.type}</span>
                         </td>
                         <td class="px-6 py-4 text-right font-mono font-bold text-sm ${color}">
                             ${prefix}${txn.currency} ${txn.amount.toLocaleString()}
@@ -579,7 +723,7 @@
                             ${docIcon}
                         </td>
                         <td class="px-6 py-4 text-right">
-                            <i class="fa-solid fa-chevron-right text-slate-600 text-xs group-hover:text-white transition-colors"></i>
+                            <i class="fa-solid fa-chevron-right text-slate-400 text-xs group-hover:text-slate-700 transition-colors"></i>
                         </td>
                     `;
                     tbody.appendChild(row);
@@ -645,33 +789,33 @@
             badgeContainer.innerHTML = '';
             
             const typeBadge = document.createElement('span');
-            typeBadge.className = 'px-2 py-1 bg-blue-900/30 text-blue-400 border border-blue-500/20 rounded text-[10px] font-bold uppercase tracking-wider';
+            typeBadge.className = 'px-2 py-1 bg-blue-50 text-blue-600 border border-blue-200 rounded text-[10px] font-bold uppercase tracking-wider';
             typeBadge.innerText = txn.type.toUpperCase();
             badgeContainer.appendChild(typeBadge);
 
             const statusBadge = document.createElement('span');
             if (txn.status === 'failed') {
-                statusBadge.className = 'px-2 py-1 bg-red-900/30 text-red-400 border border-red-500/20 rounded text-[10px] font-bold uppercase tracking-wider flex items-center gap-1';
+                statusBadge.className = 'px-2 py-1 bg-red-50 text-red-600 border border-red-200 rounded text-[10px] font-bold uppercase tracking-wider flex items-center gap-1';
                 statusBadge.innerHTML = '<i class="fa-solid fa-triangle-exclamation"></i> Failed';
             } else if (txn.status === 'pending' || txn.status === 'processing') {
-                statusBadge.className = 'px-2 py-1 bg-amber-900/30 text-amber-400 border border-amber-500/20 rounded text-[10px] font-bold uppercase tracking-wider flex items-center gap-1';
+                statusBadge.className = 'px-2 py-1 bg-amber-50 text-amber-600 border border-amber-200 rounded text-[10px] font-bold uppercase tracking-wider flex items-center gap-1';
                 statusBadge.innerHTML = '<i class="fa-solid fa-clock"></i> Pending';
             } else {
-                statusBadge.className = 'px-2 py-1 bg-green-900/30 text-green-400 border border-green-500/20 rounded text-[10px] font-bold uppercase tracking-wider flex items-center gap-1';
+                statusBadge.className = 'px-2 py-1 bg-green-50 text-green-600 border border-green-200 rounded text-[10px] font-bold uppercase tracking-wider flex items-center gap-1';
                 statusBadge.innerHTML = '<i class="fa-solid fa-check"></i> Completed';
             }
             badgeContainer.appendChild(statusBadge);
 
             // 3. Hydrate Timeline (Logic specific to status)
             const timelineContainer = document.getElementById('drawer-timeline');
-            let timelineHTML = `<div class="absolute left-2 top-2 bottom-2 w-0.5 bg-slate-800"></div>`;
+            let timelineHTML = `<div class="absolute left-2 top-2 bottom-2 w-0.5 bg-slate-200"></div>`;
             
             // Step 1: Initiated (Always done)
             timelineHTML += `
                 <div class="relative flex gap-4">
-                    <div class="w-4 h-4 bg-green-500 rounded-full border-4 border-dark-900 z-10 flex-shrink-0"></div>
+                    <div class="w-4 h-4 bg-green-500 rounded-full border-4 border-white shadow-sm z-10 flex-shrink-0"></div>
                     <div>
-                        <p class="text-sm font-bold text-white">Transaction Initiated</p>
+                        <p class="text-sm font-bold text-slate-900">Transaction Initiated</p>
                         <p class="text-xs text-slate-500">${txn.date}</p>
                     </div>
                 </div>`;
@@ -680,14 +824,14 @@
                 // FAILED FLOW
                 timelineHTML += `
                 <div class="relative flex gap-4">
-                    <div class="w-4 h-4 bg-red-500 rounded-full border-4 border-dark-900 z-10 flex-shrink-0"></div>
+                    <div class="w-4 h-4 bg-red-500 rounded-full border-4 border-white shadow-sm z-10 flex-shrink-0"></div>
                     <div>
-                        <p class="text-sm font-bold text-red-400">Processing Failed</p>
+                        <p class="text-sm font-bold text-red-600">Processing Failed</p>
                         <p class="text-xs text-slate-500">Reason: ${txn.reason || 'Bank Rejected'}</p>
                     </div>
                 </div>
                 <div class="relative flex gap-4 opacity-50">
-                    <div class="w-4 h-4 bg-slate-700 rounded-full border-4 border-dark-900 z-10 flex-shrink-0"></div>
+                    <div class="w-4 h-4 bg-slate-300 rounded-full border-4 border-white z-10 flex-shrink-0"></div>
                     <div>
                         <p class="text-sm font-bold text-slate-400">Settlement</p>
                         <p class="text-xs text-slate-500">Cancelled</p>
@@ -697,14 +841,14 @@
                 // PENDING FLOW
                 timelineHTML += `
                 <div class="relative flex gap-4">
-                    <div class="w-4 h-4 bg-amber-500 rounded-full border-4 border-dark-900 z-10 flex-shrink-0 animate-pulse"></div>
+                    <div class="w-4 h-4 bg-amber-500 rounded-full border-4 border-white shadow-sm z-10 flex-shrink-0 animate-pulse"></div>
                     <div>
-                        <p class="text-sm font-bold text-amber-400">Bank Processing</p>
+                        <p class="text-sm font-bold text-amber-600">Bank Processing</p>
                         <p class="text-xs text-slate-500">In Progress...</p>
                     </div>
                 </div>
                 <div class="relative flex gap-4 opacity-50">
-                    <div class="w-4 h-4 bg-slate-700 rounded-full border-4 border-dark-900 z-10 flex-shrink-0"></div>
+                    <div class="w-4 h-4 bg-slate-300 rounded-full border-4 border-white z-10 flex-shrink-0"></div>
                     <div>
                         <p class="text-sm font-bold text-slate-400">Compliance Check</p>
                         <p class="text-xs text-slate-500">Pending</p>
@@ -714,23 +858,23 @@
                 // COMPLETED FLOW
                 timelineHTML += `
                 <div class="relative flex gap-4">
-                    <div class="w-4 h-4 bg-green-500 rounded-full border-4 border-dark-900 z-10 flex-shrink-0"></div>
+                    <div class="w-4 h-4 bg-green-500 rounded-full border-4 border-white shadow-sm z-10 flex-shrink-0"></div>
                     <div>
-                        <p class="text-sm font-bold text-white">Wholesale Conversion</p>
+                        <p class="text-sm font-bold text-slate-900">Wholesale Conversion</p>
                         <p class="text-xs text-slate-500">GIFT City FCSS • Rate: 83.60</p>
                     </div>
                 </div>
                 <div class="relative flex gap-4">
-                    <div class="w-4 h-4 bg-green-500 rounded-full border-4 border-dark-900 z-10 flex-shrink-0"></div>
+                    <div class="w-4 h-4 bg-green-500 rounded-full border-4 border-white shadow-sm z-10 flex-shrink-0"></div>
                     <div>
-                        <p class="text-sm font-bold text-white">Settled</p>
+                        <p class="text-sm font-bold text-slate-900">Settled</p>
                         <p class="text-xs text-slate-500">Funds Available</p>
                     </div>
                 </div>
                 <div class="relative flex gap-4">
-                    <div class="w-4 h-4 bg-blue-500 rounded-full border-4 border-dark-900 z-10 flex-shrink-0 animate-pulse"></div>
+                    <div class="w-4 h-4 bg-brand-500 rounded-full border-4 border-white shadow-sm z-10 flex-shrink-0"></div>
                     <div>
-                        <p class="text-sm font-bold text-white">Compliance Closure</p>
+                        <p class="text-sm font-bold text-slate-900">Compliance Closure</p>
                         <p class="text-xs text-slate-500">e-FIRA Generated • Syncing EDPMS...</p>
                     </div>
                 </div>`;
@@ -741,31 +885,31 @@
             const docsContainer = document.getElementById('drawer-docs');
             if (txn.status === 'completed') {
                 docsContainer.innerHTML = `
-                    <div class="flex items-center justify-between p-3 bg-slate-800 rounded-lg border border-slate-700 hover:border-brand-500 transition cursor-pointer group">
+                    <div class="flex items-center justify-between p-3 bg-white rounded-lg border border-slate-200 hover:border-brand-500 transition cursor-pointer group shadow-sm">
                         <div class="flex items-center gap-3">
-                            <i class="fa-solid fa-file-invoice text-slate-400 group-hover:text-brand-400"></i>
+                            <i class="fa-solid fa-file-invoice text-slate-400 group-hover:text-brand-600"></i>
                             <div>
-                                <p class="text-sm font-bold text-white">Commercial Invoice</p>
+                                <p class="text-sm font-bold text-slate-900">Commercial Invoice</p>
                                 <p class="text-[10px] text-slate-500">INV-AUTO-${txn.id}.pdf</p>
                             </div>
                         </div>
-                        <i class="fa-solid fa-download text-slate-500 hover:text-white"></i>
+                        <i class="fa-solid fa-download text-slate-400 hover:text-slate-900"></i>
                     </div>
-                    <div class="flex items-center justify-between p-3 bg-slate-800 rounded-lg border border-slate-700 hover:border-brand-500 transition cursor-pointer group">
+                    <div class="flex items-center justify-between p-3 bg-white rounded-lg border border-slate-200 hover:border-brand-500 transition cursor-pointer group shadow-sm">
                         <div class="flex items-center gap-3">
-                            <i class="fa-solid fa-file-pdf text-slate-400 group-hover:text-red-400"></i>
+                            <i class="fa-solid fa-file-pdf text-slate-400 group-hover:text-red-600"></i>
                             <div>
-                                <p class="text-sm font-bold text-white">e-FIRA Advice</p>
+                                <p class="text-sm font-bold text-slate-900">e-FIRA Advice</p>
                                 <p class="text-[10px] text-slate-500">Digitally Signed</p>
                             </div>
                         </div>
-                        <i class="fa-solid fa-download text-slate-500 hover:text-white"></i>
+                        <i class="fa-solid fa-download text-slate-400 hover:text-slate-900"></i>
                     </div>`;
             } else {
                 docsContainer.innerHTML = `
-                    <div class="p-4 bg-slate-800/50 border border-slate-700 rounded-lg text-center">
-                        <i class="fa-solid fa-file-circle-xmark text-slate-500 text-xl mb-2"></i>
-                        <p class="text-xs text-slate-400">Documents are not available for ${txn.status} transactions.</p>
+                    <div class="p-4 bg-slate-50 border border-slate-200 rounded-lg text-center">
+                        <i class="fa-solid fa-file-circle-xmark text-slate-400 text-xl mb-2"></i>
+                        <p class="text-xs text-slate-500">Documents are not available for ${txn.status} transactions.</p>
                     </div>
                 `;
             }
@@ -777,13 +921,7 @@
 
         function copyText(text) {
             navigator.clipboard.writeText(text);
-            const btn = event.target;
-            btn.classList.replace('fa-copy', 'fa-check');
-            btn.classList.add('text-green-400');
-            setTimeout(() => {
-                btn.classList.replace('fa-check', 'fa-copy');
-                btn.classList.remove('text-green-400');
-            }, 2000);
+            // Visual feedback handled by icon change or toast in full implementation
         }
 
         function simulateDownload() {
@@ -791,10 +929,10 @@
             btn.innerHTML = '<i class="fa-solid fa-circle-notch fa-spin"></i> Zipping...';
             setTimeout(() => {
                 btn.innerHTML = '<i class="fa-solid fa-check"></i> Downloaded';
-                btn.classList.add('bg-green-600', 'hover:bg-green-500');
+                btn.classList.add('bg-green-600', 'hover:bg-green-700');
                 setTimeout(() => {
                     btn.innerHTML = '<i class="fa-solid fa-download"></i> Download Bundle';
-                    btn.classList.remove('bg-green-600', 'hover:bg-green-500');
+                    btn.classList.remove('bg-green-600', 'hover:bg-green-700');
                 }, 2000);
             }, 1500);
         }
@@ -810,43 +948,108 @@
             }, 1500);
         }
 
-        function simulateExport() {
-            const btn = event.currentTarget;
-            btn.innerHTML = '<i class="fa-solid fa-circle-notch fa-spin"></i>';
-            setTimeout(() => {
-                btn.innerHTML = '<i class="fa-solid fa-check"></i> Done';
-                setTimeout(() => {
-                    btn.innerHTML = '<i class="fa-solid fa-download"></i> Export CSV';
-                }, 2000);
-            }, 1000);
+        function simulateExport(format) {
+            const modal = document.getElementById('export-modal');
+            modal.classList.add('hidden', 'pointer-events-none'); // Close modal first
+            alert(`Exporting data as ${format}... Check downloads folder.`);
         }
 
-        // --- ATLAS CHATBOT (Embedded) ---
+        // --- Chart.js ---
+        function initCharts() {
+            const ctx = document.getElementById('cashFlowChart').getContext('2d');
+            new Chart(ctx, {
+                type: 'bar',
+                data: {
+                    labels: ['Week 1', 'Week 2', 'Week 3', 'Week 4'],
+                    datasets: [
+                        {
+                            label: 'Inflow',
+                            data: [45000, 32000, 28000, 37500],
+                            backgroundColor: '#10b981',
+                            borderRadius: 4
+                        },
+                        {
+                            label: 'Outflow',
+                            data: [12000, 8500, 9200, 4500],
+                            backgroundColor: '#ef4444',
+                            borderRadius: 4
+                        }
+                    ]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: { legend: { display: false } },
+                    scales: { 
+                        x: { grid: { display: false } }, 
+                        y: { display: false } 
+                    }
+                }
+            });
+        }
+
+        // --- Modal Logic ---
+        function toggleModal(modalId) {
+            const modal = document.getElementById(modalId);
+            if(!modal) return;
+            const card = modal.firstElementChild;
+
+            if (modal.classList.contains('hidden')) {
+                modal.classList.remove('hidden', 'pointer-events-none');
+                setTimeout(() => {
+                    modal.classList.remove('opacity-0');
+                    if(card) {
+                        card.classList.remove('scale-95');
+                        card.classList.add('scale-100');
+                    }
+                }, 10);
+            } else {
+                modal.classList.add('opacity-0');
+                if(card) {
+                    card.classList.remove('scale-100');
+                    card.classList.add('scale-95');
+                }
+                setTimeout(() => {
+                    modal.classList.add('hidden', 'pointer-events-none');
+                }, 300);
+            }
+        }
+
+        function toggleNotificationPanel() {
+            const panel = document.getElementById('notification-panel');
+            if (panel.classList.contains('translate-x-full')) {
+                panel.classList.remove('translate-x-full');
+            } else {
+                panel.classList.add('translate-x-full');
+            }
+        }
+
+        // --- ATLAS CHATBOT ---
         function initChatbotWidget() {
             const container = document.getElementById('atlas-widget-container');
             container.innerHTML = `
-                <div id="atlas-window" class="fixed bottom-20 right-6 w-[350px] bg-dark-900 border border-slate-700 rounded-2xl shadow-2xl hidden flex-col z-50 overflow-hidden transform transition-all duration-300 origin-bottom-right scale-95 opacity-0" style="height: 500px;">
-                     <div class="bg-slate-800 p-4 flex justify-between items-center border-b border-slate-700">
+                <div id="atlas-window" class="fixed bottom-20 right-6 w-[350px] bg-white border border-slate-200 rounded-2xl shadow-2xl hidden flex-col z-50 overflow-hidden transform transition-all duration-300 origin-bottom-right scale-95 opacity-0" style="height: 500px;">
+                     <div class="bg-slate-50 p-4 flex justify-between items-center border-b border-slate-200">
                         <div class="flex items-center gap-2">
                              <div class="w-8 h-8 rounded-full bg-brand-600 flex items-center justify-center text-white text-xs"><i class="fa-solid fa-robot"></i></div>
                              <div>
-                                 <span class="font-bold text-white text-sm block">Atlas AI</span>
-                                 <span class="text-[10px] text-green-400 flex items-center gap-1"><span class="w-1.5 h-1.5 bg-green-500 rounded-full animate-pulse"></span> Online</span>
+                                 <span class="font-bold text-slate-900 text-sm block">Atlas AI</span>
+                                 <span class="text-[10px] text-green-600 flex items-center gap-1"><span class="w-1.5 h-1.5 bg-green-500 rounded-full animate-pulse"></span> Online</span>
                              </div>
                         </div>
-                        <button onclick="toggleAtlas()" class="text-slate-400 hover:text-white"><i class="fa-solid fa-xmark"></i></button>
+                        <button onclick="toggleAtlas()" class="text-slate-400 hover:text-slate-800"><i class="fa-solid fa-xmark"></i></button>
                      </div>
-                     <div id="atlas-messages" class="flex-1 p-4 overflow-y-auto space-y-4 bg-dark-950 scroll-smooth">
+                     <div id="atlas-messages" class="flex-1 p-4 overflow-y-auto space-y-4 bg-slate-50 scroll-smooth">
                         <div class="flex gap-3">
-                            <div class="w-8 h-8 rounded-full bg-slate-800 flex items-center justify-center shrink-0 text-slate-400 text-xs border border-slate-700"><i class="fa-solid fa-robot"></i></div>
-                            <div class="bg-slate-800 border border-slate-700 p-3 rounded-2xl rounded-tl-none text-sm text-slate-300 shadow-sm leading-relaxed">
+                            <div class="w-8 h-8 rounded-full bg-slate-100 flex items-center justify-center shrink-0 text-slate-500 text-xs border border-slate-200"><i class="fa-solid fa-robot"></i></div>
+                            <div class="bg-white border border-slate-200 p-3 rounded-2xl rounded-tl-none text-sm text-slate-600 shadow-sm leading-relaxed">
                                 Need an Audit Report for your failed transactions? I can filter and export them for you.
                             </div>
                         </div>
                      </div>
-                     <div class="p-3 bg-slate-800 border-t border-slate-700 flex gap-2">
-                        <input type="text" id="atlas-input" class="flex-1 bg-dark-950 border border-slate-700 rounded-lg px-3 py-2 text-sm text-white focus:border-brand-500 focus:outline-none placeholder-slate-600" placeholder="Type query..." onkeypress="handleAtlasEnter(event)">
-                        <button onclick="handleAtlasSubmit()" class="w-10 h-10 bg-brand-600 text-white rounded-lg hover:bg-brand-500 flex items-center justify-center transition active:scale-95"><i class="fa-solid fa-paper-plane"></i></button>
+                     <div class="p-3 bg-slate-50 border-t border-slate-200 flex gap-2">
+                        <input type="text" id="atlas-input" class="flex-1 bg-white border border-slate-200 rounded-lg px-3 py-2 text-sm text-slate-900 focus:border-brand-500 focus:outline-none placeholder-slate-400" placeholder="Type query..." onkeypress="handleAtlasEnter(event)">
+                        <button onclick="handleAtlasSubmit()" class="w-10 h-10 bg-brand-600 text-white rounded-lg hover:bg-brand-700 flex items-center justify-center transition active:scale-95"><i class="fa-solid fa-paper-plane"></i></button>
                      </div>
                 </div>
             `;
@@ -883,7 +1086,7 @@
             const loadingDiv = document.createElement('div');
             loadingDiv.id = loadingId;
             loadingDiv.className = 'flex gap-3';
-            loadingDiv.innerHTML = `<div class="w-8 h-8 rounded-full bg-slate-800 flex items-center justify-center shrink-0 text-slate-400 text-xs border border-slate-700"><i class="fa-solid fa-robot"></i></div><div class="bg-slate-800 border border-slate-700 p-3 rounded-2xl rounded-tl-none text-sm text-slate-400 shadow-sm"><i class="fa-solid fa-ellipsis fa-fade"></i></div>`;
+            loadingDiv.innerHTML = `<div class="w-8 h-8 rounded-full bg-slate-100 flex items-center justify-center shrink-0 text-slate-500 text-xs border border-slate-200"><i class="fa-solid fa-robot"></i></div><div class="bg-white border border-slate-200 p-3 rounded-2xl rounded-tl-none text-sm text-slate-400 shadow-sm"><i class="fa-solid fa-ellipsis fa-fade"></i></div>`;
             msgBox.appendChild(loadingDiv);
             msgBox.scrollTop = msgBox.scrollHeight;
 
@@ -903,10 +1106,10 @@
             const div = document.createElement('div');
             div.className = type === 'bot' ? 'flex gap-3 animate-fade-in' : 'flex gap-3 justify-end animate-fade-in';
             
-            const formatted = text.replace(/\*\*(.*?)\*\*/g, '<strong class="text-white">$1</strong>');
+            const formatted = text.replace(/\*\*(.*?)\*\*/g, '<strong class="text-slate-900">$1</strong>');
 
             div.innerHTML = type === 'bot' 
-                ? `<div class="w-8 h-8 rounded-full bg-slate-800 flex items-center justify-center shrink-0 text-slate-400 text-xs border border-slate-700"><i class="fa-solid fa-robot"></i></div><div class="bg-slate-800 border border-slate-700 p-3 rounded-2xl rounded-tl-none text-sm text-slate-300 shadow-sm max-w-[85%] leading-relaxed">${formatted}</div>`
+                ? `<div class="w-8 h-8 rounded-full bg-slate-100 flex items-center justify-center shrink-0 text-slate-500 text-xs border border-slate-200"><i class="fa-solid fa-robot"></i></div><div class="bg-white border border-slate-200 p-3 rounded-2xl rounded-tl-none text-sm text-slate-600 shadow-sm max-w-[85%] leading-relaxed">${formatted}</div>`
                 : `<div class="bg-brand-600 text-white p-3 rounded-2xl rounded-tr-none text-sm shadow-sm max-w-[85%] leading-relaxed">${formatted}</div>`;
             box.appendChild(div);
             box.scrollTop = box.scrollHeight;

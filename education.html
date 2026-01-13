@@ -1,0 +1,740 @@
+<!DOCTYPE html>
+<html lang="en" class="scroll-smooth">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SettleX Academy | Master Cross-Border Finance</title>
+    
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    
+    <!-- Fonts: Inter & Plus Jakarta Sans -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Plus+Jakarta+Sans:wght@500;600;700;800&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet">
+    
+    <!-- Icons -->
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+
+    <!-- Config -->
+    <script>
+        tailwind.config = {
+            darkMode: 'class',
+            theme: {
+                extend: {
+                    fontFamily: {
+                        sans: ['Inter', 'sans-serif'],
+                        display: ['Plus Jakarta Sans', 'sans-serif'],
+                        mono: ['JetBrains Mono', 'monospace'],
+                    },
+                    colors: {
+                        brand: {
+                            50: '#f0f9ff',
+                            100: '#e0f2fe',
+                            200: '#bae6fd',
+                            300: '#7dd3fc',
+                            400: '#38bdf8',
+                            500: '#0ea5e9',
+                            600: '#0284c7', // Primary
+                            700: '#0369a1',
+                            800: '#075985',
+                            900: '#0c4a6e',
+                            950: '#082f49',
+                        },
+                        slate: {
+                            850: '#1e293b', // Custom dark for sidebar
+                        }
+                    },
+                    animation: {
+                        'fade-in': 'fadeIn 0.5s ease-out',
+                        'slide-up': 'slideUp 0.6s ease-out',
+                        'pulse-slow': 'pulse 3s cubic-bezier(0.4, 0, 0.6, 1) infinite',
+                    },
+                    keyframes: {
+                        fadeIn: {
+                            '0%': { opacity: '0' },
+                            '100%': { opacity: '1' },
+                        },
+                        slideUp: {
+                            '0%': { transform: 'translateY(20px)', opacity: '0' },
+                            '100%': { transform: 'translateY(0)', opacity: '1' },
+                        }
+                    }
+                }
+            }
+        }
+    </script>
+
+    <style>
+        /* Custom Scrollbar */
+        ::-webkit-scrollbar {
+            width: 8px;
+            height: 8px;
+        }
+        ::-webkit-scrollbar-track {
+            background: #f1f5f9;
+        }
+        ::-webkit-scrollbar-thumb {
+            background: #cbd5e1;
+            border-radius: 4px;
+        }
+        ::-webkit-scrollbar-thumb:hover {
+            background: #94a3b8;
+        }
+        
+        /* Smooth anchor offset for fixed header */
+        html {
+            scroll-padding-top: 100px;
+        }
+
+        .glass-card {
+            background: rgba(255, 255, 255, 0.9);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.5);
+        }
+
+        /* Diagram Lines */
+        .connector-line {
+            position: absolute;
+            background-color: #cbd5e1;
+            z-index: 0;
+        }
+        
+        .code-block {
+            counter-reset: line;
+        }
+        .code-line::before {
+            counter-increment: line;
+            content: counter(line);
+            display: inline-block;
+            width: 2em;
+            margin-right: 1em;
+            color: #64748b;
+            text-align: right;
+        }
+    </style>
+</head>
+<body class="bg-slate-50 text-slate-800 font-sans antialiased selection:bg-brand-200 selection:text-brand-900">
+
+    <!-- Navigation -->
+    <nav class="fixed w-full z-50 top-0 start-0 bg-white/80 backdrop-blur-md border-b border-slate-200">
+        <div class="max-w-7xl mx-auto flex flex-wrap items-center justify-between px-6 py-4">
+            <a href="index.html" class="flex items-center space-x-3 rtl:space-x-reverse">
+                <div class="w-10 h-10 bg-gradient-to-br from-brand-600 to-brand-700 rounded-xl flex items-center justify-center text-white text-xl shadow-lg shadow-brand-500/20">
+                    <i class="fa-solid fa-cube"></i>
+                </div>
+                <span class="self-center text-2xl font-display font-bold text-slate-900 tracking-tight">SettleX<span class="text-brand-600">.Academy</span></span>
+            </a>
+            <div class="flex md:order-2 space-x-3 md:space-x-0 rtl:space-x-reverse">
+                <a href="login.html" class="text-white bg-slate-900 hover:bg-slate-800 focus:ring-4 focus:outline-none focus:ring-slate-300 font-medium rounded-lg text-sm px-5 py-2.5 text-center transition-all">
+                    Access Dashboard
+                </a>
+            </div>
+            <div class="items-center justify-between hidden w-full md:flex md:w-auto md:order-1">
+                <ul class="flex flex-col p-4 md:p-0 mt-4 font-medium border border-slate-100 rounded-lg bg-slate-50 md:space-x-8 rtl:space-x-reverse md:flex-row md:mt-0 md:border-0 md:bg-transparent">
+                    <li><a href="index.html" class="block py-2 px-3 text-slate-600 hover:text-brand-600 md:p-0 transition-colors">Home</a></li>
+                    <li><a href="#" class="block py-2 px-3 text-brand-600 md:p-0 font-bold" aria-current="page">Academy</a></li>
+                    <li><a href="index.html#features" class="block py-2 px-3 text-slate-600 hover:text-brand-600 md:p-0 transition-colors">Features</a></li>
+                    <li><a href="index.html#pricing" class="block py-2 px-3 text-slate-600 hover:text-brand-600 md:p-0 transition-colors">Pricing</a></li>
+                </ul>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Page Layout -->
+    <div class="flex pt-20 min-h-screen">
+        
+        <!-- Sidebar Navigation (Desktop) -->
+        <aside class="hidden lg:block w-72 fixed h-[calc(100vh-80px)] top-20 left-0 bg-white border-r border-slate-200 overflow-y-auto z-40 pb-10">
+            <div class="p-6">
+                <h3 class="text-xs font-bold text-slate-400 uppercase tracking-wider mb-4">Curriculum</h3>
+                
+                <!-- Section 1 -->
+                <div class="mb-6">
+                    <h4 class="font-bold text-slate-800 mb-2 flex items-center">
+                        <i class="fa-solid fa-earth-americas w-6 text-brand-500"></i> The Ecosystem
+                    </h4>
+                    <ul class="space-y-1 text-sm border-l-2 border-slate-100 ml-2 pl-3">
+                        <li><a href="#intro" class="block py-1.5 text-slate-600 hover:text-brand-600 hover:pl-1 transition-all">Introduction</a></li>
+                        <li><a href="#legacy-problem" class="block py-1.5 text-slate-600 hover:text-brand-600 hover:pl-1 transition-all">The "SME Trade Tax"</a></li>
+                        <li><a href="#correspondent-banking" class="block py-1.5 text-slate-600 hover:text-brand-600 hover:pl-1 transition-all">Correspondent Banking</a></li>
+                        <li><a href="#settlex-solution" class="block py-1.5 text-slate-600 hover:text-brand-600 hover:pl-1 transition-all">The SettleX Solution</a></li>
+                    </ul>
+                </div>
+
+                <!-- Section 2 -->
+                <div class="mb-6">
+                    <h4 class="font-bold text-slate-800 mb-2 flex items-center">
+                        <i class="fa-solid fa-laptop-code w-6 text-purple-500"></i> Platform Guide
+                    </h4>
+                    <ul class="space-y-1 text-sm border-l-2 border-slate-100 ml-2 pl-3">
+                        <li><a href="#dashboard-tour" class="block py-1.5 text-slate-600 hover:text-brand-600 hover:pl-1 transition-all">Command Center</a></li>
+                        <li><a href="#virtual-accounts" class="block py-1.5 text-slate-600 hover:text-brand-600 hover:pl-1 transition-all">Virtual Accounts</a></li>
+                        <li><a href="#inflow-gate" class="block py-1.5 text-slate-600 hover:text-brand-600 hover:pl-1 transition-all">Inflow Decision Gate</a></li>
+                        <li><a href="#compliance-vault" class="block py-1.5 text-slate-600 hover:text-brand-600 hover:pl-1 transition-all">Compliance Vault</a></li>
+                    </ul>
+                </div>
+
+                <!-- Section 3 -->
+                <div class="mb-6">
+                    <h4 class="font-bold text-slate-800 mb-2 flex items-center">
+                        <i class="fa-solid fa-book-open w-6 text-green-500"></i> Concepts 101
+                    </h4>
+                    <ul class="space-y-1 text-sm border-l-2 border-slate-100 ml-2 pl-3">
+                        <li><a href="#fira-edpms" class="block py-1.5 text-slate-600 hover:text-brand-600 hover:pl-1 transition-all">FIRA & EDPMS</a></li>
+                        <li><a href="#gift-city" class="block py-1.5 text-slate-600 hover:text-brand-600 hover:pl-1 transition-all">GIFT City Explained</a></li>
+                        <li><a href="#faq" class="block py-1.5 text-slate-600 hover:text-brand-600 hover:pl-1 transition-all">Common FAQs</a></li>
+                    </ul>
+                </div>
+                
+                <!-- CTA -->
+                <div class="mt-8 bg-slate-900 rounded-xl p-4 text-white">
+                    <p class="text-xs text-slate-400 mb-2">Ready to start?</p>
+                    <p class="font-bold text-sm mb-3">Open your Global Account today.</p>
+                    <a href="onboarding.html" class="block w-full py-2 bg-brand-600 hover:bg-brand-500 rounded-lg text-xs font-bold text-center transition-colors">Get Started</a>
+                </div>
+            </div>
+        </aside>
+
+        <!-- Main Content -->
+        <main class="w-full lg:ml-72 bg-white">
+            
+            <!-- Hero Header -->
+            <header class="bg-slate-50 border-b border-slate-200 py-16 px-6 lg:px-12 relative overflow-hidden">
+                <div class="absolute top-0 right-0 w-1/2 h-full bg-gradient-to-l from-brand-50 to-transparent opacity-50 pointer-events-none"></div>
+                <div class="relative z-10 max-w-4xl">
+                    <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-brand-100 text-brand-700 text-xs font-bold mb-4 border border-brand-200">
+                        <i class="fa-solid fa-graduation-cap"></i> Education Portal
+                    </div>
+                    <h1 class="text-4xl md:text-5xl font-display font-bold text-slate-900 mb-6 leading-tight">
+                        Understanding the Future of <br><span class="text-transparent bg-clip-text bg-gradient-to-r from-brand-600 to-indigo-600">Cross-Border Finance</span>
+                    </h1>
+                    <p class="text-lg text-slate-600 max-w-2xl leading-relaxed">
+                        Cross-border trade is complex. SettleX simplifies it. This academy breaks down the mechanics of international payments, regulatory compliance, and how our platform saves you 2-3% on every transaction.
+                    </p>
+                </div>
+            </header>
+
+            <!-- Content Container -->
+            <div class="px-6 lg:px-12 py-12 max-w-5xl mx-auto space-y-24">
+
+                <!-- SECTION 1: THE PROBLEM -->
+                <section id="intro" class="scroll-mt-24">
+                    <h2 class="text-3xl font-display font-bold text-slate-900 mb-6">1. The Global Trade Problem</h2>
+                    <div class="prose prose-slate max-w-none text-slate-600">
+                        <p class="mb-4 text-lg">
+                            For decades, Small and Medium Enterprises (SMEs) in India have been paying a hidden tax on their growth. While large corporations enjoy wholesale exchange rates and instant settlements, SMEs are forced to use legacy banking rails that are slow, expensive, and opaque.
+                        </p>
+                    </div>
+
+                    <div id="legacy-problem" class="mt-12 bg-slate-50 rounded-2xl border border-slate-200 p-8">
+                        <h3 class="text-xl font-bold text-slate-900 mb-4"><i class="fa-solid fa-triangle-exclamation text-red-500 mr-2"></i> The "SME Trade Tax"</h3>
+                        <div class="grid md:grid-cols-3 gap-6">
+                            <!-- Card 1 -->
+                            <div class="bg-white p-6 rounded-xl shadow-sm border border-slate-100">
+                                <div class="w-12 h-12 bg-red-100 rounded-lg flex items-center justify-center text-red-600 text-xl mb-4">
+                                    <i class="fa-solid fa-money-bill-wave"></i>
+                                </div>
+                                <h4 class="font-bold text-slate-900 mb-2">High Costs (2-3%)</h4>
+                                <p class="text-sm text-slate-600">Banks charge a "spread" on currency conversion. If the real rate is ₹84, they give you ₹82. On a $10,000 invoice, you lose ₹20,000 instantly.</p>
+                            </div>
+                            <!-- Card 2 -->
+                            <div class="bg-white p-6 rounded-xl shadow-sm border border-slate-100">
+                                <div class="w-12 h-12 bg-orange-100 rounded-lg flex items-center justify-center text-orange-600 text-xl mb-4">
+                                    <i class="fa-solid fa-hourglass-half"></i>
+                                </div>
+                                <h4 class="font-bold text-slate-900 mb-2">Slow Speed (T+4)</h4>
+                                <p class="text-sm text-slate-600">Money takes 3-5 days to travel through multiple intermediary banks (SWIFT network), choking your cash flow.</p>
+                            </div>
+                            <!-- Card 3 -->
+                            <div class="bg-white p-6 rounded-xl shadow-sm border border-slate-100">
+                                <div class="w-12 h-12 bg-slate-100 rounded-lg flex items-center justify-center text-slate-600 text-xl mb-4">
+                                    <i class="fa-solid fa-file-contract"></i>
+                                </div>
+                                <h4 class="font-bold text-slate-900 mb-2">Compliance Pain</h4>
+                                <p class="text-sm text-slate-600">Manual reconciliation of FIRA/FIRC documents takes weeks. Missing documents can lead to ED (Enforcement Directorate) notices.</p>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- SECTION: CORRESPONDENT BANKING VISUALIZER -->
+                <section id="correspondent-banking" class="scroll-mt-24">
+                    <div class="flex items-center justify-between mb-6">
+                        <h2 class="text-3xl font-display font-bold text-slate-900">2. How Money Moves: The Old Way</h2>
+                    </div>
+                    <p class="text-slate-600 mb-8 max-w-3xl">
+                        Traditional cross-border payments rely on a chain of "Correspondent Banks." It's like a game of telephone, but for money. Each bank takes a fee and adds time.
+                    </p>
+
+                    <!-- Interactive Diagram -->
+                    <div class="relative bg-slate-900 rounded-3xl p-8 overflow-hidden shadow-2xl">
+                        <div class="absolute top-0 left-0 w-full h-full opacity-10" style="background-image: radial-gradient(#64748b 1px, transparent 1px); background-size: 20px 20px;"></div>
+                        
+                        <h3 class="text-white font-bold mb-8 relative z-10 text-center uppercase tracking-widest text-sm">Legacy Swift Network Path</h3>
+
+                        <div class="relative z-10 flex flex-col md:flex-row justify-between items-center gap-4">
+                            
+                            <!-- US Buyer -->
+                            <div class="flex flex-col items-center group">
+                                <div class="w-20 h-20 bg-blue-600 rounded-full flex items-center justify-center text-white text-3xl shadow-lg border-4 border-blue-400 z-10">
+                                    <i class="fa-solid fa-building-user"></i>
+                                </div>
+                                <span class="text-white font-bold mt-4">US Buyer</span>
+                                <span class="text-slate-400 text-xs">$10,000</span>
+                            </div>
+
+                            <!-- Connection 1 -->
+                            <div class="h-1 md:h-1 md:w-full bg-slate-700 relative mx-2 flex-1">
+                                <div class="absolute -top-3 left-1/2 -translate-x-1/2 text-xs text-red-400 font-mono">Fee: $25</div>
+                                <i class="fa-solid fa-caret-right absolute right-0 -top-1.5 text-slate-700 text-lg hidden md:block"></i>
+                            </div>
+
+                            <!-- US Bank -->
+                            <div class="flex flex-col items-center">
+                                <div class="w-16 h-16 bg-slate-700 rounded-xl flex items-center justify-center text-slate-300 text-2xl border border-slate-600 z-10">
+                                    <i class="fa-solid fa-building-columns"></i>
+                                </div>
+                                <span class="text-slate-300 text-sm mt-2">US Bank</span>
+                            </div>
+
+                            <!-- Connection 2 -->
+                            <div class="h-1 md:h-1 md:w-full bg-slate-700 relative mx-2 flex-1">
+                                <div class="absolute -top-3 left-1/2 -translate-x-1/2 text-xs text-red-400 font-mono">Time: +2 Days</div>
+                            </div>
+
+                            <!-- Intermediary Bank -->
+                            <div class="flex flex-col items-center">
+                                <div class="w-16 h-16 bg-slate-700 rounded-xl flex items-center justify-center text-slate-300 text-2xl border border-slate-600 z-10 relative">
+                                    <i class="fa-solid fa-globe"></i>
+                                    <span class="absolute -top-2 -right-2 bg-red-500 text-white text-[10px] px-1.5 py-0.5 rounded-full">Slow</span>
+                                </div>
+                                <span class="text-slate-300 text-sm mt-2">Intermediary</span>
+                            </div>
+
+                             <!-- Connection 3 -->
+                             <div class="h-1 md:h-1 md:w-full bg-slate-700 relative mx-2 flex-1">
+                                <div class="absolute -top-3 left-1/2 -translate-x-1/2 text-xs text-red-400 font-mono">Fee: $40</div>
+                            </div>
+
+                            <!-- Indian Bank -->
+                            <div class="flex flex-col items-center">
+                                <div class="w-16 h-16 bg-slate-700 rounded-xl flex items-center justify-center text-slate-300 text-2xl border border-slate-600 z-10">
+                                    <i class="fa-solid fa-rupee-sign"></i>
+                                </div>
+                                <span class="text-slate-300 text-sm mt-2">Local Bank</span>
+                            </div>
+
+                            <!-- Connection 4 -->
+                            <div class="h-1 md:h-1 md:w-full bg-slate-700 relative mx-2 flex-1">
+                                <div class="absolute -top-3 left-1/2 -translate-x-1/2 text-xs text-red-400 font-mono">Rate: -3%</div>
+                            </div>
+
+                            <!-- SME Exporter -->
+                            <div class="flex flex-col items-center">
+                                <div class="w-20 h-20 bg-red-500 rounded-full flex items-center justify-center text-white text-3xl shadow-lg border-4 border-red-400 z-10 grayscale">
+                                    <i class="fa-solid fa-store"></i>
+                                </div>
+                                <span class="text-white font-bold mt-4">You</span>
+                                <span class="text-red-400 text-xs font-bold">Rec: ₹8,20,000</span>
+                                <span class="text-slate-500 text-[10px] line-through">₹8,40,000</span>
+                            </div>
+
+                        </div>
+                    </div>
+                </section>
+
+                <!-- SECTION 3: SETTLEX SOLUTION -->
+                <section id="settlex-solution" class="scroll-mt-24">
+                    <h2 class="text-3xl font-display font-bold text-slate-900 mb-6">3. The SettleX Architecture</h2>
+                    <p class="text-slate-600 mb-8 max-w-3xl">
+                        We don't use the old rails. We built a new highway using <strong>GIFT City (Gujarat International Finance Tec-City)</strong>. This allows us to hold foreign currency legally in India without converting it immediately, giving you control.
+                    </p>
+
+                    <div class="grid lg:grid-cols-2 gap-12 items-center">
+                        <div>
+                            <ul class="space-y-6">
+                                <li class="flex gap-4">
+                                    <div class="w-10 h-10 rounded-full bg-brand-100 flex items-center justify-center text-brand-600 shrink-0">
+                                        <i class="fa-solid fa-server"></i>
+                                    </div>
+                                    <div>
+                                        <h4 class="font-bold text-slate-900">Virtual Global Accounts</h4>
+                                        <p class="text-sm text-slate-600 mt-1">We give you local bank account details in the US, UK, and EU. Your buyers pay locally (ACH, SEPA), which is free and instant.</p>
+                                    </div>
+                                </li>
+                                <li class="flex gap-4">
+                                    <div class="w-10 h-10 rounded-full bg-brand-100 flex items-center justify-center text-brand-600 shrink-0">
+                                        <i class="fa-solid fa-bolt"></i>
+                                    </div>
+                                    <div>
+                                        <h4 class="font-bold text-slate-900">GIFT City Processing</h4>
+                                        <p class="text-sm text-slate-600 mt-1">Funds land in our GIFT City node. Since this is a Special Economic Zone, we can aggregate funds and convert at "Interbank Rates" (the rates banks trade at).</p>
+                                    </div>
+                                </li>
+                                <li class="flex gap-4">
+                                    <div class="w-10 h-10 rounded-full bg-brand-100 flex items-center justify-center text-brand-600 shrink-0">
+                                        <i class="fa-solid fa-robot"></i>
+                                    </div>
+                                    <div>
+                                        <h4 class="font-bold text-slate-900">Atlas AI Compliance</h4>
+                                        <p class="text-sm text-slate-600 mt-1">Our AI reads your invoices and shipping bills, automatically generating the FIRA documents required by RBI. No manual paperwork.</p>
+                                    </div>
+                                </li>
+                            </ul>
+                        </div>
+                        
+                        <!-- Comparison Box -->
+                        <div class="bg-gradient-to-br from-slate-900 to-slate-800 rounded-2xl p-8 text-white shadow-2xl relative overflow-hidden">
+                            <div class="absolute top-0 right-0 p-32 bg-brand-500 rounded-full blur-[100px] opacity-20"></div>
+                            
+                            <h3 class="text-xl font-bold mb-6 border-b border-slate-700 pb-4">Savings Calculator (Example)</h3>
+                            
+                            <div class="space-y-4 font-mono text-sm">
+                                <div class="flex justify-between text-slate-400">
+                                    <span>Invoice Amount:</span>
+                                    <span>$10,000.00</span>
+                                </div>
+                                <div class="flex justify-between text-slate-400">
+                                    <span>Market Rate:</span>
+                                    <span>₹84.00</span>
+                                </div>
+                                
+                                <div class="my-4 border-t border-dashed border-slate-700"></div>
+                                
+                                <!-- Legacy -->
+                                <div class="flex justify-between items-center group">
+                                    <span class="text-red-400">Legacy Bank (Rate ₹82.10)</span>
+                                    <span class="text-slate-300">₹8,21,000</span>
+                                </div>
+                                
+                                <!-- SettleX -->
+                                <div class="flex justify-between items-center bg-brand-900/50 p-3 rounded-lg border border-brand-500/30">
+                                    <span class="text-brand-400 font-bold"><i class="fa-solid fa-check mr-2"></i>SettleX (Rate ₹83.95)</span>
+                                    <span class="text-white font-bold text-lg">₹8,39,500</span>
+                                </div>
+
+                                <div class="mt-6 pt-4 border-t border-slate-700 text-center">
+                                    <span class="block text-slate-400 text-xs uppercase tracking-wider">Net Savings</span>
+                                    <span class="text-3xl font-bold text-green-400">+ ₹18,500</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+
+                <hr class="border-slate-200">
+
+                <!-- SECTION 4: PLATFORM GUIDE -->
+                <section id="dashboard-tour" class="scroll-mt-24">
+                    <div class="mb-10">
+                        <span class="text-brand-600 font-bold uppercase tracking-wider text-sm">Platform Walkthrough</span>
+                        <h2 class="text-3xl font-display font-bold text-slate-900 mt-2">Using SettleX Treasury OS</h2>
+                    </div>
+
+                    <!-- Feature 1: Dashboard -->
+                    <div class="flex flex-col md:flex-row gap-8 mb-16">
+                        <div class="w-full md:w-1/2">
+                            <div class="bg-slate-100 rounded-xl overflow-hidden shadow-inner border border-slate-200 aspect-video relative group">
+                                <img src="/api/placeholder/600/400" alt="Dashboard Preview" class="w-full h-full object-cover opacity-50 grayscale group-hover:grayscale-0 transition-all duration-500">
+                                <div class="absolute inset-0 flex items-center justify-center">
+                                    <a href="client-dashboard.html" class="bg-white text-slate-900 px-6 py-3 rounded-full font-bold shadow-lg hover:bg-brand-50 transition-colors flex items-center gap-2">
+                                        <i class="fa-solid fa-play"></i> Launch Demo
+                                    </a>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="w-full md:w-1/2">
+                            <h3 class="text-xl font-bold text-slate-900 mb-3">The Command Center</h3>
+                            <p class="text-slate-600 mb-4">
+                                Your dashboard gives you a real-time view of your global liquidity. Unlike traditional bank portals that look like spreadsheets from 1999, SettleX provides actionable insights.
+                            </p>
+                            <ul class="space-y-2 text-sm text-slate-600">
+                                <li class="flex items-start gap-2"><i class="fa-solid fa-check-circle text-green-500 mt-1"></i> View balances across USD, GBP, and EUR in one place.</li>
+                                <li class="flex items-start gap-2"><i class="fa-solid fa-check-circle text-green-500 mt-1"></i> Track live exchange rates vs. your target rates.</li>
+                                <li class="flex items-start gap-2"><i class="fa-solid fa-check-circle text-green-500 mt-1"></i> Quick actions for transfers and compliance checks.</li>
+                            </ul>
+                        </div>
+                    </div>
+
+                    <!-- Feature 2: Virtual Accounts -->
+                    <div id="virtual-accounts" class="scroll-mt-24 flex flex-col md:flex-row-reverse gap-8 mb-16">
+                         <div class="w-full md:w-1/2">
+                            <div class="bg-slate-100 rounded-xl overflow-hidden shadow-inner border border-slate-200 aspect-video relative group">
+                                <!-- Mock UI for visual interest -->
+                                <div class="p-6 h-full flex flex-col justify-center">
+                                    <div class="bg-white p-4 rounded-lg shadow-sm border border-slate-200 mb-2">
+                                        <div class="flex justify-between items-center mb-2">
+                                            <span class="font-bold text-slate-700">Citibank NA (New York)</span>
+                                            <img src="https://upload.wikimedia.org/wikipedia/en/a/a4/Flag_of_the_United_States.svg" class="w-6 h-4 shadow-sm">
+                                        </div>
+                                        <div class="font-mono text-xs text-slate-500 bg-slate-50 p-2 rounded">
+                                            Acc: 9876543210<br>
+                                            Routing: 021000089
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="absolute inset-0 flex items-center justify-center">
+                                    <a href="virtual-accounts.html" class="bg-white text-slate-900 px-6 py-3 rounded-full font-bold shadow-lg hover:bg-brand-50 transition-colors flex items-center gap-2">
+                                        <i class="fa-solid fa-eye"></i> View Accounts
+                                    </a>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="w-full md:w-1/2">
+                            <h3 class="text-xl font-bold text-slate-900 mb-3">Global Virtual Accounts</h3>
+                            <p class="text-slate-600 mb-4">
+                                Stop asking clients to pay via "International Wire." Give them a local bank account number.
+                            </p>
+                            <div class="bg-blue-50 border-l-4 border-blue-500 p-4 rounded-r-lg mb-4">
+                                <h4 class="font-bold text-blue-900 text-sm">Why this matters:</h4>
+                                <p class="text-xs text-blue-800 mt-1">When clients pay locally (e.g., via ACH in USA), there are <strong>zero landing fees</strong>. Wires often cost the sender $30-50, which makes them dislike paying small invoices.</p>
+                            </div>
+                        </div>
+                    </div>
+
+                     <!-- Feature 3: Inflow Decision Gate -->
+                     <div id="inflow-gate" class="scroll-mt-24 flex flex-col md:flex-row gap-8 mb-16">
+                        <div class="w-full md:w-1/2">
+                             <div class="bg-slate-900 text-white p-6 rounded-xl aspect-video flex flex-col justify-center relative overflow-hidden group">
+                                <div class="absolute top-0 right-0 w-32 h-32 bg-brand-500 rounded-full blur-[60px] opacity-20"></div>
+                                <div class="space-y-3 relative z-10">
+                                    <div class="flex justify-between items-center border-b border-slate-700 pb-2">
+                                        <span>Incoming: $5,000</span>
+                                        <span class="text-yellow-400"><i class="fa-solid fa-clock"></i> Pending Action</span>
+                                    </div>
+                                    <div class="grid grid-cols-2 gap-2">
+                                        <div class="bg-slate-800 p-2 text-center rounded border border-slate-700 text-sm">Convert Now</div>
+                                        <div class="bg-slate-800 p-2 text-center rounded border border-slate-700 text-sm">Hold in USD</div>
+                                    </div>
+                                </div>
+                                <div class="absolute inset-0 flex items-center justify-center bg-black/40 opacity-0 group-hover:opacity-100 transition-opacity">
+                                    <a href="inflow-decision-gate.html" class="bg-white text-slate-900 px-6 py-3 rounded-full font-bold shadow-lg flex items-center gap-2">
+                                        <i class="fa-solid fa-gavel"></i> Try Decision Gate
+                                    </a>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="w-full md:w-1/2">
+                            <h3 class="text-xl font-bold text-slate-900 mb-3">Inflow Decision Gate</h3>
+                            <p class="text-slate-600 mb-4">
+                                When money arrives, banks usually auto-convert it. SettleX asks you: <strong>"Do you want to convert now or later?"</strong>
+                            </p>
+                            <ul class="space-y-2 text-sm text-slate-600">
+                                <li class="flex items-start gap-2"><i class="fa-solid fa-arrow-right text-brand-500 mt-1"></i> <strong>Convert Now:</strong> If the rate is good.</li>
+                                <li class="flex items-start gap-2"><i class="fa-solid fa-arrow-right text-brand-500 mt-1"></i> <strong>Hold:</strong> Keep funds in USD to pay foreign suppliers later (Natural Hedge).</li>
+                                <li class="flex items-start gap-2"><i class="fa-solid fa-arrow-right text-brand-500 mt-1"></i> <strong>Split:</strong> Convert 50% for payroll, keep 50% for software subscriptions.</li>
+                            </ul>
+                        </div>
+                    </div>
+
+                    <!-- Feature 4: Compliance Vault -->
+                    <div id="compliance-vault" class="scroll-mt-24 bg-brand-50 rounded-2xl p-8 border border-brand-100">
+                        <div class="flex flex-col md:flex-row items-center gap-8">
+                            <div class="flex-1">
+                                <h3 class="text-2xl font-bold text-brand-900 mb-2">Compliance Vault & Atlas AI</h3>
+                                <p class="text-brand-800 mb-4">
+                                    The #1 reason payments get stuck is missing paperwork. Our <strong>Atlas AI</strong> engine pre-validates every transaction against RBI guidelines.
+                                </p>
+                                <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 text-sm">
+                                    <div class="bg-white p-3 rounded-lg shadow-sm text-slate-600">
+                                        <span class="font-bold text-slate-900 block mb-1">Auto-FIRC</span>
+                                        Digital Foreign Inward Remittance Certificates generated in T+1 day.
+                                    </div>
+                                    <div class="bg-white p-3 rounded-lg shadow-sm text-slate-600">
+                                        <span class="font-bold text-slate-900 block mb-1">EDPMS Knock-off</span>
+                                        We communicate directly with RBI servers to mark your exports as "Realized."
+                                    </div>
+                                </div>
+                                <div class="mt-6">
+                                    <a href="compliance-vault.html" class="inline-flex items-center text-brand-700 font-bold hover:text-brand-900">
+                                        Visit the Vault <i class="fa-solid fa-arrow-right ml-2"></i>
+                                    </a>
+                                </div>
+                            </div>
+                            <div class="w-full md:w-1/3 flex justify-center">
+                                <i class="fa-solid fa-shield-halved text-9xl text-brand-200"></i>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- SECTION 5: GLOSSARY / 101 -->
+                <section id="fira-edpms" class="scroll-mt-24">
+                    <h2 class="text-3xl font-display font-bold text-slate-900 mb-8">4. Trade Finance Glossary</h2>
+                    <div class="grid md:grid-cols-2 gap-6">
+                        <!-- Term 1 -->
+                        <div class="border border-slate-200 rounded-xl p-6 hover:shadow-md transition-shadow">
+                            <h4 class="font-bold text-slate-900 text-lg mb-2">FIRA / FIRC</h4>
+                            <p class="text-sm text-slate-600 leading-relaxed">
+                                <strong>Foreign Inward Remittance Advice/Certificate.</strong> A mandatory document proving that foreign currency entered India legally. You need this to claim GST refunds and prove to the government you aren't laundering money.
+                            </p>
+                        </div>
+                         <!-- Term 2 -->
+                         <div class="border border-slate-200 rounded-xl p-6 hover:shadow-md transition-shadow">
+                            <h4 class="font-bold text-slate-900 text-lg mb-2">Nostro / Vostro Account</h4>
+                            <p class="text-sm text-slate-600 leading-relaxed">
+                                Latin for "Ours" and "Yours". A <strong>Nostro</strong> account is an account an Indian bank holds with a US bank (in Dollars). A <strong>Vostro</strong> is the reverse. This is the plumbing of international finance.
+                            </p>
+                        </div>
+                         <!-- Term 3 -->
+                         <div class="border border-slate-200 rounded-xl p-6 hover:shadow-md transition-shadow">
+                            <h4 class="font-bold text-slate-900 text-lg mb-2">EDPMS</h4>
+                            <p class="text-sm text-slate-600 leading-relaxed">
+                                <strong>Export Data Processing and Monitoring System.</strong> An RBI database that tracks every export invoice. If a payment isn't matched ("knocked off") against an invoice in EDPMS, the exporter gets "caution listed."
+                            </p>
+                        </div>
+                         <!-- Term 4 -->
+                         <div class="border border-slate-200 rounded-xl p-6 hover:shadow-md transition-shadow">
+                            <h4 class="font-bold text-slate-900 text-lg mb-2">EEFC Account</h4>
+                            <p class="text-sm text-slate-600 leading-relaxed">
+                                <strong>Exchange Earner's Foreign Currency Account.</strong> A specialized account that allows Indian exporters to hold 100% of their earnings in foreign currency for one calendar month to hedge against rate fluctuations.
+                            </p>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- SECTION 6: FAQ -->
+                <section id="faq" class="scroll-mt-24 pb-20">
+                    <h2 class="text-3xl font-display font-bold text-slate-900 mb-8">Frequently Asked Questions</h2>
+                    <div class="space-y-4">
+                        <!-- Q1 -->
+                        <div class="bg-white border border-slate-200 rounded-xl overflow-hidden">
+                            <button class="w-full flex justify-between items-center p-6 text-left focus:outline-none" onclick="toggleFaq(this)">
+                                <span class="font-bold text-slate-800">Is SettleX a bank?</span>
+                                <i class="fa-solid fa-chevron-down text-slate-400 transition-transform"></i>
+                            </button>
+                            <div class="hidden px-6 pb-6 text-slate-600 text-sm border-t border-slate-50 pt-4">
+                                No. SettleX is a financial technology company. We partner with regulated entities like Yes Bank (India) and DBS (Singapore) to provide banking services. Your money is always held in regulated, insured bank accounts.
+                            </div>
+                        </div>
+                        <!-- Q2 -->
+                        <div class="bg-white border border-slate-200 rounded-xl overflow-hidden">
+                            <button class="w-full flex justify-between items-center p-6 text-left focus:outline-none" onclick="toggleFaq(this)">
+                                <span class="font-bold text-slate-800">How long does onboarding take?</span>
+                                <i class="fa-solid fa-chevron-down text-slate-400 transition-transform"></i>
+                            </button>
+                            <div class="hidden px-6 pb-6 text-slate-600 text-sm border-t border-slate-50 pt-4">
+                                Typical onboarding takes 24-48 hours. Since we require KYC (Know Your Customer) and IEC (Import Export Code) verification, it's slightly more involved than a personal wallet, but much faster than a traditional bank (which takes weeks).
+                            </div>
+                        </div>
+                         <!-- Q3 -->
+                         <div class="bg-white border border-slate-200 rounded-xl overflow-hidden">
+                            <button class="w-full flex justify-between items-center p-6 text-left focus:outline-none" onclick="toggleFaq(this)">
+                                <span class="font-bold text-slate-800">What currencies do you support?</span>
+                                <i class="fa-solid fa-chevron-down text-slate-400 transition-transform"></i>
+                            </button>
+                            <div class="hidden px-6 pb-6 text-slate-600 text-sm border-t border-slate-50 pt-4">
+                                Currently, we support USD, GBP, EUR, SGD, and AED for collections. We support payouts in INR (to India) and USD/EUR/GBP (to global suppliers).
+                            </div>
+                        </div>
+                    </div>
+                </section>
+
+            </div>
+
+            <!-- Footer -->
+            <footer class="bg-white border-t border-slate-200 pt-16 pb-8">
+                <div class="max-w-7xl mx-auto px-6 lg:px-8">
+                    <div class="grid grid-cols-1 md:grid-cols-4 gap-12 mb-12">
+                        <div class="col-span-1 md:col-span-1">
+                            <a href="#" class="flex items-center space-x-2 mb-4">
+                                <div class="w-8 h-8 bg-brand-600 rounded-lg flex items-center justify-center text-white text-sm">
+                                    <i class="fa-solid fa-cube"></i>
+                                </div>
+                                <span class="text-xl font-display font-bold text-slate-900">SettleX</span>
+                            </a>
+                            <p class="text-slate-500 text-sm leading-relaxed">
+                                Empowering Indian SMEs with enterprise-grade treasury tools. Built on the GIFT City - Singapore corridor.
+                            </p>
+                        </div>
+                        <div>
+                            <h4 class="font-bold text-slate-900 mb-4">Platform</h4>
+                            <ul class="space-y-2 text-sm text-slate-600">
+                                <li><a href="client-dashboard.html" class="hover:text-brand-600 transition-colors">Dashboard</a></li>
+                                <li><a href="virtual-accounts.html" class="hover:text-brand-600 transition-colors">Global Accounts</a></li>
+                                <li><a href="compliance-vault.html" class="hover:text-brand-600 transition-colors">Compliance</a></li>
+                            </ul>
+                        </div>
+                        <div>
+                            <h4 class="font-bold text-slate-900 mb-4">Academy</h4>
+                            <ul class="space-y-2 text-sm text-slate-600">
+                                <li><a href="#legacy-problem" class="hover:text-brand-600 transition-colors">The Trade Tax</a></li>
+                                <li><a href="#fira-edpms" class="hover:text-brand-600 transition-colors">Glossary</a></li>
+                                <li><a href="#faq" class="hover:text-brand-600 transition-colors">Help Center</a></li>
+                            </ul>
+                        </div>
+                        <div>
+                            <h4 class="font-bold text-slate-900 mb-4">Contact</h4>
+                            <ul class="space-y-2 text-sm text-slate-600">
+                                <li><i class="fa-solid fa-envelope mr-2"></i> help@settlex.com</li>
+                                <li><i class="fa-solid fa-phone mr-2"></i> +91 22 4000 5000</li>
+                                <li><i class="fa-solid fa-location-dot mr-2"></i> GIFT City, Gandhinagar</li>
+                            </ul>
+                        </div>
+                    </div>
+                    <div class="border-t border-slate-100 pt-8 flex flex-col md:flex-row justify-between items-center">
+                        <p class="text-xs text-slate-400">&copy; 2026 SettleX Technologies Pvt Ltd. All rights reserved.</p>
+                        <div class="flex space-x-4 mt-4 md:mt-0">
+                            <a href="#" class="text-slate-400 hover:text-brand-600 transition-colors"><i class="fa-brands fa-linkedin text-lg"></i></a>
+                            <a href="#" class="text-slate-400 hover:text-brand-600 transition-colors"><i class="fa-brands fa-twitter text-lg"></i></a>
+                        </div>
+                    </div>
+                </div>
+            </footer>
+
+        </main>
+    </div>
+
+    <!-- Scripts -->
+    <script>
+        // Simple Accordion Logic for FAQ
+        function toggleFaq(button) {
+            const content = button.nextElementSibling;
+            const icon = button.querySelector('.fa-chevron-down');
+            
+            // Toggle hidden class
+            if (content.classList.contains('hidden')) {
+                content.classList.remove('hidden');
+                icon.style.transform = 'rotate(180deg)';
+                button.classList.add('bg-slate-50');
+            } else {
+                content.classList.add('hidden');
+                icon.style.transform = 'rotate(0deg)';
+                button.classList.remove('bg-slate-50');
+            }
+        }
+
+        // Add smooth scrolling for sidebar links
+        document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+            anchor.addEventListener('click', function (e) {
+                e.preventDefault();
+                document.querySelector(this.getAttribute('href')).scrollIntoView({
+                    behavior: 'smooth'
+                });
+            });
+        });
+        
+        // Highlight active sidebar link on scroll
+        window.addEventListener('scroll', () => {
+            let current = '';
+            const sections = document.querySelectorAll('section');
+            
+            sections.forEach(section => {
+                const sectionTop = section.offsetTop;
+                const sectionHeight = section.clientHeight;
+                if (scrollY >= (sectionTop - 150)) {
+                    current = section.getAttribute('id');
+                }
+            });
+
+            document.querySelectorAll('aside a').forEach(a => {
+                a.classList.remove('text-brand-600', 'font-bold', 'pl-1');
+                a.classList.add('text-slate-600');
+                if (a.getAttribute('href').includes(current) && current !== '') {
+                    a.classList.add('text-brand-600', 'font-bold', 'pl-1');
+                    a.classList.remove('text-slate-600');
+                }
+            });
+        });
+    </script>
+</body>
+</html>

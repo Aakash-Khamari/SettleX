@@ -42,11 +42,6 @@
                             900: '#0c4a6e',
                             950: '#082f49',
                         },
-                        dark: {
-                            800: '#1e293b',
-                            900: '#0f172a',
-                            950: '#020617',
-                        },
                         // Trade-specific semantic colors
                         trade: {
                             up: '#10b981',   // Green for profit/inflow
@@ -60,8 +55,11 @@
                         'flash': 'flash 1s ease-in-out',
                         'slide-in': 'slideIn 0.3s ease-out forwards',
                         'slide-out': 'slideOut 0.3s ease-in forwards',
-                        'fade-in': 'fadeIn 0.3s ease-out forwards',
+                        'fade-in': 'fadeIn 0.5s ease-out forwards',
+                        'fade-in-up': 'fadeInUp 0.6s ease-out forwards',
                         'spin-slow': 'spin 3s linear infinite',
+                        'bounce-slight': 'bounceSlight 2s infinite',
+                        'wiggle': 'wiggle 1s ease-in-out infinite',
                     },
                     keyframes: {
                         flash: {
@@ -79,70 +77,98 @@
                         fadeIn: {
                             '0%': { opacity: '0', transform: 'scale(0.95)' },
                             '100%': { opacity: '1', transform: 'scale(1)' },
+                        },
+                        fadeInUp: {
+                            '0%': { opacity: '0', transform: 'translateY(20px)' },
+                            '100%': { opacity: '1', transform: 'translateY(0)' },
+                        },
+                        bounceSlight: {
+                             '0%, 100%': { transform: 'translateY(-2%)' },
+                             '50%': { transform: 'translateY(0)' },
+                        },
+                        wiggle: {
+                            '0%, 100%': { transform: 'rotate(-3deg)' },
+                            '50%': { transform: 'rotate(3deg)' },
                         }
                     },
                     boxShadow: {
-                        'neon': '0 0 10px rgba(14, 165, 233, 0.5), 0 0 20px rgba(14, 165, 233, 0.3)',
-                        'glass': '0 8px 32px 0 rgba(0, 0, 0, 0.37)',
+                        'neon': '0 0 10px rgba(14, 165, 233, 0.2), 0 0 20px rgba(14, 165, 233, 0.1)',
+                        'glass': '0 8px 32px 0 rgba(0, 0, 0, 0.05)',
+                        'soft-glow': '0 0 15px rgba(14, 165, 233, 0.1)',
+                        'card-hover': '0 10px 40px -10px rgba(0,0,0,0.1)'
                     }
                 }
             }
         }
     </script>
     <style>
-        /* Base Styles */
+        /* Base Styles - Light Theme */
         body {
-            background-color: #020617; /* dark-950 */
-            color: #cbd5e1; /* slate-300 */
+            background-color: #f8fafc; /* slate-50 */
+            color: #0f172a; /* slate-900 */
         }
 
-        /* Dark Mode Scrollbar */
+        /* Light Mode Scrollbar */
         ::-webkit-scrollbar { width: 6px; height: 6px; }
-        ::-webkit-scrollbar-track { background: #0f172a; }
-        ::-webkit-scrollbar-thumb { background: #334155; border-radius: 4px; }
-        ::-webkit-scrollbar-thumb:hover { background: #475569; }
+        ::-webkit-scrollbar-track { background: #f1f5f9; }
+        ::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 4px; }
+        ::-webkit-scrollbar-thumb:hover { background: #94a3b8; }
         
-        /* Glassmorphism Utilities */
+        /* Glassmorphism Utilities - Tuned for Light Mode */
         .glass-panel {
-            background: rgba(15, 23, 42, 0.7);
-            backdrop-filter: blur(16px);
-            -webkit-backdrop-filter: blur(16px);
-            border: 1px solid rgba(255, 255, 255, 0.08);
-            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+            background: rgba(255, 255, 255, 0.85);
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+            border: 1px solid rgba(226, 232, 240, 0.8);
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05), 0 2px 4px -1px rgba(0, 0, 0, 0.03);
         }
         
         .glass-modal {
-            background: rgba(15, 23, 42, 0.95);
+            background: rgba(255, 255, 255, 0.98);
             backdrop-filter: blur(24px);
-            border: 1px solid rgba(255, 255, 255, 0.1);
+            border: 1px solid rgba(226, 232, 240, 1);
         }
 
-        /* Grid Pattern Background */
+        /* Simple Mode Card Styles - Light */
+        .simple-card {
+            background: #ffffff;
+            border-radius: 20px;
+            border: 1px solid #f1f5f9;
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05), 0 2px 4px -1px rgba(0, 0, 0, 0.03);
+            transition: all 0.3s ease;
+        }
+        .simple-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
+            border-color: #e0f2fe;
+        }
+
+        /* Grid Pattern Background - Subtle Gray */
         .bg-grid {
             background-size: 40px 40px;
             background-image: 
-                linear-gradient(to right, rgba(255, 255, 255, 0.03) 1px, transparent 1px),
-                linear-gradient(to bottom, rgba(255, 255, 255, 0.03) 1px, transparent 1px);
+                linear-gradient(to right, rgba(0, 0, 0, 0.03) 1px, transparent 1px),
+                linear-gradient(to bottom, rgba(0, 0, 0, 0.03) 1px, transparent 1px);
         }
 
         /* Utility Classes */
         .no-scrollbar::-webkit-scrollbar { display: none; }
         .no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
         
-        /* Table Row Hover Effect */
+        /* Table Row Hover Effect - Light */
         tr.interactive-row {
             transition: all 0.2s ease;
             cursor: pointer;
         }
         tr.interactive-row:hover {
-            background-color: rgba(255, 255, 255, 0.03);
+            background-color: #f1f5f9; /* slate-100 */
             transform: translateX(4px);
             border-left: 2px solid #0ea5e9;
         }
 
         /* Loading Skeleton Animation */
         .skeleton {
-            background: linear-gradient(90deg, #1e293b 25%, #334155 50%, #1e293b 75%);
+            background: linear-gradient(90deg, #f1f5f9 25%, #e2e8f0 50%, #f1f5f9 75%);
             background-size: 200% 100%;
             animation: loading 1.5s infinite;
         }
@@ -150,21 +176,58 @@
             0% { background-position: 200% 0; }
             100% { background-position: -200% 0; }
         }
+
+        /* Focus Mode Transitions */
+        .view-transition {
+            transition: opacity 0.4s ease-in-out, transform 0.4s ease-in-out;
+        }
+        .view-hidden {
+            opacity: 0;
+            pointer-events: none;
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            z-index: -1;
+            transform: scale(0.98);
+        }
+        .view-visible {
+            opacity: 1;
+            pointer-events: auto;
+            position: relative;
+            transform: scale(1);
+        }
+
+        /* Tab Styles for Settings */
+        .settings-tab {
+            @apply w-full text-left px-4 py-3 text-sm font-medium text-slate-500 hover:bg-slate-50 hover:text-slate-900 rounded-lg transition-colors flex items-center gap-3 border border-transparent;
+        }
+        .settings-tab.active {
+            @apply bg-brand-50 text-brand-700 font-bold border-brand-200 shadow-sm;
+        }
+
+        /* Print Styles */
+        @media print {
+            body { background: white; color: black; }
+            aside, header, #notification-panel, #settings-modal { display: none !important; }
+            .glass-panel { box-shadow: none; border: 1px solid #ddd; }
+            #main-content { padding: 0; overflow: visible; }
+        }
     </style>
 </head>
 <body class="font-sans h-screen flex overflow-hidden selection:bg-brand-500 selection:text-white">
 
     <!-- 1. PROFESSIONAL SIDEBAR -->
-    <aside class="w-20 lg:w-72 bg-dark-900 border-r border-slate-800 flex flex-col flex-shrink-0 transition-all duration-300 z-50">
+    <aside class="w-20 lg:w-72 bg-white border-r border-slate-200 flex flex-col flex-shrink-0 transition-all duration-300 z-50">
         
         <!-- Logo Area -->
-        <div class="h-20 flex items-center px-0 lg:px-6 justify-center lg:justify-start border-b border-slate-800 relative group cursor-pointer" onclick="window.location.reload()">
+        <div class="h-20 flex items-center px-0 lg:px-6 justify-center lg:justify-start border-b border-slate-200 relative group cursor-pointer" onclick="window.location.reload()">
             <div class="w-10 h-10 bg-gradient-to-br from-brand-500 to-brand-700 rounded-xl flex items-center justify-center text-white font-bold text-xl shadow-lg shadow-brand-500/20 flex-shrink-0 transition-transform group-hover:scale-105">
                 S
             </div>
             <div class="hidden lg:block ml-3">
-                <h1 class="text-xl font-display font-bold text-white tracking-tight">Settle<span class="text-brand-400">X</span></h1>
-                <p class="text-[10px] text-slate-500 font-mono uppercase tracking-wider group-hover:text-brand-400 transition-colors">Treasury OS v2.4</p>
+                <h1 class="text-xl font-display font-bold text-slate-900 tracking-tight">Settle<span class="text-brand-600">X</span></h1>
+                <p class="text-[10px] text-slate-500 font-mono uppercase tracking-wider group-hover:text-brand-600 transition-colors">Treasury OS v2.4</p>
             </div>
         </div>
 
@@ -172,71 +235,71 @@
         <nav class="flex-1 overflow-y-auto py-6 px-3 space-y-1">
             
             <!-- Dashboard (Active) -->
-            <a href="#" class="flex items-center gap-3 px-3 py-3 bg-brand-900/30 text-white rounded-xl border border-brand-500/30 shadow-sm group relative overflow-hidden">
-                <div class="absolute inset-0 bg-brand-500/10 rounded-xl blur opacity-0 group-hover:opacity-100 transition-opacity"></div>
+            <a href="#" class="flex items-center gap-3 px-3 py-3 bg-brand-50 text-brand-900 rounded-xl border border-brand-200 shadow-sm group relative overflow-hidden">
+                <div class="absolute inset-0 bg-brand-100 rounded-xl blur opacity-0 group-hover:opacity-100 transition-opacity"></div>
                 <div class="absolute left-0 top-0 bottom-0 w-1 bg-brand-500 rounded-l-xl"></div>
                 <!-- FIXED ICON: Using fa-border-all for Dashboard/Grid -->
-                <i class="fa-solid fa-border-all w-6 text-center text-brand-400 text-lg group-hover:scale-110 transition-transform"></i>
+                <i class="fa-solid fa-border-all w-6 text-center text-brand-600 text-lg group-hover:scale-110 transition-transform"></i>
                 <span class="hidden lg:block font-medium tracking-wide">Command Center</span>
             </a>
 
             <div class="hidden lg:block px-3 mt-6 mb-2 flex items-center justify-between">
-                <p class="text-[10px] font-bold text-slate-500 uppercase tracking-widest">Global Money</p>
-                <i class="fa-solid fa-globe text-[10px] text-slate-600"></i>
+                <p class="text-[10px] font-bold text-slate-400 uppercase tracking-widest">Global Money</p>
+                <i class="fa-solid fa-globe text-[10px] text-slate-400"></i>
             </div>
 
             <!-- Inflow -->
-            <a href="inflow-decision-gate.html" class="flex items-center gap-3 px-3 py-3 text-slate-400 hover:text-white hover:bg-slate-800 rounded-xl transition-all group">
+            <a href="inflow-decision-gate.html" class="flex items-center gap-3 px-3 py-3 text-slate-500 hover:text-slate-900 hover:bg-slate-50 rounded-xl transition-all group">
                 <!-- FIXED ICON: Using fa-inbox for Inflow/Collections -->
-                <i class="fa-solid fa-inbox w-6 text-center group-hover:text-green-400 transition-colors group-hover:translate-y-[-2px]"></i>
+                <i class="fa-solid fa-inbox w-6 text-center group-hover:text-green-600 transition-colors group-hover:translate-y-[-2px]"></i>
                 <span class="hidden lg:block font-medium">Inflow (Collections)</span>
-                <span class="hidden lg:flex ml-auto bg-brand-500 text-white text-[10px] font-bold px-2 py-0.5 rounded-full shadow-lg shadow-brand-500/40 animate-pulse-slow">3</span>
+                <span class="hidden lg:flex ml-auto bg-brand-100 text-brand-700 text-[10px] font-bold px-2 py-0.5 rounded-full shadow-sm animate-pulse-slow">3</span>
             </a>
 
             <!-- Outflow -->
-            <a href="outflow-transfer.html" class="flex items-center gap-3 px-3 py-3 text-slate-400 hover:text-white hover:bg-slate-800 rounded-xl transition-all group">
-                <i class="fa-solid fa-paper-plane w-6 text-center group-hover:text-red-400 transition-colors group-hover:translate-x-[2px]"></i>
+            <a href="outflow-transfer.html" class="flex items-center gap-3 px-3 py-3 text-slate-500 hover:text-slate-900 hover:bg-slate-50 rounded-xl transition-all group">
+                <i class="fa-solid fa-paper-plane w-6 text-center group-hover:text-red-500 transition-colors group-hover:translate-x-[2px]"></i>
                 <span class="hidden lg:block font-medium">Outflow (Payments)</span>
             </a>
 
             <!-- Virtual Accounts -->
-            <a href="virtual-accounts.html" class="flex items-center gap-3 px-3 py-3 text-slate-400 hover:text-white hover:bg-slate-800 rounded-xl transition-all group">
-                <i class="fa-solid fa-wallet w-6 text-center group-hover:text-purple-400 transition-colors"></i>
+            <a href="virtual-accounts.html" class="flex items-center gap-3 px-3 py-3 text-slate-500 hover:text-slate-900 hover:bg-slate-50 rounded-xl transition-all group">
+                <i class="fa-solid fa-wallet w-6 text-center group-hover:text-purple-500 transition-colors"></i>
                 <span class="hidden lg:block font-medium">Virtual Accounts</span>
             </a>
 
             <div class="hidden lg:block px-3 mt-6 mb-2 flex items-center justify-between">
-                <p class="text-[10px] font-bold text-slate-500 uppercase tracking-widest">Compliance</p>
-                <i class="fa-solid fa-shield-halved text-[10px] text-slate-600"></i>
+                <p class="text-[10px] font-bold text-slate-400 uppercase tracking-widest">Compliance</p>
+                <i class="fa-solid fa-shield-halved text-[10px] text-slate-400"></i>
             </div>
 
             <!-- Ledger -->
-            <a href="transaction-history.html" class="flex items-center gap-3 px-3 py-3 text-slate-400 hover:text-white hover:bg-slate-800 rounded-xl transition-all group">
-                <i class="fa-solid fa-book-open w-6 text-center group-hover:text-amber-400 transition-colors"></i>
+            <a href="transaction-history.html" class="flex items-center gap-3 px-3 py-3 text-slate-500 hover:text-slate-900 hover:bg-slate-50 rounded-xl transition-all group">
+                <i class="fa-solid fa-book-open w-6 text-center group-hover:text-amber-500 transition-colors"></i>
                 <span class="hidden lg:block font-medium">Digital Ledger</span>
             </a>
 
             <!-- Docs -->
-            <a href="compliance-vault.html" class="flex items-center gap-3 px-3 py-3 text-slate-400 hover:text-white hover:bg-slate-800 rounded-xl transition-all group">
-                <i class="fa-solid fa-file-shield w-6 text-center group-hover:text-blue-400 transition-colors"></i>
+            <a href="compliance-vault.html" class="flex items-center gap-3 px-3 py-3 text-slate-500 hover:text-slate-900 hover:bg-slate-50 rounded-xl transition-all group">
+                <i class="fa-solid fa-file-shield w-6 text-center group-hover:text-blue-500 transition-colors"></i>
                 <span class="hidden lg:block font-medium">BoE & e-FIRA Vault</span>
             </a>
         </nav>
 
         <!-- User Profile Widget -->
-        <div class="p-4 border-t border-slate-800 bg-dark-900/50">
-            <div class="flex items-center gap-3 cursor-pointer hover:bg-slate-800 p-2 rounded-xl transition-colors group" onclick="toggleModal('settings-modal')">
+        <div class="p-4 border-t border-slate-200 bg-slate-50/50">
+            <div class="flex items-center gap-3 cursor-pointer hover:bg-slate-100 p-2 rounded-xl transition-colors group" onclick="toggleModal('settings-modal')">
                 <div class="relative">
-                    <div class="w-10 h-10 rounded-full bg-slate-700 flex items-center justify-center border border-slate-600 group-hover:border-brand-500 transition-colors">
-                        <span class="font-bold text-white group-hover:text-brand-200">TE</span>
+                    <div class="w-10 h-10 rounded-full bg-slate-200 flex items-center justify-center border border-slate-300 group-hover:border-brand-300 transition-colors">
+                        <span class="font-bold text-slate-700 group-hover:text-brand-600">TE</span>
                     </div>
-                    <div class="absolute -bottom-1 -right-1 w-3 h-3 bg-green-500 border-2 border-dark-900 rounded-full animate-pulse"></div>
+                    <div class="absolute -bottom-1 -right-1 w-3 h-3 bg-green-500 border-2 border-white rounded-full animate-pulse"></div>
                 </div>
                 <div class="hidden lg:block min-w-0">
-                    <p class="text-sm font-bold text-white truncate group-hover:text-brand-400 transition-colors">Tex Exports Pvt Ltd</p>
+                    <p class="text-sm font-bold text-slate-900 truncate group-hover:text-brand-700 transition-colors">Tex Exports Pvt Ltd</p>
                     <p class="text-[10px] text-slate-500 font-mono truncate">ID: IND-TN-8821</p>
                 </div>
-                <div class="hidden lg:block ml-auto text-slate-500 group-hover:text-white transition-colors">
+                <div class="hidden lg:block ml-auto text-slate-400 group-hover:text-slate-600 transition-colors">
                     <i class="fa-solid fa-gear text-xs"></i>
                 </div>
             </div>
@@ -247,16 +310,25 @@
     <main class="flex-1 flex flex-col h-screen relative overflow-hidden bg-grid">
         
         <!-- Top Bar (Sticky) -->
-        <header class="h-16 bg-dark-900/80 backdrop-blur-md border-b border-slate-800 flex items-center justify-between px-6 z-40 sticky top-0 transition-all duration-300" id="topbar">
+        <header class="h-16 bg-white/80 backdrop-blur-md border-b border-slate-200 flex items-center justify-between px-6 z-40 sticky top-0 transition-all duration-300" id="topbar">
             
             <!-- Context: Active Entity -->
             <div class="flex items-center gap-4">
-                <div class="hidden md:flex items-center gap-2 px-3 py-1.5 bg-slate-800/50 rounded-lg border border-slate-700 hover:border-brand-500/50 transition-colors cursor-help group">
+                <div class="hidden md:flex items-center gap-2 px-3 py-1.5 bg-slate-100 rounded-lg border border-slate-200 hover:border-brand-200 transition-colors cursor-help group">
                     <span class="w-2 h-2 rounded-full bg-brand-500 animate-pulse"></span>
-                    <span class="text-xs font-mono text-brand-300 group-hover:text-white transition-colors">GIFT CITY: ACTIVE</span>
+                    <span class="text-xs font-mono text-slate-600 group-hover:text-brand-700 transition-colors">GIFT CITY: ACTIVE</span>
                 </div>
-                <div class="h-4 w-px bg-slate-700 hidden md:block"></div>
-                <p class="text-sm text-slate-400 hidden md:flex items-center gap-2">
+                <!-- VIEW SWITCHER (ADDITIVE CHANGE) -->
+                <div class="flex items-center bg-slate-100 rounded-lg p-1 border border-slate-200">
+                    <button id="btn-view-simple" onclick="switchView('simple')" class="px-3 py-1 text-[10px] font-bold text-slate-500 rounded hover:text-slate-900 transition-colors flex items-center gap-2">
+                        <i class="fa-solid fa-mug-hot"></i> Simple
+                    </button>
+                    <button id="btn-view-pro" onclick="switchView('pro')" class="px-3 py-1 text-[10px] font-bold bg-white text-brand-700 border border-slate-200 shadow-sm rounded flex items-center gap-2">
+                        <i class="fa-solid fa-terminal"></i> Pro
+                    </button>
+                </div>
+                <div class="h-4 w-px bg-slate-300 hidden md:block"></div>
+                <p class="text-sm text-slate-500 hidden md:flex items-center gap-2">
                     <i class="fa-regular fa-clock text-brand-500"></i> 
                     <span id="market-clock">Market Open • Closes in 4h 20m</span>
                 </p>
@@ -266,361 +338,447 @@
             <div class="flex items-center gap-4">
                 <!-- Search Bar -->
                 <div class="relative hidden md:block w-96 group">
-                    <i class="fa-solid fa-magnifying-glass absolute left-3 top-2.5 text-slate-500 text-xs group-hover:text-brand-400 transition-colors"></i>
-                    <input type="text" id="global-search" class="w-full bg-dark-800 border border-slate-700 rounded-lg pl-9 pr-12 py-2 text-sm text-white placeholder-slate-500 focus:outline-none focus:border-brand-500 focus:ring-1 focus:ring-brand-500/50 transition-all shadow-sm" placeholder="Search invoices, amounts, or regulatory codes..." onkeyup="handleSearch(event)">
-                    <div class="absolute right-2 top-2 text-[10px] text-slate-600 bg-slate-800 px-1.5 py-0.5 rounded border border-slate-700 font-mono">⌘K</div>
+                    <i class="fa-solid fa-magnifying-glass absolute left-3 top-2.5 text-slate-400 text-xs group-hover:text-brand-600 transition-colors"></i>
+                    <input type="text" id="global-search" class="w-full bg-slate-50 border border-slate-200 rounded-lg pl-9 pr-12 py-2 text-sm text-slate-900 placeholder-slate-400 focus:outline-none focus:border-brand-500 focus:ring-1 focus:ring-brand-500/50 transition-all shadow-sm focus:bg-white" placeholder="Search invoices, amounts, or regulatory codes..." onkeyup="handleSearch(event)">
+                    <div class="absolute right-2 top-2 text-[10px] text-slate-500 bg-white px-1.5 py-0.5 rounded border border-slate-200 font-mono shadow-sm">⌘K</div>
                 </div>
 
-                <div class="h-6 w-px bg-slate-700"></div>
+                <div class="h-6 w-px bg-slate-300"></div>
 
                 <!-- Notifications -->
-                <button class="relative p-2 text-slate-400 hover:text-white transition-colors hover:bg-slate-800 rounded-lg" onclick="toggleNotificationPanel()">
+                <button class="relative p-2 text-slate-500 hover:text-slate-900 transition-colors hover:bg-slate-100 rounded-lg" onclick="toggleNotificationPanel()">
                     <i class="fa-regular fa-bell"></i>
-                    <span class="absolute top-1.5 right-1.5 w-2 h-2 bg-red-500 rounded-full border border-dark-900 animate-ping"></span>
-                    <span class="absolute top-1.5 right-1.5 w-2 h-2 bg-red-500 rounded-full border border-dark-900"></span>
+                    <span class="absolute top-1.5 right-1.5 w-2 h-2 bg-red-500 rounded-full border border-white animate-ping"></span>
+                    <span class="absolute top-1.5 right-1.5 w-2 h-2 bg-red-500 rounded-full border border-white"></span>
                 </button>
                 
                 <!-- Support -->
-                <button class="relative p-2 text-slate-400 hover:text-white transition-colors hover:bg-slate-800 rounded-lg" onclick="toggleAtlas()">
+                <button class="relative p-2 text-slate-500 hover:text-slate-900 transition-colors hover:bg-slate-100 rounded-lg" onclick="toggleAtlas()">
                     <i class="fa-solid fa-headset"></i>
                 </button>
             </div>
         </header>
 
-        <!-- Dashboard Content -->
-        <div class="flex-1 overflow-y-auto p-6 scroll-smooth" id="main-content">
+        <!-- Dashboard Content Container (Holds both views) -->
+        <div class="flex-1 overflow-y-auto p-6 scroll-smooth relative" id="main-content">
             
-            <!-- A. HEADS-UP DISPLAY (KPIs) -->
-            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
-                
-                <!-- KPI 1: Total Liquidity (Aggregated) -->
-                <div class="glass-panel p-5 rounded-2xl relative overflow-hidden group cursor-pointer hover:border-brand-500/30 transition-all duration-300" onclick="alert('Opening Consolidated Liquidity View...')">
-                    <div class="absolute inset-0 bg-gradient-to-br from-brand-500/5 to-transparent opacity-0 group-hover:opacity-100 transition-opacity"></div>
-                    <div class="relative z-10">
-                        <div class="flex justify-between items-start mb-2">
-                            <p class="text-xs font-bold text-slate-500 uppercase tracking-wider group-hover:text-brand-300 transition-colors">Total Liquidity</p>
-                            <span class="bg-green-500/10 text-green-400 border border-green-500/20 text-[10px] font-bold px-1.5 py-0.5 rounded flex items-center gap-1">
-                                <i class="fa-solid fa-arrow-trend-up"></i> 12.5%
-                            </span>
+            <!-- VIEW 1: PRO COMMAND CENTER (Original Code Preserved) -->
+            <div id="view-pro" class="view-visible view-transition space-y-6">
+                <!-- A. HEADS-UP DISPLAY (KPIs) -->
+                <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
+                    
+                    <!-- KPI 1: Total Liquidity (Aggregated) -->
+                    <div class="glass-panel p-5 rounded-2xl relative overflow-hidden group cursor-pointer hover:border-brand-300 transition-all duration-300" onclick="toggleModal('market-depth-modal')">
+                        <div class="absolute inset-0 bg-gradient-to-br from-brand-50 to-transparent opacity-0 group-hover:opacity-100 transition-opacity"></div>
+                        <div class="relative z-10">
+                            <div class="flex justify-between items-start mb-2">
+                                <p class="text-xs font-bold text-slate-500 uppercase tracking-wider group-hover:text-brand-600 transition-colors">Total Liquidity</p>
+                                <span class="bg-green-50 text-green-600 border border-green-200 text-[10px] font-bold px-1.5 py-0.5 rounded flex items-center gap-1">
+                                    <i class="fa-solid fa-arrow-trend-up"></i> 12.5%
+                                </span>
+                            </div>
+                            <h3 class="text-2xl font-display font-bold text-slate-900 tracking-tight">₹ 1.42 Cr</h3>
+                            <p class="text-[10px] text-slate-500 mt-1 font-mono">Includes INR + EEFC (USD/SGD)</p>
                         </div>
-                        <h3 class="text-2xl font-display font-bold text-white tracking-tight">₹ 1.42 Cr</h3>
-                        <p class="text-[10px] text-slate-400 mt-1 font-mono">Includes INR + EEFC (USD/SGD)</p>
+                        <!-- Interactive Chart Container -->
+                        <div class="absolute bottom-0 left-0 w-full h-16 opacity-30 group-hover:opacity-60 transition-opacity pointer-events-none">
+                            <canvas id="liquidityChart"></canvas>
+                        </div>
                     </div>
-                    <!-- Interactive Chart Container -->
-                    <div class="absolute bottom-0 left-0 w-full h-16 opacity-30 group-hover:opacity-60 transition-opacity pointer-events-none">
-                        <canvas id="liquidityChart"></canvas>
-                    </div>
-                </div>
 
-                <!-- KPI 2: EEFC Balance (USD) -->
-                <div class="glass-panel p-5 rounded-2xl relative overflow-hidden group border-l-4 border-l-brand-500 hover:shadow-neon transition-shadow duration-300">
-                    <div class="relative z-10">
-                        <div class="flex justify-between items-start mb-2">
-                            <p class="text-xs font-bold text-slate-500 uppercase tracking-wider group-hover:text-brand-300">GIFT City EEFC</p>
-                            <div class="bg-slate-800 p-1.5 rounded-lg group-hover:bg-brand-900 transition-colors">
-                                <i class="fa-solid fa-dollar-sign text-slate-400 group-hover:text-brand-400"></i>
+                    <!-- KPI 2: EEFC Balance (USD) -->
+                    <div class="glass-panel p-5 rounded-2xl relative overflow-hidden group border-l-4 border-l-brand-500 hover:shadow-neon transition-shadow duration-300">
+                        <div class="relative z-10">
+                            <div class="flex justify-between items-start mb-2">
+                                <p class="text-xs font-bold text-slate-500 uppercase tracking-wider group-hover:text-brand-600">GIFT City EEFC</p>
+                                <div class="bg-slate-100 p-1.5 rounded-lg group-hover:bg-brand-50 transition-colors">
+                                    <i class="fa-solid fa-dollar-sign text-slate-500 group-hover:text-brand-600"></i>
+                                </div>
+                            </div>
+                            <h3 class="text-2xl font-display font-bold text-slate-900 tracking-tight">$ 84,500.00</h3>
+                            <div class="flex gap-2 mt-3">
+                                <button class="flex-1 text-[10px] bg-brand-600 hover:bg-brand-700 text-white px-3 py-1.5 rounded-lg font-bold transition shadow-md hover:shadow-lg active:scale-95" onclick="openConvertModal('USD')">
+                                    Convert
+                                </button>
+                                <button class="flex-1 text-[10px] bg-white hover:bg-slate-50 text-slate-700 px-3 py-1.5 rounded-lg font-bold transition shadow-sm border border-slate-300 hover:border-slate-400" onclick="openTransferModal()">
+                                    Transfer
+                                </button>
                             </div>
                         </div>
-                        <h3 class="text-2xl font-display font-bold text-white tracking-tight">$ 84,500.00</h3>
-                        <div class="flex gap-2 mt-3">
-                            <button class="flex-1 text-[10px] bg-brand-600 hover:bg-brand-500 text-white px-3 py-1.5 rounded-lg font-bold transition shadow-md hover:shadow-lg active:scale-95" onclick="openConvertModal('USD')">
-                                Convert
-                            </button>
-                            <button class="flex-1 text-[10px] bg-slate-800 hover:bg-slate-700 text-slate-300 px-3 py-1.5 rounded-lg font-bold transition shadow-sm border border-slate-700 hover:border-slate-600" onclick="openTransferModal()">
-                                Transfer
-                            </button>
+                    </div>
+
+                    <!-- KPI 3: Compliance Score -->
+                    <div class="glass-panel p-5 rounded-2xl relative overflow-hidden group hover:border-green-300 transition-all cursor-pointer" onclick="toggleModal('compliance-detail-modal')">
+                        <div class="flex justify-between items-start mb-2">
+                            <p class="text-xs font-bold text-slate-500 uppercase tracking-wider group-hover:text-green-600 transition-colors">Regulatory Health</p>
+                            <i class="fa-solid fa-shield-halved text-green-500 animate-pulse-slow"></i>
+                        </div>
+                        <div class="flex items-end gap-2">
+                            <h3 class="text-3xl font-display font-bold text-slate-900">98<span class="text-lg text-slate-400">/100</span></h3>
+                        </div>
+                        <div class="w-full bg-slate-200 h-1.5 rounded-full mt-3 overflow-hidden">
+                            <div class="h-full bg-gradient-to-r from-green-600 to-green-400 w-[98%] rounded-full shadow-[0_0_10px_rgba(74,222,128,0.5)]"></div>
+                        </div>
+                        <p class="text-[10px] text-green-600 mt-2 font-bold flex items-center gap-1">
+                            <i class="fa-solid fa-check-circle"></i> EDPMS Sync Active (T+0)
+                        </p>
+                    </div>
+
+                    <!-- KPI 4: Pending Action -->
+                    <div class="bg-gradient-to-br from-amber-50 to-amber-100 border border-amber-200 p-5 rounded-2xl relative overflow-hidden cursor-pointer hover:border-amber-300 hover:shadow-lg transition-all duration-300 group" onclick="window.location.href='inflow-decision-gate.html'">
+                        <div class="absolute -right-4 -top-4 w-16 h-16 bg-amber-200/50 rounded-full blur-xl group-hover:bg-amber-200 transition-all"></div>
+                        <div class="flex justify-between items-start mb-2">
+                            <p class="text-xs font-bold text-amber-700 uppercase tracking-wider animate-pulse">Action Required</p>
+                            <div class="relative">
+                                <i class="fa-solid fa-bell text-amber-500 text-lg group-hover:rotate-12 transition-transform"></i>
+                                <span class="absolute -top-1 -right-1 w-2.5 h-2.5 bg-red-500 rounded-full border border-white"></span>
+                            </div>
+                        </div>
+                        <h3 class="text-2xl font-display font-bold text-amber-950">3 Inflows</h3>
+                        <p class="text-xs text-amber-800/80 mt-1 font-mono">Pending Decision: $12,500</p>
+                        <div class="mt-3 flex items-center gap-2 text-[10px] font-bold text-amber-800 group-hover:translate-x-1 transition-transform">
+                            <span>Review Now</span> <i class="fa-solid fa-arrow-right"></i>
                         </div>
                     </div>
                 </div>
 
-                <!-- KPI 3: Compliance Score -->
-                <div class="glass-panel p-5 rounded-2xl relative overflow-hidden group hover:border-green-500/30 transition-all cursor-pointer" onclick="toggleModal('compliance-detail-modal')">
-                    <div class="flex justify-between items-start mb-2">
-                        <p class="text-xs font-bold text-slate-500 uppercase tracking-wider group-hover:text-green-400 transition-colors">Regulatory Health</p>
-                        <i class="fa-solid fa-shield-halved text-green-500 animate-pulse-slow"></i>
-                    </div>
-                    <div class="flex items-end gap-2">
-                        <h3 class="text-3xl font-display font-bold text-white">98<span class="text-lg text-slate-500">/100</span></h3>
-                    </div>
-                    <div class="w-full bg-slate-800 h-1.5 rounded-full mt-3 overflow-hidden">
-                        <div class="h-full bg-gradient-to-r from-green-600 to-green-400 w-[98%] rounded-full shadow-[0_0_10px_rgba(74,222,128,0.5)]"></div>
-                    </div>
-                    <p class="text-[10px] text-green-400 mt-2 font-bold flex items-center gap-1">
-                        <i class="fa-solid fa-check-circle"></i> EDPMS Sync Active (T+0)
-                    </p>
-                </div>
+                <!-- B. MAIN WORKSPACE GRID -->
+                <div class="grid lg:grid-cols-3 gap-8">
+                    
+                    <!-- COL 1 & 2: ACTION CENTER -->
+                    <div class="lg:col-span-2 space-y-6">
+                        
+                        <!-- 1. LIVE RATES FEED (Bloomberg Style) -->
+                        <div class="glass-panel rounded-2xl p-0 overflow-hidden border-t-2 border-t-brand-500">
+                            <div class="px-6 py-4 border-b border-slate-200 flex justify-between items-center bg-slate-50/80">
+                                <h3 class="text-sm font-bold text-slate-900 flex items-center gap-2">
+                                    <span class="w-2 h-2 rounded-full bg-green-500 animate-pulse"></span> 
+                                    Live Interbank Rates (GIFT IBU)
+                                </h3>
+                                <div class="flex gap-3">
+                                    <span class="text-[10px] text-slate-500 font-mono self-center">Updated: <span id="last-updated-time">Just now</span></span>
+                                    <button class="text-xs text-brand-600 font-bold hover:text-brand-800 transition" onclick="toggleModal('market-depth-modal')">
+                                        Full Depth <i class="fa-solid fa-up-right-from-square ml-1"></i>
+                                    </button>
+                                </div>
+                            </div>
+                            
+                            <div class="grid grid-cols-1 md:grid-cols-3 divide-y md:divide-y-0 md:divide-x divide-slate-200">
+                                <!-- USD -->
+                                <div class="p-6 group hover:bg-slate-50 transition-colors cursor-pointer relative" onclick="openConvertModal('USD')">
+                                    <div class="absolute top-2 right-2 opacity-0 group-hover:opacity-100 transition-opacity">
+                                        <i class="fa-solid fa-arrow-right-arrow-left text-slate-400 text-xs"></i>
+                                    </div>
+                                    <div class="flex justify-between items-center mb-2">
+                                        <div class="flex items-center gap-2">
+                                            <img src="https://flagcdn.com/w20/us.png" class="rounded-sm w-5 shadow-sm">
+                                            <span class="font-bold text-slate-900">USD/INR</span>
+                                        </div>
+                                        <span class="text-xs font-mono text-green-700 bg-green-100 px-1.5 py-0.5 rounded border border-green-200">+0.05%</span>
+                                    </div>
+                                    <div class="flex items-baseline gap-2">
+                                        <span class="text-3xl font-mono font-bold text-slate-900 tracking-tighter" id="rate-usd">83.60</span>
+                                        <span class="text-xs text-slate-400 line-through">84.50</span>
+                                    </div>
+                                    <p class="text-[10px] text-brand-600 mt-1 font-bold uppercase tracking-wide">Wholesale Spread: 0.20%</p>
+                                    <!-- Mini Sparkline -->
+                                    <div class="h-8 mt-2 opacity-80">
+                                        <canvas id="sparkline-usd"></canvas>
+                                    </div>
+                                </div>
 
-                <!-- KPI 4: Pending Action -->
-                <div class="bg-gradient-to-br from-amber-500/20 to-amber-700/10 border border-amber-500/30 p-5 rounded-2xl relative overflow-hidden cursor-pointer hover:border-amber-500/60 hover:shadow-[0_0_20px_rgba(245,158,11,0.2)] transition-all duration-300 group" onclick="window.location.href='inflow-decision-gate.html'">
-                    <div class="absolute -right-4 -top-4 w-16 h-16 bg-amber-500/20 rounded-full blur-xl group-hover:bg-amber-500/30 transition-all"></div>
-                    <div class="flex justify-between items-start mb-2">
-                        <p class="text-xs font-bold text-amber-200 uppercase tracking-wider animate-pulse">Action Required</p>
-                        <div class="relative">
-                            <i class="fa-solid fa-bell text-amber-400 text-lg group-hover:rotate-12 transition-transform"></i>
-                            <span class="absolute -top-1 -right-1 w-2.5 h-2.5 bg-red-500 rounded-full border border-dark-900"></span>
+                                <!-- SGD -->
+                                <div class="p-6 group hover:bg-slate-50 transition-colors cursor-pointer relative" onclick="openConvertModal('SGD')">
+                                    <div class="absolute top-2 right-2 opacity-0 group-hover:opacity-100 transition-opacity">
+                                        <i class="fa-solid fa-arrow-right-arrow-left text-slate-400 text-xs"></i>
+                                    </div>
+                                    <div class="flex justify-between items-center mb-2">
+                                        <div class="flex items-center gap-2">
+                                            <img src="https://flagcdn.com/w20/sg.png" class="rounded-sm w-5 shadow-sm">
+                                            <span class="font-bold text-slate-900">SGD/INR</span>
+                                        </div>
+                                        <span class="text-xs font-mono text-red-700 bg-red-100 px-1.5 py-0.5 rounded border border-red-200">-0.12%</span>
+                                    </div>
+                                    <div class="flex items-baseline gap-2">
+                                        <span class="text-3xl font-mono font-bold text-slate-900 tracking-tighter" id="rate-sgd">62.40</span>
+                                        <span class="text-xs text-slate-400 line-through">63.20</span>
+                                    </div>
+                                    <p class="text-[10px] text-brand-600 mt-1 font-bold uppercase tracking-wide">Wholesale Spread: 0.20%</p>
+                                    <div class="h-8 mt-2 opacity-80">
+                                        <canvas id="sparkline-sgd"></canvas>
+                                    </div>
+                                </div>
+
+                                <!-- GBP -->
+                                <div class="p-6 group hover:bg-slate-50 transition-colors cursor-pointer relative" onclick="openConvertModal('GBP')">
+                                    <div class="absolute top-2 right-2 opacity-0 group-hover:opacity-100 transition-opacity">
+                                        <i class="fa-solid fa-arrow-right-arrow-left text-slate-400 text-xs"></i>
+                                    </div>
+                                    <div class="flex justify-between items-center mb-2">
+                                        <div class="flex items-center gap-2">
+                                            <img src="https://flagcdn.com/w20/gb.png" class="rounded-sm w-5 shadow-sm">
+                                            <span class="font-bold text-slate-900">GBP/INR</span>
+                                        </div>
+                                        <span class="text-xs font-mono text-green-700 bg-green-100 px-1.5 py-0.5 rounded border border-green-200">+0.01%</span>
+                                    </div>
+                                    <div class="flex items-baseline gap-2">
+                                        <span class="text-3xl font-mono font-bold text-slate-900 tracking-tighter" id="rate-gbp">106.40</span>
+                                        <span class="text-xs text-slate-400 line-through">108.10</span>
+                                    </div>
+                                    <p class="text-[10px] text-brand-600 mt-1 font-bold uppercase tracking-wide">Wholesale Spread: 0.20%</p>
+                                    <div class="h-8 mt-2 opacity-80">
+                                        <canvas id="sparkline-gbp"></canvas>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- 2. RECENT ACTIVITY LEDGER -->
+                        <div class="glass-panel rounded-2xl p-0 overflow-hidden flex flex-col h-[400px]">
+                            <div class="px-6 py-4 border-b border-slate-200 flex justify-between items-center bg-white sticky top-0 z-10 backdrop-blur-md">
+                                <h3 class="text-sm font-bold text-slate-900 flex items-center gap-2">
+                                    <i class="fa-solid fa-list-ul text-brand-600"></i> Live Transaction Stream
+                                </h3>
+                                <div class="flex gap-2">
+                                    <button class="p-1.5 text-slate-400 hover:text-slate-700 hover:bg-slate-100 rounded transition-colors" title="Filter"><i class="fa-solid fa-filter text-xs"></i></button>
+                                    <button class="p-1.5 text-slate-400 hover:text-slate-700 hover:bg-slate-100 rounded transition-colors" title="Download CSV"><i class="fa-solid fa-download text-xs"></i></button>
+                                </div>
+                            </div>
+                            
+                            <div class="overflow-y-auto flex-1 custom-scrollbar">
+                                <table class="w-full text-sm text-left border-collapse">
+                                    <thead class="text-xs text-slate-500 uppercase bg-slate-50 sticky top-0 z-10 border-b border-slate-200">
+                                        <tr>
+                                            <th class="px-6 py-3 font-semibold w-24">Time</th>
+                                            <th class="px-6 py-3 font-semibold">Counterparty</th>
+                                            <th class="px-6 py-3 font-semibold">Amount</th>
+                                            <th class="px-6 py-3 font-semibold">Type</th>
+                                            <th class="px-6 py-3 font-semibold">Compliance</th>
+                                            <th class="px-6 py-3 font-semibold text-right">Action</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody class="divide-y divide-slate-100" id="transaction-table-body">
+                                        <!-- Populated via JS -->
+                                        <tr class="animate-pulse">
+                                            <td colspan="6" class="px-6 py-8 text-center text-slate-400">Loading live data...</td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
                         </div>
                     </div>
-                    <h3 class="text-2xl font-display font-bold text-white">3 Inflows</h3>
-                    <p class="text-xs text-amber-200/70 mt-1 font-mono">Pending Decision: $12,500</p>
-                    <div class="mt-3 flex items-center gap-2 text-[10px] font-bold text-amber-300 group-hover:translate-x-1 transition-transform">
-                        <span>Review Now</span> <i class="fa-solid fa-arrow-right"></i>
+
+                    <!-- COL 3: WIDGETS -->
+                    <div class="space-y-6">
+                        
+                        <!-- 1. AI ASSISTANT (Atlas) - Pro Mode -->
+                        <div class="glass-panel p-5 rounded-2xl relative overflow-hidden bg-gradient-to-b from-brand-50 to-white border-brand-200 shadow-lg shadow-brand-100">
+                            <div class="absolute top-0 right-0 p-4 opacity-10">
+                                <i class="fa-solid fa-robot text-6xl text-brand-200"></i>
+                            </div>
+                            <div class="flex items-center gap-3 mb-4 relative z-10">
+                                <div class="w-8 h-8 rounded-full bg-gradient-to-br from-brand-500 to-brand-700 flex items-center justify-center shadow-lg shadow-brand-200 animate-pulse-slow">
+                                    <i class="fa-solid fa-robot text-white text-xs"></i>
+                                </div>
+                                <div>
+                                    <h4 class="text-sm font-bold text-slate-900">Atlas AI</h4>
+                                    <p class="text-[10px] text-brand-600 flex items-center gap-1">
+                                        <span class="w-1.5 h-1.5 bg-green-500 rounded-full animate-pulse"></span> Live Assistant
+                                    </p>
+                                </div>
+                            </div>
+                            
+                            <div class="bg-white rounded-xl p-3 mb-4 border border-brand-100 shadow-sm relative z-10">
+                                <p class="text-xs text-slate-600 leading-relaxed" id="atlas-pro-tip">
+                                    <span class="text-brand-600 font-bold"><i class="fa-solid fa-lightbulb"></i> Tip:</span> The USD rate has improved by <strong>15 pips</strong>. Convert your pending Zara inflow now to gain ~₹2,400.
+                                </p>
+                            </div>
+                            
+                            <div class="grid grid-cols-2 gap-2 relative z-10">
+                                <button onclick="toggleAtlas()" class="text-[10px] font-bold bg-white text-slate-700 border border-slate-200 py-2 rounded-lg hover:bg-slate-50 transition shadow-sm flex items-center justify-center gap-1">
+                                    <i class="fa-regular fa-comment-dots"></i> Ask
+                                </button>
+                                <button onclick="window.location.href='inflow-decision-gate.html'" class="text-[10px] font-bold bg-brand-600 text-white py-2 rounded-lg hover:bg-brand-700 transition shadow-sm flex items-center justify-center gap-1">
+                                    Go to Inflow <i class="fa-solid fa-arrow-right"></i>
+                                </button>
+                            </div>
+                        </div>
+
+                        <!-- 2. QUICK TRANSFER -->
+                        <div class="glass-panel p-5 rounded-2xl">
+                            <div class="flex justify-between items-center mb-4">
+                                <h4 class="text-xs font-bold text-slate-500 uppercase tracking-wider">Quick Pay</h4>
+                                <button class="text-slate-400 hover:text-slate-700 transition"><i class="fa-solid fa-ellipsis"></i></button>
+                            </div>
+                            
+                            <div class="flex gap-3 overflow-x-auto pb-2 mb-4 no-scrollbar">
+                                <!-- Add New -->
+                                <div class="flex flex-col items-center gap-1 cursor-pointer group min-w-[50px]" onclick="openTransferModal()">
+                                    <div class="w-10 h-10 rounded-full border-2 border-dashed border-slate-300 flex items-center justify-center text-slate-400 hover:border-brand-500 hover:text-brand-600 transition-colors bg-slate-50">
+                                        <i class="fa-solid fa-plus"></i>
+                                    </div>
+                                    <span class="text-[10px] text-slate-500 group-hover:text-brand-600 transition-colors">New</span>
+                                </div>
+                                <!-- Avatar 1 -->
+                                <div class="flex flex-col items-center gap-1 cursor-pointer group min-w-[50px]" onclick="prefillTransfer('Maersk')">
+                                    <div class="w-10 h-10 rounded-full bg-slate-100 border-2 border-transparent group-hover:border-brand-500 transition-colors flex items-center justify-center text-xs font-bold text-slate-700 shadow-sm relative">
+                                        M
+                                        <div class="absolute bottom-0 right-0 w-2.5 h-2.5 bg-green-500 border border-white rounded-full"></div>
+                                    </div>
+                                    <span class="text-[10px] text-slate-500 group-hover:text-slate-900 truncate max-w-[50px]">Maersk</span>
+                                </div>
+                                <!-- Avatar 2 -->
+                                <div class="flex flex-col items-center gap-1 cursor-pointer group min-w-[50px]" onclick="prefillTransfer('FedEx')">
+                                    <div class="w-10 h-10 rounded-full bg-slate-100 border-2 border-transparent group-hover:border-brand-500 transition-colors flex items-center justify-center text-xs font-bold text-slate-700 shadow-sm">
+                                        F
+                                    </div>
+                                    <span class="text-[10px] text-slate-500 group-hover:text-slate-900 truncate max-w-[50px]">FedEx</span>
+                                </div>
+                                 <!-- Avatar 3 -->
+                                 <div class="flex flex-col items-center gap-1 cursor-pointer group min-w-[50px]" onclick="prefillTransfer('AWS')">
+                                    <div class="w-10 h-10 rounded-full bg-slate-100 border-2 border-transparent group-hover:border-brand-500 transition-colors flex items-center justify-center text-xs font-bold text-slate-700 shadow-sm">
+                                        A
+                                    </div>
+                                    <span class="text-[10px] text-slate-500 group-hover:text-slate-900 truncate max-w-[50px]">AWS</span>
+                                </div>
+                            </div>
+
+                            <div class="relative mb-3">
+                                <span class="absolute left-3 top-2.5 text-slate-500 text-xs font-bold">$</span>
+                                <input type="number" id="quick-pay-amount" class="w-full bg-slate-50 border border-slate-200 rounded-lg py-2 pl-6 pr-3 text-sm text-slate-900 focus:border-brand-500 focus:outline-none focus:ring-1 focus:ring-brand-500 transition-all font-mono placeholder-slate-400" placeholder="0.00">
+                            </div>
+                            <button class="w-full py-2 bg-brand-600 hover:bg-brand-700 text-white text-xs font-bold rounded-lg transition shadow-lg shadow-brand-500/20 active:scale-95 flex items-center justify-center gap-2" onclick="processQuickPay()">
+                                Send Now <i class="fa-solid fa-paper-plane"></i>
+                            </button>
+                        </div>
+
+                        <!-- 3. COMPLIANCE STATUS BREAKDOWN -->
+                        <div class="glass-panel p-5 rounded-2xl">
+                            <div class="flex justify-between items-center mb-4">
+                                <h4 class="text-xs font-bold text-slate-500 uppercase tracking-wider">Doc Status</h4>
+                                <span class="text-[10px] text-slate-400 flex items-center gap-1"><i class="fa-solid fa-sync fa-spin"></i> Syncing...</span>
+                            </div>
+                            
+                            <div class="space-y-4">
+                                <!-- e-FIRA -->
+                                <div>
+                                    <div class="flex items-center justify-between text-xs mb-1">
+                                        <span class="text-slate-500">e-FIRAs Generated</span>
+                                        <span class="text-slate-900 font-bold font-mono">142/145</span>
+                                    </div>
+                                    <div class="w-full bg-slate-200 h-1.5 rounded-full overflow-hidden">
+                                        <div class="bg-brand-500 h-full w-[98%] rounded-full"></div>
+                                    </div>
+                                </div>
+                                
+                                <!-- BoE -->
+                                <div>
+                                    <div class="flex items-center justify-between text-xs mb-1">
+                                        <span class="text-slate-500">Bill of Entry Mapped</span>
+                                        <span class="text-slate-900 font-bold font-mono">98%</span>
+                                    </div>
+                                    <div class="w-full bg-slate-200 h-1.5 rounded-full overflow-hidden">
+                                        <div class="bg-green-500 h-full w-[98%] rounded-full"></div>
+                                    </div>
+                                </div>
+
+                                <!-- Outstanding -->
+                                <div>
+                                    <div class="flex items-center justify-between text-xs mb-1">
+                                        <span class="text-slate-500">Pending EDPMS</span>
+                                        <span class="text-amber-600 font-bold font-mono">3 Actions</span>
+                                    </div>
+                                    <div class="w-full bg-slate-200 h-1.5 rounded-full overflow-hidden">
+                                        <div class="bg-amber-500 h-full w-[15%] rounded-full"></div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
                     </div>
                 </div>
             </div>
 
-            <!-- B. MAIN WORKSPACE GRID -->
-            <div class="grid lg:grid-cols-3 gap-8">
+            <!-- VIEW 2: EXECUTIVE SUMMARY (SIMPLE MODE) -->
+            <div id="view-simple" class="view-hidden view-transition pt-8">
                 
-                <!-- COL 1 & 2: ACTION CENTER -->
-                <div class="lg:col-span-2 space-y-6">
+                <!-- Welcome Banner -->
+                <div class="mb-10 text-center animate-fade-in-up">
+                    <span class="inline-block px-3 py-1 bg-brand-50 text-brand-700 rounded-full text-xs font-bold mb-3 border border-brand-200">Executive Overview</span>
+                    <h2 class="text-4xl font-display font-bold text-slate-900 mb-2">Good afternoon, Tex Exports</h2>
+                    <p class="text-slate-500 max-w-lg mx-auto">Your treasury is healthy. You have <span class="text-slate-900 font-bold">3 pending actions</span> requiring attention today.</p>
+                </div>
+
+                <!-- Primary Action Cards (Big Targets) -->
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-6 max-w-5xl mx-auto mb-12">
                     
-                    <!-- 1. LIVE RATES FEED (Bloomberg Style) -->
-                    <div class="glass-panel rounded-2xl p-0 overflow-hidden border-t-2 border-t-brand-500">
-                        <div class="px-6 py-4 border-b border-slate-800 flex justify-between items-center bg-dark-900/50">
-                            <h3 class="text-sm font-bold text-white flex items-center gap-2">
-                                <span class="w-2 h-2 rounded-full bg-green-500 animate-pulse"></span> 
-                                Live Interbank Rates (GIFT IBU)
-                            </h3>
-                            <div class="flex gap-3">
-                                <span class="text-[10px] text-slate-500 font-mono self-center">Updated: <span id="last-updated-time">Just now</span></span>
-                                <button class="text-xs text-brand-400 font-bold hover:text-white transition" onclick="toggleModal('market-depth-modal')">
-                                    Full Depth <i class="fa-solid fa-up-right-from-square ml-1"></i>
-                                </button>
-                            </div>
+                    <!-- Card 1: Receive -->
+                    <div class="simple-card p-8 text-center group cursor-pointer animate-fade-in-up" style="animation-delay: 0.1s" onclick="window.location.href='inflow-decision-gate.html'">
+                        <div class="w-16 h-16 rounded-2xl bg-gradient-to-br from-green-500 to-green-700 mx-auto flex items-center justify-center text-white text-2xl shadow-lg shadow-green-500/30 mb-6 group-hover:scale-110 transition-transform">
+                            <i class="fa-solid fa-arrow-down"></i>
                         </div>
-                        
-                        <div class="grid grid-cols-1 md:grid-cols-3 divide-y md:divide-y-0 md:divide-x divide-slate-800">
-                            <!-- USD -->
-                            <div class="p-6 group hover:bg-white/5 transition-colors cursor-pointer relative" onclick="openConvertModal('USD')">
-                                <div class="absolute top-2 right-2 opacity-0 group-hover:opacity-100 transition-opacity">
-                                    <i class="fa-solid fa-arrow-right-arrow-left text-slate-500 text-xs"></i>
-                                </div>
-                                <div class="flex justify-between items-center mb-2">
-                                    <div class="flex items-center gap-2">
-                                        <img src="https://flagcdn.com/w20/us.png" class="rounded-sm w-5 shadow-sm">
-                                        <span class="font-bold text-white">USD/INR</span>
-                                    </div>
-                                    <span class="text-xs font-mono text-green-400 bg-green-900/30 px-1.5 py-0.5 rounded border border-green-500/20">+0.05%</span>
-                                </div>
-                                <div class="flex items-baseline gap-2">
-                                    <span class="text-3xl font-mono font-bold text-white tracking-tighter" id="rate-usd">83.60</span>
-                                    <span class="text-xs text-slate-500 line-through">84.50</span>
-                                </div>
-                                <p class="text-[10px] text-brand-400 mt-1 font-bold uppercase tracking-wide">Wholesale Spread: 0.20%</p>
-                                <!-- Mini Sparkline -->
-                                <div class="h-8 mt-2 opacity-50">
-                                    <canvas id="sparkline-usd"></canvas>
-                                </div>
-                            </div>
-
-                            <!-- SGD -->
-                            <div class="p-6 group hover:bg-white/5 transition-colors cursor-pointer relative" onclick="openConvertModal('SGD')">
-                                <div class="absolute top-2 right-2 opacity-0 group-hover:opacity-100 transition-opacity">
-                                    <i class="fa-solid fa-arrow-right-arrow-left text-slate-500 text-xs"></i>
-                                </div>
-                                <div class="flex justify-between items-center mb-2">
-                                    <div class="flex items-center gap-2">
-                                        <img src="https://flagcdn.com/w20/sg.png" class="rounded-sm w-5 shadow-sm">
-                                        <span class="font-bold text-white">SGD/INR</span>
-                                    </div>
-                                    <span class="text-xs font-mono text-red-400 bg-red-900/30 px-1.5 py-0.5 rounded border border-red-500/20">-0.12%</span>
-                                </div>
-                                <div class="flex items-baseline gap-2">
-                                    <span class="text-3xl font-mono font-bold text-white tracking-tighter" id="rate-sgd">62.40</span>
-                                    <span class="text-xs text-slate-500 line-through">63.20</span>
-                                </div>
-                                <p class="text-[10px] text-brand-400 mt-1 font-bold uppercase tracking-wide">Wholesale Spread: 0.20%</p>
-                                <div class="h-8 mt-2 opacity-50">
-                                    <canvas id="sparkline-sgd"></canvas>
-                                </div>
-                            </div>
-
-                            <!-- GBP -->
-                            <div class="p-6 group hover:bg-white/5 transition-colors cursor-pointer relative" onclick="openConvertModal('GBP')">
-                                <div class="absolute top-2 right-2 opacity-0 group-hover:opacity-100 transition-opacity">
-                                    <i class="fa-solid fa-arrow-right-arrow-left text-slate-500 text-xs"></i>
-                                </div>
-                                <div class="flex justify-between items-center mb-2">
-                                    <div class="flex items-center gap-2">
-                                        <img src="https://flagcdn.com/w20/gb.png" class="rounded-sm w-5 shadow-sm">
-                                        <span class="font-bold text-white">GBP/INR</span>
-                                    </div>
-                                    <span class="text-xs font-mono text-green-400 bg-green-900/30 px-1.5 py-0.5 rounded border border-green-500/20">+0.01%</span>
-                                </div>
-                                <div class="flex items-baseline gap-2">
-                                    <span class="text-3xl font-mono font-bold text-white tracking-tighter" id="rate-gbp">106.40</span>
-                                    <span class="text-xs text-slate-500 line-through">108.10</span>
-                                </div>
-                                <p class="text-[10px] text-brand-400 mt-1 font-bold uppercase tracking-wide">Wholesale Spread: 0.20%</p>
-                                <div class="h-8 mt-2 opacity-50">
-                                    <canvas id="sparkline-gbp"></canvas>
-                                </div>
-                            </div>
-                        </div>
+                        <h3 class="text-xl font-bold text-slate-900 mb-2">Inbound Payments</h3>
+                        <p class="text-sm text-slate-500 mb-6">Review 3 pending invoices totalling $12,500 waiting for approval.</p>
+                        <button class="w-full py-3 bg-slate-50 border border-slate-200 hover:bg-white hover:border-green-300 text-slate-900 font-bold rounded-xl transition shadow-sm">View Pending (3)</button>
                     </div>
 
-                    <!-- 2. RECENT ACTIVITY LEDGER -->
-                    <div class="glass-panel rounded-2xl p-0 overflow-hidden flex flex-col h-[400px]">
-                        <div class="px-6 py-4 border-b border-slate-800 flex justify-between items-center bg-dark-900/80 sticky top-0 z-10 backdrop-blur-md">
-                            <h3 class="text-sm font-bold text-white flex items-center gap-2">
-                                <i class="fa-solid fa-list-ul text-brand-500"></i> Live Transaction Stream
-                            </h3>
-                            <div class="flex gap-2">
-                                <button class="p-1.5 text-slate-400 hover:text-white hover:bg-slate-700 rounded transition-colors" title="Filter"><i class="fa-solid fa-filter text-xs"></i></button>
-                                <button class="p-1.5 text-slate-400 hover:text-white hover:bg-slate-700 rounded transition-colors" title="Download CSV"><i class="fa-solid fa-download text-xs"></i></button>
-                            </div>
+                    <!-- Card 2: Send -->
+                    <div class="simple-card p-8 text-center group cursor-pointer animate-fade-in-up" style="animation-delay: 0.2s" onclick="openTransferModal()">
+                        <div class="w-16 h-16 rounded-2xl bg-gradient-to-br from-brand-500 to-brand-700 mx-auto flex items-center justify-center text-white text-2xl shadow-lg shadow-brand-500/30 mb-6 group-hover:scale-110 transition-transform">
+                            <i class="fa-solid fa-paper-plane"></i>
                         </div>
-                        
-                        <div class="overflow-y-auto flex-1 custom-scrollbar">
-                            <table class="w-full text-sm text-left border-collapse">
-                                <thead class="text-xs text-slate-500 uppercase bg-dark-900/50 sticky top-0 z-10 backdrop-blur-md border-b border-slate-800">
-                                    <tr>
-                                        <th class="px-6 py-3 font-semibold w-24">Time</th>
-                                        <th class="px-6 py-3 font-semibold">Counterparty</th>
-                                        <th class="px-6 py-3 font-semibold">Amount</th>
-                                        <th class="px-6 py-3 font-semibold">Type</th>
-                                        <th class="px-6 py-3 font-semibold">Compliance</th>
-                                        <th class="px-6 py-3 font-semibold text-right">Action</th>
-                                    </tr>
-                                </thead>
-                                <tbody class="divide-y divide-slate-800/50" id="transaction-table-body">
-                                    <!-- Populated via JS -->
-                                    <tr class="animate-pulse">
-                                        <td colspan="6" class="px-6 py-8 text-center text-slate-500">Loading live data...</td>
-                                    </tr>
-                                </tbody>
-                            </table>
+                        <h3 class="text-xl font-bold text-slate-900 mb-2">Send Money</h3>
+                        <p class="text-sm text-slate-500 mb-6">Pay international vendors or transfer funds to your local accounts.</p>
+                        <button class="w-full py-3 bg-brand-600 hover:bg-brand-700 text-white font-bold rounded-xl transition shadow-lg shadow-brand-500/20">New Transfer</button>
+                    </div>
+
+                    <!-- Card 3: Convert -->
+                    <div class="simple-card p-8 text-center group cursor-pointer animate-fade-in-up" style="animation-delay: 0.3s" onclick="openConvertModal('USD')">
+                        <div class="w-16 h-16 rounded-2xl bg-gradient-to-br from-purple-500 to-purple-700 mx-auto flex items-center justify-center text-white text-2xl shadow-lg shadow-purple-500/30 mb-6 group-hover:scale-110 transition-transform">
+                            <i class="fa-solid fa-rotate"></i>
                         </div>
+                        <h3 class="text-xl font-bold text-slate-900 mb-2">Convert FX</h3>
+                        <p class="text-sm text-slate-500 mb-6">Rates are favorable. Convert your EEFC USD balance to INR instantly.</p>
+                        <button class="w-full py-3 bg-slate-50 border border-slate-200 hover:bg-white hover:border-purple-300 text-slate-900 font-bold rounded-xl transition shadow-sm">Check Rates</button>
                     </div>
                 </div>
 
-                <!-- COL 3: WIDGETS -->
-                <div class="space-y-6">
-                    
-                    <!-- 1. AI ASSISTANT (Atlas) - Pro Mode -->
-                    <div class="glass-panel p-5 rounded-2xl relative overflow-hidden bg-gradient-to-b from-brand-900/20 to-transparent border-brand-500/20 shadow-lg shadow-brand-900/20">
-                        <div class="absolute top-0 right-0 p-4 opacity-10">
-                            <i class="fa-solid fa-robot text-6xl text-white"></i>
-                        </div>
-                        <div class="flex items-center gap-3 mb-4 relative z-10">
-                            <div class="w-8 h-8 rounded-full bg-gradient-to-br from-brand-400 to-brand-600 flex items-center justify-center shadow-lg shadow-brand-500/40 animate-pulse-slow">
-                                <i class="fa-solid fa-robot text-white text-xs"></i>
-                            </div>
-                            <div>
-                                <h4 class="text-sm font-bold text-white">Atlas AI</h4>
-                                <p class="text-[10px] text-brand-300 flex items-center gap-1">
-                                    <span class="w-1.5 h-1.5 bg-green-500 rounded-full animate-pulse"></span> Live Assistant
-                                </p>
-                            </div>
-                        </div>
-                        
-                        <div class="bg-dark-900/50 rounded-xl p-3 mb-4 border border-slate-800/50 backdrop-blur-sm relative z-10">
-                            <p class="text-xs text-slate-300 leading-relaxed" id="atlas-pro-tip">
-                                <span class="text-brand-400 font-bold"><i class="fa-solid fa-lightbulb"></i> Tip:</span> The USD rate has improved by <strong>15 pips</strong>. Convert your pending Zara inflow now to gain ~₹2,400.
-                            </p>
-                        </div>
-                        
-                        <div class="grid grid-cols-2 gap-2 relative z-10">
-                            <button onclick="toggleAtlas()" class="text-[10px] font-bold bg-white text-dark-950 py-2 rounded-lg hover:bg-slate-200 transition shadow-sm flex items-center justify-center gap-1">
-                                <i class="fa-regular fa-comment-dots"></i> Ask
-                            </button>
-                            <button onclick="window.location.href='inflow-decision-gate.html'" class="text-[10px] font-bold bg-brand-600 text-white py-2 rounded-lg hover:bg-brand-500 transition shadow-sm flex items-center justify-center gap-1">
-                                Go to Inflow <i class="fa-solid fa-arrow-right"></i>
-                            </button>
-                        </div>
-                    </div>
-
-                    <!-- 2. QUICK TRANSFER -->
-                    <div class="glass-panel p-5 rounded-2xl">
-                        <div class="flex justify-between items-center mb-4">
-                            <h4 class="text-xs font-bold text-slate-500 uppercase tracking-wider">Quick Pay</h4>
-                            <button class="text-slate-500 hover:text-white transition"><i class="fa-solid fa-ellipsis"></i></button>
-                        </div>
-                        
-                        <div class="flex gap-3 overflow-x-auto pb-2 mb-4 no-scrollbar">
-                            <!-- Add New -->
-                            <div class="flex flex-col items-center gap-1 cursor-pointer group min-w-[50px]" onclick="openTransferModal()">
-                                <div class="w-10 h-10 rounded-full border-2 border-dashed border-slate-600 flex items-center justify-center text-slate-500 hover:border-brand-500 hover:text-brand-400 transition-colors bg-slate-800/50">
-                                    <i class="fa-solid fa-plus"></i>
-                                </div>
-                                <span class="text-[10px] text-slate-500 group-hover:text-brand-400 transition-colors">New</span>
-                            </div>
-                            <!-- Avatar 1 -->
-                            <div class="flex flex-col items-center gap-1 cursor-pointer group min-w-[50px]" onclick="prefillTransfer('Maersk')">
-                                <div class="w-10 h-10 rounded-full bg-slate-700 border-2 border-transparent group-hover:border-brand-500 transition-colors flex items-center justify-center text-xs font-bold text-white shadow-sm relative">
-                                    M
-                                    <div class="absolute bottom-0 right-0 w-2.5 h-2.5 bg-green-500 border border-dark-900 rounded-full"></div>
-                                </div>
-                                <span class="text-[10px] text-slate-400 group-hover:text-white truncate max-w-[50px]">Maersk</span>
-                            </div>
-                            <!-- Avatar 2 -->
-                            <div class="flex flex-col items-center gap-1 cursor-pointer group min-w-[50px]" onclick="prefillTransfer('FedEx')">
-                                <div class="w-10 h-10 rounded-full bg-slate-700 border-2 border-transparent group-hover:border-brand-500 transition-colors flex items-center justify-center text-xs font-bold text-white shadow-sm">
-                                    F
-                                </div>
-                                <span class="text-[10px] text-slate-400 group-hover:text-white truncate max-w-[50px]">FedEx</span>
-                            </div>
-                             <!-- Avatar 3 -->
-                             <div class="flex flex-col items-center gap-1 cursor-pointer group min-w-[50px]" onclick="prefillTransfer('AWS')">
-                                <div class="w-10 h-10 rounded-full bg-slate-700 border-2 border-transparent group-hover:border-brand-500 transition-colors flex items-center justify-center text-xs font-bold text-white shadow-sm">
-                                    A
-                                </div>
-                                <span class="text-[10px] text-slate-400 group-hover:text-white truncate max-w-[50px]">AWS</span>
-                            </div>
-                        </div>
-
-                        <div class="relative mb-3">
-                            <span class="absolute left-3 top-2.5 text-slate-500 text-xs font-bold">$</span>
-                            <input type="number" id="quick-pay-amount" class="w-full bg-dark-900 border border-slate-700 rounded-lg py-2 pl-6 pr-3 text-sm text-white focus:border-brand-500 focus:outline-none focus:ring-1 focus:ring-brand-500 transition-all font-mono placeholder-slate-600" placeholder="0.00">
-                        </div>
-                        <button class="w-full py-2 bg-brand-600 hover:bg-brand-500 text-white text-xs font-bold rounded-lg transition shadow-lg shadow-brand-500/20 active:scale-95 flex items-center justify-center gap-2" onclick="processQuickPay()">
-                            Send Now <i class="fa-solid fa-paper-plane"></i>
-                        </button>
-                    </div>
-
-                    <!-- 3. COMPLIANCE STATUS BREAKDOWN -->
-                    <div class="glass-panel p-5 rounded-2xl">
-                        <div class="flex justify-between items-center mb-4">
-                            <h4 class="text-xs font-bold text-slate-500 uppercase tracking-wider">Doc Status</h4>
-                            <span class="text-[10px] text-slate-400 flex items-center gap-1"><i class="fa-solid fa-sync fa-spin"></i> Syncing...</span>
-                        </div>
-                        
-                        <div class="space-y-4">
-                            <!-- e-FIRA -->
-                            <div>
-                                <div class="flex items-center justify-between text-xs mb-1">
-                                    <span class="text-slate-400">e-FIRAs Generated</span>
-                                    <span class="text-white font-bold font-mono">142/145</span>
-                                </div>
-                                <div class="w-full bg-slate-800 h-1.5 rounded-full overflow-hidden">
-                                    <div class="bg-brand-500 h-full w-[98%] rounded-full"></div>
+                <!-- Recent Simplified List -->
+                <div class="max-w-4xl mx-auto animate-fade-in-up" style="animation-delay: 0.4s">
+                    <h4 class="text-sm font-bold text-slate-500 uppercase tracking-wider mb-4 ml-2">Recent Activity</h4>
+                    <div class="bg-white rounded-2xl border border-slate-200 overflow-hidden divide-y divide-slate-100 shadow-sm">
+                        <!-- Item 1 -->
+                        <div class="p-4 flex items-center justify-between hover:bg-slate-50 transition cursor-pointer" onclick="toggleModal('transaction-detail-modal')">
+                            <div class="flex items-center gap-4">
+                                <div class="w-10 h-10 rounded-full bg-slate-100 flex items-center justify-center text-slate-500 border border-slate-200">Z</div>
+                                <div>
+                                    <p class="font-bold text-slate-900">Zara International</p>
+                                    <p class="text-xs text-slate-500">Inbound • Today 10:42 AM</p>
                                 </div>
                             </div>
-                            
-                            <!-- BoE -->
-                            <div>
-                                <div class="flex items-center justify-between text-xs mb-1">
-                                    <span class="text-slate-400">Bill of Entry Mapped</span>
-                                    <span class="text-white font-bold font-mono">98%</span>
-                                </div>
-                                <div class="w-full bg-slate-800 h-1.5 rounded-full overflow-hidden">
-                                    <div class="bg-green-500 h-full w-[98%] rounded-full"></div>
+                            <div class="text-right">
+                                <p class="font-bold text-green-600 text-lg">+ $12,500.00</p>
+                                <span class="text-[10px] bg-green-50 text-green-700 px-2 py-0.5 rounded border border-green-200">Completed</span>
+                            </div>
+                        </div>
+                        <!-- Item 2 -->
+                        <div class="p-4 flex items-center justify-between hover:bg-slate-50 transition cursor-pointer" onclick="toggleModal('transaction-detail-modal')">
+                            <div class="flex items-center gap-4">
+                                <div class="w-10 h-10 rounded-full bg-slate-100 flex items-center justify-center text-slate-500 border border-slate-200">M</div>
+                                <div>
+                                    <p class="font-bold text-slate-900">Maersk Logistics</p>
+                                    <p class="text-xs text-slate-500">Outbound • Yesterday</p>
                                 </div>
                             </div>
-
-                            <!-- Outstanding -->
-                            <div>
-                                <div class="flex items-center justify-between text-xs mb-1">
-                                    <span class="text-slate-400">Pending EDPMS</span>
-                                    <span class="text-amber-400 font-bold font-mono">3 Actions</span>
-                                </div>
-                                <div class="w-full bg-slate-800 h-1.5 rounded-full overflow-hidden">
-                                    <div class="bg-amber-500 h-full w-[15%] rounded-full"></div>
-                                </div>
+                            <div class="text-right">
+                                <p class="font-bold text-slate-700 text-lg">$2,100.00</p>
+                                <span class="text-[10px] bg-slate-100 text-slate-500 px-2 py-0.5 rounded border border-slate-200">Sent</span>
                             </div>
                         </div>
                     </div>
-
+                    <div class="text-center mt-6">
+                        <button onclick="switchView('pro')" class="text-sm text-slate-500 hover:text-brand-600 transition underline decoration-dotted underline-offset-4">View Full Ledger</button>
+                    </div>
                 </div>
 
             </div>
@@ -631,80 +789,80 @@
     <!-- === MODALS & SLIDE-OVERS === -->
 
     <!-- 1. NOTIFICATION PANEL (Slide-Over) -->
-    <div id="notification-panel" class="fixed inset-y-0 right-0 w-80 bg-dark-900 border-l border-slate-800 shadow-2xl transform translate-x-full transition-transform duration-300 z-50 flex flex-col">
-        <div class="p-4 border-b border-slate-800 flex justify-between items-center bg-dark-900/95 backdrop-blur">
-            <h3 class="font-bold text-white text-sm"><i class="fa-regular fa-bell mr-2"></i> Notifications</h3>
-            <button onclick="toggleNotificationPanel()" class="text-slate-400 hover:text-white"><i class="fa-solid fa-xmark"></i></button>
+    <div id="notification-panel" class="fixed inset-y-0 right-0 w-80 bg-white border-l border-slate-200 shadow-2xl transform translate-x-full transition-transform duration-300 z-50 flex flex-col">
+        <div class="p-4 border-b border-slate-200 flex justify-between items-center bg-white/95 backdrop-blur">
+            <h3 class="font-bold text-slate-900 text-sm"><i class="fa-regular fa-bell mr-2"></i> Notifications</h3>
+            <button onclick="toggleNotificationPanel()" class="text-slate-400 hover:text-slate-900"><i class="fa-solid fa-xmark"></i></button>
         </div>
         <div class="flex-1 overflow-y-auto p-4 space-y-3">
             <!-- Alert Item -->
-            <div class="bg-slate-800/50 p-3 rounded-xl border-l-2 border-brand-500 relative group cursor-pointer hover:bg-slate-800 transition-colors">
+            <div class="bg-slate-50 p-3 rounded-xl border-l-2 border-brand-500 relative group cursor-pointer hover:bg-slate-100 transition-colors">
                 <div class="flex justify-between items-start">
-                    <h4 class="text-xs font-bold text-white">Funds Received</h4>
+                    <h4 class="text-xs font-bold text-slate-900">Funds Received</h4>
                     <span class="text-[10px] text-slate-500">2m ago</span>
                 </div>
-                <p class="text-xs text-slate-400 mt-1">Zara Intl sent <strong>$12,500</strong> via PayNow.</p>
+                <p class="text-xs text-slate-600 mt-1">Zara Intl sent <strong>$12,500</strong> via PayNow.</p>
                 <div class="mt-2">
-                    <button class="text-[10px] bg-brand-600/20 text-brand-400 px-2 py-1 rounded font-bold hover:bg-brand-600 hover:text-white transition">View</button>
+                    <button class="text-[10px] bg-brand-50 text-brand-600 px-2 py-1 rounded font-bold hover:bg-brand-600 hover:text-white transition">View</button>
                 </div>
             </div>
             <!-- Alert Item -->
-            <div class="bg-slate-800/50 p-3 rounded-xl border-l-2 border-green-500 relative group cursor-pointer hover:bg-slate-800 transition-colors">
+            <div class="bg-slate-50 p-3 rounded-xl border-l-2 border-green-500 relative group cursor-pointer hover:bg-slate-100 transition-colors">
                 <div class="flex justify-between items-start">
-                    <h4 class="text-xs font-bold text-white">e-FIRA Generated</h4>
+                    <h4 class="text-xs font-bold text-slate-900">e-FIRA Generated</h4>
                     <span class="text-[10px] text-slate-500">1h ago</span>
                 </div>
-                <p class="text-xs text-slate-400 mt-1">Document #FIRA-8821 is ready for download.</p>
+                <p class="text-xs text-slate-600 mt-1">Document #FIRA-8821 is ready for download.</p>
             </div>
              <!-- Alert Item -->
-             <div class="bg-slate-800/50 p-3 rounded-xl border-l-2 border-amber-500 relative group cursor-pointer hover:bg-slate-800 transition-colors">
+             <div class="bg-slate-50 p-3 rounded-xl border-l-2 border-amber-500 relative group cursor-pointer hover:bg-slate-100 transition-colors">
                 <div class="flex justify-between items-start">
-                    <h4 class="text-xs font-bold text-white">Rate Alert</h4>
+                    <h4 class="text-xs font-bold text-slate-900">Rate Alert</h4>
                     <span class="text-[10px] text-slate-500">3h ago</span>
                 </div>
-                <p class="text-xs text-slate-400 mt-1">USD/INR crossed 83.60 target.</p>
+                <p class="text-xs text-slate-600 mt-1">USD/INR crossed 83.60 target.</p>
             </div>
         </div>
-        <div class="p-4 border-t border-slate-800">
-            <button class="w-full py-2 text-xs font-bold text-slate-400 hover:text-white border border-slate-700 rounded-lg hover:bg-slate-800 transition">Mark All Read</button>
+        <div class="p-4 border-t border-slate-200">
+            <button class="w-full py-2 text-xs font-bold text-slate-500 hover:text-slate-900 border border-slate-200 rounded-lg hover:bg-slate-50 transition">Mark All Read</button>
         </div>
     </div>
 
     <!-- 2. TRANSFER MODAL -->
-    <div id="transfer-modal" class="fixed inset-0 bg-black/80 backdrop-blur-sm hidden items-center justify-center z-50 transition-opacity opacity-0 pointer-events-none">
-        <div class="bg-dark-900 border border-slate-700 rounded-2xl w-full max-w-lg shadow-2xl transform scale-95 transition-transform duration-300 m-4 flex flex-col max-h-[90vh]">
+    <div id="transfer-modal" class="fixed inset-0 bg-slate-900/20 backdrop-blur-sm hidden items-center justify-center z-50 transition-opacity opacity-0 pointer-events-none">
+        <div class="bg-white border border-slate-200 rounded-2xl w-full max-w-lg shadow-2xl transform scale-95 transition-transform duration-300 m-4 flex flex-col max-h-[90vh]">
             <!-- Header -->
-            <div class="p-5 border-b border-slate-800 flex justify-between items-center bg-dark-900 sticky top-0 rounded-t-2xl">
-                <h3 class="font-display font-bold text-white text-lg"><i class="fa-solid fa-paper-plane text-brand-500 mr-2"></i> New Outflow Transfer</h3>
-                <button onclick="closeTransferModal()" class="text-slate-400 hover:text-white w-8 h-8 rounded-full hover:bg-slate-800 flex items-center justify-center transition"><i class="fa-solid fa-xmark"></i></button>
+            <div class="p-5 border-b border-slate-200 flex justify-between items-center bg-white sticky top-0 rounded-t-2xl">
+                <h3 class="font-display font-bold text-slate-900 text-lg"><i class="fa-solid fa-paper-plane text-brand-600 mr-2"></i> New Outflow Transfer</h3>
+                <button onclick="closeTransferModal()" class="text-slate-400 hover:text-slate-800 w-8 h-8 rounded-full hover:bg-slate-100 flex items-center justify-center transition"><i class="fa-solid fa-xmark"></i></button>
             </div>
             
             <!-- Body -->
             <div class="p-6 overflow-y-auto custom-scrollbar">
                 <!-- Beneficiary Select -->
                 <div class="mb-5">
-                    <label class="block text-xs font-bold text-slate-400 uppercase tracking-wider mb-2">Beneficiary</label>
+                    <label class="block text-xs font-bold text-slate-500 uppercase tracking-wider mb-2">Beneficiary</label>
                     <div class="relative group">
-                        <select id="transfer-beneficiary" class="w-full bg-dark-950 border border-slate-700 rounded-xl px-4 py-3 text-sm text-white appearance-none focus:border-brand-500 focus:outline-none focus:ring-1 focus:ring-brand-500 transition-colors">
+                        <select id="transfer-beneficiary" class="w-full bg-slate-50 border border-slate-300 rounded-xl px-4 py-3 text-sm text-slate-900 appearance-none focus:border-brand-500 focus:outline-none focus:ring-1 focus:ring-brand-500 transition-colors">
                             <option value="" disabled selected>Select Partner...</option>
                             <option value="Maersk">Maersk Logistics (Mumbai)</option>
                             <option value="FedEx">FedEx Express (Global)</option>
                             <option value="AWS">Amazon Web Services (US)</option>
                             <option value="New">+ Add New Beneficiary</option>
                         </select>
-                        <i class="fa-solid fa-chevron-down absolute right-4 top-3.5 text-slate-500 pointer-events-none"></i>
+                        <i class="fa-solid fa-chevron-down absolute right-4 top-3.5 text-slate-400 pointer-events-none"></i>
                     </div>
                 </div>
 
                 <!-- Amount & Currency -->
                 <div class="grid grid-cols-3 gap-4 mb-5">
                     <div class="col-span-2">
-                        <label class="block text-xs font-bold text-slate-400 uppercase tracking-wider mb-2">Amount</label>
-                        <input type="number" id="transfer-amount" class="w-full bg-dark-950 border border-slate-700 rounded-xl px-4 py-3 text-white font-mono text-lg focus:border-brand-500 focus:outline-none" placeholder="0.00">
+                        <label class="block text-xs font-bold text-slate-500 uppercase tracking-wider mb-2">Amount</label>
+                        <input type="number" id="transfer-amount" class="w-full bg-slate-50 border border-slate-300 rounded-xl px-4 py-3 text-slate-900 font-mono text-lg focus:border-brand-500 focus:outline-none" placeholder="0.00">
                     </div>
                     <div>
-                        <label class="block text-xs font-bold text-slate-400 uppercase tracking-wider mb-2">Currency</label>
-                        <select class="w-full bg-dark-950 border border-slate-700 rounded-xl px-4 py-3 text-sm text-white focus:border-brand-500 focus:outline-none">
+                        <label class="block text-xs font-bold text-slate-500 uppercase tracking-wider mb-2">Currency</label>
+                        <select class="w-full bg-slate-50 border border-slate-300 rounded-xl px-4 py-3 text-sm text-slate-900 focus:border-brand-500 focus:outline-none">
                             <option>USD</option>
                             <option>SGD</option>
                             <option>EUR</option>
@@ -714,34 +872,34 @@
 
                 <!-- Purpose Code -->
                 <div class="mb-5">
-                    <label class="block text-xs font-bold text-slate-400 uppercase tracking-wider mb-2">Purpose Code (FEMA)</label>
+                    <label class="block text-xs font-bold text-slate-500 uppercase tracking-wider mb-2">Purpose Code (FEMA)</label>
                     <div class="relative">
-                        <select class="w-full bg-dark-950 border border-slate-700 rounded-xl px-4 py-3 text-sm text-white appearance-none focus:border-brand-500 focus:outline-none">
+                        <select class="w-full bg-slate-50 border border-slate-300 rounded-xl px-4 py-3 text-sm text-slate-900 appearance-none focus:border-brand-500 focus:outline-none">
                             <option value="S0101">S0101 - Import of Goods (Advance)</option>
                             <option value="S0102">S0102 - Import of Goods (Settlement)</option>
                             <option value="S1007">S1007 - Advertising / Marketing</option>
                             <option value="S1107">S1107 - Software Consultancy</option>
                         </select>
-                        <i class="fa-solid fa-chevron-down absolute right-4 top-3.5 text-slate-500 pointer-events-none"></i>
+                        <i class="fa-solid fa-chevron-down absolute right-4 top-3.5 text-slate-400 pointer-events-none"></i>
                     </div>
                 </div>
 
                 <!-- Doc Upload -->
-                <div class="border-2 border-dashed border-slate-700 rounded-xl p-6 text-center hover:border-brand-500 hover:bg-brand-900/10 transition-colors cursor-pointer group">
-                    <i class="fa-solid fa-cloud-arrow-up text-2xl text-slate-500 group-hover:text-brand-400 mb-2"></i>
-                    <p class="text-xs font-bold text-white">Upload Invoice / BoE</p>
+                <div class="border-2 border-dashed border-slate-300 rounded-xl p-6 text-center hover:border-brand-500 hover:bg-brand-50 transition-colors cursor-pointer group">
+                    <i class="fa-solid fa-cloud-arrow-up text-2xl text-slate-400 group-hover:text-brand-500 mb-2"></i>
+                    <p class="text-xs font-bold text-slate-700">Upload Invoice / BoE</p>
                     <p class="text-[10px] text-slate-500 mt-1">PDF, JPG (Max 5MB)</p>
                 </div>
             </div>
 
             <!-- Footer -->
-            <div class="p-5 border-t border-slate-800 flex justify-between items-center bg-dark-900 rounded-b-2xl">
+            <div class="p-5 border-t border-slate-200 flex justify-between items-center bg-slate-50 rounded-b-2xl">
                 <div class="text-xs">
-                    <span class="text-slate-500">Fee:</span> <span class="text-white font-bold">$0.00 (Promo)</span>
+                    <span class="text-slate-500">Fee:</span> <span class="text-slate-900 font-bold">$0.00 (Promo)</span>
                 </div>
                 <div class="flex gap-3">
-                    <button onclick="closeTransferModal()" class="px-4 py-2 text-sm font-bold text-slate-400 hover:text-white transition">Cancel</button>
-                    <button onclick="submitTransfer()" class="px-6 py-2 bg-brand-600 hover:bg-brand-500 text-white rounded-lg font-bold shadow-lg shadow-brand-500/20 transition transform active:scale-95 flex items-center gap-2">
+                    <button onclick="closeTransferModal()" class="px-4 py-2 text-sm font-bold text-slate-500 hover:text-slate-900 transition">Cancel</button>
+                    <button onclick="submitTransfer()" class="px-6 py-2 bg-brand-600 hover:bg-brand-700 text-white rounded-lg font-bold shadow-lg shadow-brand-500/20 transition transform active:scale-95 flex items-center gap-2">
                         Review & Send <i class="fa-solid fa-arrow-right"></i>
                     </button>
                 </div>
@@ -750,46 +908,46 @@
     </div>
 
     <!-- 3. CONVERT MODAL -->
-    <div id="convert-modal" class="fixed inset-0 bg-black/80 backdrop-blur-sm hidden items-center justify-center z-50 transition-opacity opacity-0 pointer-events-none">
-        <div class="bg-dark-900 border border-slate-700 rounded-2xl w-full max-w-md shadow-2xl transform scale-95 transition-transform duration-300">
+    <div id="convert-modal" class="fixed inset-0 bg-slate-900/20 backdrop-blur-sm hidden items-center justify-center z-50 transition-opacity opacity-0 pointer-events-none">
+        <div class="bg-white border border-slate-200 rounded-2xl w-full max-w-md shadow-2xl transform scale-95 transition-transform duration-300">
             <div class="p-6">
                 <div class="flex justify-between items-center mb-6">
-                    <h3 class="font-bold text-white text-lg">Convert Currency</h3>
-                    <button onclick="closeConvertModal()" class="text-slate-400 hover:text-white"><i class="fa-solid fa-xmark"></i></button>
+                    <h3 class="font-bold text-slate-900 text-lg">Convert Currency</h3>
+                    <button onclick="closeConvertModal()" class="text-slate-400 hover:text-slate-800"><i class="fa-solid fa-xmark"></i></button>
                 </div>
 
                 <div class="space-y-4 relative">
                     <!-- From -->
-                    <div class="bg-dark-950 border border-slate-700 rounded-xl p-4">
+                    <div class="bg-slate-50 border border-slate-200 rounded-xl p-4">
                         <div class="flex justify-between text-xs text-slate-500 mb-1">
                             <span>Selling</span>
                             <span>Balance: $84,500.00</span>
                         </div>
                         <div class="flex justify-between items-center">
-                            <input type="number" id="convert-from-amount" class="bg-transparent text-2xl font-mono text-white font-bold w-full focus:outline-none" placeholder="0.00" oninput="calculateConversion()">
-                            <div class="flex items-center gap-2 bg-slate-800 px-2 py-1 rounded-lg">
+                            <input type="number" id="convert-from-amount" class="bg-transparent text-2xl font-mono text-slate-900 font-bold w-full focus:outline-none" placeholder="0.00" oninput="calculateConversion()">
+                            <div class="flex items-center gap-2 bg-white border border-slate-200 px-2 py-1 rounded-lg">
                                 <img src="https://flagcdn.com/w20/us.png" class="w-5 rounded-sm">
-                                <span class="text-white font-bold text-sm">USD</span>
+                                <span class="text-slate-900 font-bold text-sm">USD</span>
                             </div>
                         </div>
                     </div>
 
                     <!-- Swap Icon -->
-                    <div class="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 w-8 h-8 bg-brand-600 rounded-full flex items-center justify-center border-4 border-dark-900 shadow-xl z-10">
+                    <div class="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 w-8 h-8 bg-brand-600 rounded-full flex items-center justify-center border-4 border-white shadow-xl z-10">
                         <i class="fa-solid fa-arrow-down text-white text-xs"></i>
                     </div>
 
                     <!-- To -->
-                    <div class="bg-dark-950 border border-slate-700 rounded-xl p-4">
+                    <div class="bg-slate-50 border border-slate-200 rounded-xl p-4">
                         <div class="flex justify-between text-xs text-slate-500 mb-1">
                             <span>Buying</span>
                             <span>Rate: 83.60</span>
                         </div>
                         <div class="flex justify-between items-center">
-                            <input type="text" id="convert-to-amount" class="bg-transparent text-2xl font-mono text-brand-400 font-bold w-full focus:outline-none" placeholder="0.00" readonly>
-                            <div class="flex items-center gap-2 bg-slate-800 px-2 py-1 rounded-lg">
+                            <input type="text" id="convert-to-amount" class="bg-transparent text-2xl font-mono text-brand-600 font-bold w-full focus:outline-none" placeholder="0.00" readonly>
+                            <div class="flex items-center gap-2 bg-white border border-slate-200 px-2 py-1 rounded-lg">
                                 <img src="https://flagcdn.com/w20/in.png" class="w-5 rounded-sm">
-                                <span class="text-white font-bold text-sm">INR</span>
+                                <span class="text-slate-900 font-bold text-sm">INR</span>
                             </div>
                         </div>
                     </div>
@@ -798,19 +956,19 @@
                 <div class="mt-6 space-y-3">
                     <div class="flex justify-between text-xs">
                         <span class="text-slate-500">Wholesale Rate</span>
-                        <span class="text-white font-mono">83.60</span>
+                        <span class="text-slate-900 font-mono">83.60</span>
                     </div>
                     <div class="flex justify-between text-xs">
                         <span class="text-slate-500">Bank Rate</span>
                         <span class="text-slate-400 line-through font-mono">82.10</span>
                     </div>
                     <div class="flex justify-between text-xs">
-                        <span class="text-green-400 font-bold">Total Savings</span>
-                        <span class="text-green-400 font-bold font-mono" id="convert-savings">₹ 0.00</span>
+                        <span class="text-green-600 font-bold">Total Savings</span>
+                        <span class="text-green-600 font-bold font-mono" id="convert-savings">₹ 0.00</span>
                     </div>
                 </div>
 
-                <button class="w-full mt-6 py-3 bg-brand-600 hover:bg-brand-500 text-white rounded-xl font-bold shadow-lg shadow-brand-500/20 transition active:scale-95">
+                <button class="w-full mt-6 py-3 bg-brand-600 hover:bg-brand-700 text-white rounded-xl font-bold shadow-lg shadow-brand-500/20 transition active:scale-95">
                     Confirm Conversion
                 </button>
             </div>
@@ -818,8 +976,8 @@
     </div>
 
     <!-- 4. TRANSACTION DETAIL MODAL -->
-    <div id="transaction-detail-modal" class="fixed inset-0 bg-black/80 backdrop-blur-sm hidden items-center justify-center z-50">
-        <div class="bg-white rounded-2xl w-full max-w-2xl shadow-2xl overflow-hidden animate-fade-in relative text-slate-900">
+    <div id="transaction-detail-modal" class="fixed inset-0 bg-slate-900/20 backdrop-blur-sm hidden items-center justify-center z-50 transition-opacity opacity-0 pointer-events-none">
+        <div class="bg-white rounded-2xl w-full max-w-2xl shadow-2xl overflow-hidden animate-fade-in relative text-slate-900 transform scale-95 transition-all duration-300">
             <!-- Receipt Header -->
             <div class="bg-slate-50 p-6 border-b border-slate-200 flex justify-between items-start">
                 <div class="flex items-center gap-4">
@@ -901,7 +1059,244 @@
 
             <!-- Footer -->
             <div class="bg-slate-50 p-4 flex justify-end border-t border-slate-200">
-                <button onclick="document.getElementById('transaction-detail-modal').classList.add('hidden')" class="px-6 py-2 bg-white border border-slate-300 text-slate-700 font-bold rounded-lg hover:bg-slate-100 transition shadow-sm">Close</button>
+                <button onclick="toggleModal('transaction-detail-modal')" class="px-6 py-2 bg-white border border-slate-300 text-slate-700 font-bold rounded-lg hover:bg-slate-100 transition shadow-sm">Close</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- 5. SETTINGS MODAL -->
+    <div id="settings-modal" class="fixed inset-0 bg-slate-900/20 backdrop-blur-sm hidden items-center justify-center z-50 transition-opacity opacity-0 pointer-events-none">
+        <div class="bg-white border border-slate-200 rounded-2xl w-full max-w-2xl shadow-2xl transform scale-95 transition-transform duration-300 m-4 flex flex-col max-h-[90vh]">
+            <div class="p-5 border-b border-slate-200 flex justify-between items-center bg-white rounded-t-2xl">
+                <h3 class="font-bold text-slate-900 text-lg"><i class="fa-solid fa-gear text-slate-500 mr-2"></i> Account Settings</h3>
+                <button onclick="toggleModal('settings-modal')" class="text-slate-400 hover:text-slate-800"><i class="fa-solid fa-xmark"></i></button>
+            </div>
+            
+            <div class="flex-1 overflow-y-auto p-6 space-y-8">
+                <!-- Section 1 -->
+                <div>
+                    <h4 class="text-xs font-bold text-brand-600 uppercase tracking-wider mb-4 border-b border-slate-200 pb-2">Entity Profile</h4>
+                    <div class="grid grid-cols-2 gap-4">
+                        <div>
+                            <label class="block text-xs text-slate-500 mb-1">Company Name</label>
+                            <input type="text" value="Tex Exports Pvt Ltd" class="w-full bg-slate-50 border border-slate-300 rounded-lg px-3 py-2 text-sm text-slate-900" disabled>
+                        </div>
+                        <div>
+                            <label class="block text-xs text-slate-500 mb-1">IE Code</label>
+                            <input type="text" value="0512345678" class="w-full bg-slate-50 border border-slate-300 rounded-lg px-3 py-2 text-sm text-slate-900" disabled>
+                        </div>
+                    </div>
+                </div>
+                <!-- Section 2 -->
+                <div>
+                    <h4 class="text-xs font-bold text-brand-600 uppercase tracking-wider mb-4 border-b border-slate-200 pb-2">Preferences</h4>
+                    <div class="space-y-3">
+                        <div class="flex items-center justify-between">
+                            <div>
+                                <p class="text-sm font-bold text-slate-900">Default View</p>
+                                <p class="text-xs text-slate-500">Choose between Pro or Simple dashboard on login</p>
+                            </div>
+                            <select class="bg-slate-50 border border-slate-300 rounded-lg text-sm text-slate-900 px-2 py-1">
+                                <option>Pro Command Center</option>
+                                <option>Executive Simple</option>
+                            </select>
+                        </div>
+                         <div class="flex items-center justify-between">
+                            <div>
+                                <p class="text-sm font-bold text-slate-900">Rate Alerts</p>
+                                <p class="text-xs text-slate-500">Push notifications for wholesale spreads</p>
+                            </div>
+                            <label class="relative inline-flex items-center cursor-pointer">
+                                <input type="checkbox" value="" class="sr-only peer" checked>
+                                <div class="w-11 h-6 bg-slate-200 peer-focus:outline-none peer-focus:ring-2 peer-focus:ring-brand-500 rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-brand-600"></div>
+                            </label>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="p-5 border-t border-slate-200 bg-slate-50 rounded-b-2xl flex justify-between items-center">
+                 <!-- LOGOUT BUTTON (Added) -->
+                 <button onclick="logout()" class="px-4 py-2 text-sm font-bold text-red-600 hover:text-red-700 hover:bg-red-50 rounded-lg transition border border-transparent hover:border-red-200">
+                    <i class="fa-solid fa-power-off mr-2"></i> Log Out
+                 </button>
+                 <div class="flex gap-3">
+                     <button onclick="toggleModal('settings-modal')" class="px-4 py-2 text-sm text-slate-500 hover:text-slate-900">Close</button>
+                     <button onclick="toggleModal('settings-modal')" class="px-4 py-2 bg-white text-slate-900 border border-slate-300 font-bold rounded-lg text-sm hover:bg-slate-100">Save Changes</button>
+                 </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- 6. COMPLIANCE DETAIL MODAL -->
+    <div id="compliance-detail-modal" class="fixed inset-0 bg-slate-900/20 backdrop-blur-sm hidden items-center justify-center z-50 transition-opacity opacity-0 pointer-events-none">
+        <div class="bg-white border border-slate-200 rounded-2xl w-full max-w-3xl shadow-2xl transform scale-95 transition-transform duration-300 m-4 flex flex-col max-h-[90vh]">
+            <div class="p-6 border-b border-slate-200 flex justify-between items-center bg-white rounded-t-2xl">
+                <div>
+                    <h3 class="font-bold text-slate-900 text-lg"><i class="fa-solid fa-shield-halved text-green-500 mr-2"></i> Regulatory Health Check</h3>
+                    <p class="text-xs text-slate-500 mt-1">Real-time sync with RBI EDPMS/IDPMS Servers</p>
+                </div>
+                <button onclick="toggleModal('compliance-detail-modal')" class="text-slate-400 hover:text-slate-800"><i class="fa-solid fa-xmark"></i></button>
+            </div>
+            <div class="p-8 overflow-y-auto">
+                 <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
+                     <!-- Card 1 -->
+                     <div class="bg-slate-50 border border-slate-200 rounded-xl p-4">
+                         <div class="flex justify-between items-start mb-2">
+                             <p class="text-xs text-slate-500 font-bold uppercase">Compliance Score</p>
+                             <i class="fa-solid fa-chart-line text-green-500"></i>
+                         </div>
+                         <p class="text-3xl font-display font-bold text-slate-900">98/100</p>
+                         <p class="text-xs text-green-600 mt-1">Top 5% of exporters</p>
+                     </div>
+                      <!-- Card 2 -->
+                     <div class="bg-slate-50 border border-slate-200 rounded-xl p-4">
+                         <div class="flex justify-between items-start mb-2">
+                             <p class="text-xs text-slate-500 font-bold uppercase">Open Invoices</p>
+                             <i class="fa-solid fa-file-invoice text-brand-500"></i>
+                         </div>
+                         <p class="text-3xl font-display font-bold text-slate-900">12</p>
+                         <p class="text-xs text-brand-600 mt-1">$142,000 Exposure</p>
+                     </div>
+                      <!-- Card 3 -->
+                     <div class="bg-slate-50 border border-slate-200 rounded-xl p-4">
+                         <div class="flex justify-between items-start mb-2">
+                             <p class="text-xs text-slate-500 font-bold uppercase">Pending BRX</p>
+                             <i class="fa-solid fa-clock text-amber-500"></i>
+                         </div>
+                         <p class="text-3xl font-display font-bold text-slate-900">3</p>
+                         <p class="text-xs text-amber-600 mt-1">Action Req. < 7 days</p>
+                     </div>
+                 </div>
+
+                 <h4 class="text-sm font-bold text-slate-900 mb-4">Outstanding Action Items</h4>
+                 <div class="space-y-3">
+                     <!-- Item -->
+                     <div class="flex items-center justify-between bg-slate-50 p-4 rounded-xl border border-slate-200">
+                         <div class="flex items-center gap-4">
+                             <div class="w-10 h-10 rounded-full bg-amber-100 flex items-center justify-center text-amber-600 border border-amber-200">
+                                 <i class="fa-solid fa-file-signature"></i>
+                             </div>
+                             <div>
+                                 <p class="font-bold text-slate-900 text-sm">Sign Digital FIRA</p>
+                                 <p class="text-xs text-slate-500">Transaction #TXN-998 • 2 days remaining</p>
+                             </div>
+                         </div>
+                         <button class="px-4 py-2 bg-white border border-slate-300 text-slate-900 text-xs font-bold rounded-lg hover:bg-slate-100">Sign Now</button>
+                     </div>
+                      <!-- Item -->
+                     <div class="flex items-center justify-between bg-slate-50 p-4 rounded-xl border border-slate-200">
+                         <div class="flex items-center gap-4">
+                             <div class="w-10 h-10 rounded-full bg-amber-100 flex items-center justify-center text-amber-600 border border-amber-200">
+                                 <i class="fa-solid fa-link"></i>
+                             </div>
+                             <div>
+                                 <p class="font-bold text-slate-900 text-sm">Link BoE to Payment</p>
+                                 <p class="text-xs text-slate-500">Invoice #INV-2024-001 • 5 days remaining</p>
+                             </div>
+                         </div>
+                         <button class="px-4 py-2 bg-white border border-slate-300 text-slate-900 text-xs font-bold rounded-lg hover:bg-slate-100">Link</button>
+                     </div>
+                 </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- 7. MARKET DEPTH MODAL -->
+    <div id="market-depth-modal" class="fixed inset-0 bg-slate-900/20 backdrop-blur-sm hidden items-center justify-center z-50 transition-opacity opacity-0 pointer-events-none">
+        <div class="bg-white border border-slate-200 rounded-2xl w-full max-w-4xl shadow-2xl transform scale-95 transition-transform duration-300 m-4 flex flex-col max-h-[90vh]">
+            <div class="p-5 border-b border-slate-200 flex justify-between items-center bg-white rounded-t-2xl">
+                <div>
+                    <h3 class="font-bold text-slate-900 text-lg"><i class="fa-solid fa-layer-group text-brand-600 mr-2"></i> IBU Market Depth (USD/INR)</h3>
+                    <p class="text-xs text-slate-500 mt-1">Live Order Book - GIFT City IFSC</p>
+                </div>
+                <button onclick="toggleModal('market-depth-modal')" class="text-slate-400 hover:text-slate-800"><i class="fa-solid fa-xmark"></i></button>
+            </div>
+            <div class="p-6 grid grid-cols-2 gap-8">
+                <!-- Bids -->
+                <div>
+                    <h4 class="text-xs font-bold text-green-600 uppercase tracking-wider mb-3 text-center">Bids (Buying)</h4>
+                    <div class="space-y-1">
+                        <div class="grid grid-cols-3 text-xs text-slate-500 border-b border-slate-200 pb-1 mb-1">
+                            <span>Vol</span>
+                            <span class="text-center">Bank</span>
+                            <span class="text-right">Price</span>
+                        </div>
+                        <!-- Rows -->
+                        <div class="grid grid-cols-3 text-sm py-1 bg-green-50 px-2 rounded">
+                            <span class="text-slate-900">5.00M</span>
+                            <span class="text-slate-500 text-center">JPM</span>
+                            <span class="text-green-600 font-mono font-bold text-right">83.5950</span>
+                        </div>
+                        <div class="grid grid-cols-3 text-sm py-1 px-2">
+                            <span class="text-slate-900">2.50M</span>
+                            <span class="text-slate-500 text-center">DBS</span>
+                            <span class="text-green-600/80 font-mono text-right">83.5925</span>
+                        </div>
+                        <div class="grid grid-cols-3 text-sm py-1 px-2">
+                            <span class="text-slate-900">10.00M</span>
+                            <span class="text-slate-500 text-center">SBI</span>
+                            <span class="text-green-600/60 font-mono text-right">83.5900</span>
+                        </div>
+                         <div class="grid grid-cols-3 text-sm py-1 px-2">
+                            <span class="text-slate-900">1.00M</span>
+                            <span class="text-slate-500 text-center">HSBC</span>
+                            <span class="text-green-600/40 font-mono text-right">83.5850</span>
+                        </div>
+                    </div>
+                </div>
+                <!-- Asks -->
+                 <div>
+                    <h4 class="text-xs font-bold text-red-600 uppercase tracking-wider mb-3 text-center">Asks (Selling)</h4>
+                    <div class="space-y-1">
+                        <div class="grid grid-cols-3 text-xs text-slate-500 border-b border-slate-200 pb-1 mb-1">
+                            <span>Price</span>
+                            <span class="text-center">Bank</span>
+                            <span class="text-right">Vol</span>
+                        </div>
+                        <!-- Rows -->
+                        <div class="grid grid-cols-3 text-sm py-1 bg-red-50 px-2 rounded">
+                            <span class="text-red-600 font-mono font-bold">83.6050</span>
+                            <span class="text-slate-500 text-center">CITI</span>
+                            <span class="text-slate-900 text-right">2.00M</span>
+                        </div>
+                        <div class="grid grid-cols-3 text-sm py-1 px-2">
+                            <span class="text-red-600/80 font-mono">83.6075</span>
+                            <span class="text-slate-500 text-center">BOA</span>
+                            <span class="text-slate-900 text-right">5.00M</span>
+                        </div>
+                         <div class="grid grid-cols-3 text-sm py-1 px-2">
+                            <span class="text-red-600/60 font-mono">83.6100</span>
+                            <span class="text-slate-500 text-center">DBS</span>
+                            <span class="text-slate-900 text-right">8.50M</span>
+                        </div>
+                         <div class="grid grid-cols-3 text-sm py-1 px-2">
+                            <span class="text-red-600/40 font-mono">83.6150</span>
+                            <span class="text-slate-500 text-center">BARC</span>
+                            <span class="text-slate-900 text-right">1.25M</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="p-4 border-t border-slate-200 bg-slate-50 rounded-b-2xl">
+                 <div class="flex justify-between items-center text-xs">
+                     <p class="text-slate-500">Spread: <span class="text-slate-900 font-mono">0.0100</span></p>
+                     <p class="text-slate-500">Market Status: <span class="text-green-600 font-bold">Liquid</span></p>
+                 </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- 8. WELCOME OVERLAY -->
+    <div id="welcome-overlay" class="fixed inset-0 bg-white/90 backdrop-blur-md z-[100] flex items-center justify-center hidden">
+        <div class="text-center max-w-lg p-6 animate-fade-in-up">
+            <div class="w-20 h-20 bg-gradient-to-br from-brand-500 to-brand-700 rounded-2xl mx-auto flex items-center justify-center text-4xl text-white shadow-2xl shadow-brand-500/30 mb-6">
+                <i class="fa-solid fa-rocket"></i>
+            </div>
+            <h2 class="text-3xl font-display font-bold text-slate-900 mb-3">Welcome to SettleX</h2>
+            <p class="text-slate-500 mb-8 leading-relaxed">Your new Treasury OS is ready. We've prepared a simplified view for your daily executive tasks.</p>
+            <div class="flex gap-4 justify-center">
+                 <button onclick="dismissWelcome()" class="px-8 py-3 bg-white border border-slate-200 text-slate-900 font-bold rounded-xl hover:bg-slate-50 transition shadow-lg">Get Started</button>
+                 <button onclick="dismissWelcome(); switchView('simple')" class="px-8 py-3 bg-brand-600 text-white font-bold rounded-xl hover:bg-brand-700 transition shadow-lg shadow-brand-500/20">Try Simple Mode</button>
             </div>
         </div>
     </div>
@@ -921,6 +1316,8 @@
                 { id: 'txn_003', time: 'Yesterday', party: 'Uniqlo Japan', location: 'Tokyo', amount: 45000, currency: 'JPY', type: 'INFLOW', status: 'completed', compliance: 'verified' },
                 { id: 'txn_004', time: 'Yesterday', party: 'FedEx Express', location: 'Global', amount: 450, currency: 'USD', type: 'OUTFLOW', status: 'completed', compliance: 'verified' },
                 { id: 'txn_005', time: '2 days ago', party: 'H&M Sourcing', location: 'Sweden', amount: 18200, currency: 'EUR', type: 'INFLOW', status: 'completed', compliance: 'verified' },
+                { id: 'txn_006', time: '3 days ago', party: 'IKEA Supply', location: 'Netherlands', amount: 5600, currency: 'EUR', type: 'INFLOW', status: 'completed', compliance: 'verified' },
+                { id: 'txn_007', time: '3 days ago', party: 'AWS Services', location: 'US-East', amount: 1200, currency: 'USD', type: 'OUTFLOW', status: 'completed', compliance: 'verified' },
             ],
             rates: { USD: 83.60, SGD: 62.40, GBP: 106.40, EUR: 90.50 }
         };
@@ -947,7 +1344,55 @@
 
             // 5. Update Clock
             setInterval(updateMarketClock, 60000);
+            updateMarketClock();
+
+            // 6. Check for First Run (Mock)
+            // setTimeout(() => {
+            //     const overlay = document.getElementById('welcome-overlay');
+            //     overlay.classList.remove('hidden');
+            // }, 1000);
         });
+
+        // --- VIEW SWITCHER LOGIC ---
+        function switchView(viewName) {
+            const proView = document.getElementById('view-pro');
+            const simpleView = document.getElementById('view-simple');
+            const btnPro = document.getElementById('btn-view-pro');
+            const btnSimple = document.getElementById('btn-view-simple');
+
+            if (viewName === 'simple') {
+                // Show Simple
+                proView.classList.remove('view-visible');
+                proView.classList.add('view-hidden');
+                
+                simpleView.classList.remove('view-hidden');
+                simpleView.classList.add('view-visible');
+
+                // Toggle Buttons
+                btnSimple.className = "px-3 py-1 text-[10px] font-bold bg-brand-600 text-white rounded shadow-sm flex items-center gap-2 transition-all";
+                btnPro.className = "px-3 py-1 text-[10px] font-bold text-slate-500 rounded hover:text-slate-900 transition-colors flex items-center gap-2 transition-all";
+                
+            } else {
+                // Show Pro
+                simpleView.classList.remove('view-visible');
+                simpleView.classList.add('view-hidden');
+                
+                proView.classList.remove('view-hidden');
+                proView.classList.add('view-visible');
+
+                // Toggle Buttons
+                btnPro.className = "px-3 py-1 text-[10px] font-bold bg-brand-600 text-white rounded shadow-sm flex items-center gap-2 transition-all";
+                btnSimple.className = "px-3 py-1 text-[10px] font-bold text-slate-500 rounded hover:text-slate-900 transition-colors flex items-center gap-2 transition-all";
+            }
+        }
+        
+        function dismissWelcome() {
+            const overlay = document.getElementById('welcome-overlay');
+            overlay.classList.add('opacity-0');
+            setTimeout(() => {
+                overlay.classList.add('hidden');
+            }, 500);
+        }
 
         // --- UI FUNCTIONS ---
 
@@ -957,37 +1402,37 @@
 
             data.forEach((txn, index) => {
                 const isPositive = txn.type === 'INFLOW';
-                const amountClass = isPositive ? 'text-green-400' : 'text-slate-300';
+                const amountClass = isPositive ? 'text-green-600' : 'text-slate-500';
                 const amountPrefix = isPositive ? '+ ' : '';
                 
                 let complianceBadge = '';
                 if(txn.compliance === 'action_required') {
-                    complianceBadge = `<span class="flex items-center gap-1 text-[10px] text-amber-400 font-bold bg-amber-900/20 px-2 py-1 rounded w-fit"><i class="fa-solid fa-circle-exclamation"></i> Decision Pending</span>`;
+                    complianceBadge = `<span class="flex items-center gap-1 text-[10px] text-amber-600 font-bold bg-amber-50 px-2 py-1 rounded w-fit border border-amber-100"><i class="fa-solid fa-circle-exclamation"></i> Decision Pending</span>`;
                 } else {
-                    complianceBadge = `<span class="flex items-center gap-1 text-[10px] text-green-400 font-bold bg-green-900/20 px-2 py-1 rounded w-fit"><i class="fa-solid fa-check"></i> Verified</span>`;
+                    complianceBadge = `<span class="flex items-center gap-1 text-[10px] text-green-600 font-bold bg-green-50 px-2 py-1 rounded w-fit border border-green-100"><i class="fa-solid fa-check"></i> Verified</span>`;
                 }
 
                 const row = document.createElement('tr');
-                row.className = 'hover:bg-white/[0.02] transition-colors group interactive-row border-b border-slate-800/50';
+                row.className = 'hover:bg-slate-50 transition-colors group interactive-row border-b border-slate-100';
                 row.onclick = () => toggleModal('transaction-detail-modal');
                 row.innerHTML = `
-                    <td class="px-6 py-4 font-mono text-xs text-slate-400">${txn.time}</td>
+                    <td class="px-6 py-4 font-mono text-xs text-slate-500">${txn.time}</td>
                     <td class="px-6 py-4">
                         <div class="flex items-center gap-3">
-                            <div class="w-8 h-8 rounded bg-slate-800 flex items-center justify-center font-bold text-xs text-white border border-slate-700">${txn.party.charAt(0)}</div>
+                            <div class="w-8 h-8 rounded bg-slate-100 flex items-center justify-center font-bold text-xs text-slate-600 border border-slate-200">${txn.party.charAt(0)}</div>
                             <div>
-                                <p class="font-bold text-slate-200 text-xs">${txn.party}</p>
+                                <p class="font-bold text-slate-800 text-xs">${txn.party}</p>
                                 <p class="text-[10px] text-slate-500">${txn.location}</p>
                             </div>
                         </div>
                     </td>
                     <td class="px-6 py-4 font-mono ${amountClass} font-bold text-xs">${amountPrefix}${txn.currency} ${txn.amount.toLocaleString()}</td>
-                    <td class="px-6 py-4"><span class="bg-slate-800 text-slate-400 border border-slate-700 text-[10px] px-2 py-1 rounded font-bold">${txn.type}</span></td>
+                    <td class="px-6 py-4"><span class="bg-slate-100 text-slate-600 border border-slate-200 text-[10px] px-2 py-1 rounded font-bold">${txn.type}</span></td>
                     <td class="px-6 py-4">${complianceBadge}</td>
                     <td class="px-6 py-4 text-right">
                         ${txn.compliance === 'action_required' 
-                            ? `<button onclick="event.stopPropagation(); window.location.href='inflow-decision-gate.html'" class="text-xs bg-brand-600 hover:bg-brand-500 text-white px-3 py-1.5 rounded font-bold transition shadow-sm">Review</button>` 
-                            : `<button class="text-slate-500 hover:text-white transition"><i class="fa-solid fa-ellipsis"></i></button>`}
+                            ? `<button onclick="event.stopPropagation(); window.location.href='inflow-decision-gate.html'" class="text-xs bg-brand-600 hover:bg-brand-700 text-white px-3 py-1.5 rounded font-bold transition shadow-sm">Review</button>` 
+                            : `<button class="text-slate-400 hover:text-slate-800 transition"><i class="fa-solid fa-ellipsis"></i></button>`}
                     </td>
                 `;
                 
@@ -1017,43 +1462,49 @@
             const diffHrs = Math.floor((diffMs % 86400000) / 3600000);
             const diffMins = Math.round(((diffMs % 86400000) % 3600000) / 60000);
             
-            if(diffMs > 0) {
-                document.getElementById('market-clock').innerText = `Market Open • Closes in ${diffHrs}h ${diffMins}m`;
-            } else {
-                document.getElementById('market-clock').innerText = `Market Closed • Opens in 14h`;
+            const clockEl = document.getElementById('market-clock');
+            if(clockEl) {
+                if(diffMs > 0) {
+                    clockEl.innerText = `Market Open • Closes in ${diffHrs}h ${diffMins}m`;
+                } else {
+                    clockEl.innerText = `Market Closed • Opens in 14h`;
+                }
             }
         }
 
         // --- CHART JS SETUP ---
         function initCharts() {
             // 1. Liquidity Chart (Area)
-            const ctxLiquidity = document.getElementById('liquidityChart').getContext('2d');
-            new Chart(ctxLiquidity, {
-                type: 'line',
-                data: {
-                    labels: ['M','T','W','T','F','S','S'],
-                    datasets: [{
-                        data: [120, 132, 125, 142, 138, 150, 142],
-                        borderColor: '#0ea5e9',
-                        backgroundColor: (context) => {
-                            const ctx = context.chart.ctx;
-                            const gradient = ctx.createLinearGradient(0, 0, 0, 200);
-                            gradient.addColorStop(0, 'rgba(14, 165, 233, 0.5)');
-                            gradient.addColorStop(1, 'rgba(14, 165, 233, 0)');
-                            return gradient;
-                        },
-                        borderWidth: 2,
-                        tension: 0.4,
-                        pointRadius: 0
-                    }]
-                },
-                options: {
-                    responsive: true,
-                    maintainAspectRatio: false,
-                    plugins: { legend: { display: false } },
-                    scales: { x: { display: false }, y: { display: false } }
-                }
-            });
+            const ctxLiquidity = document.getElementById('liquidityChart')?.getContext('2d');
+            if(ctxLiquidity) {
+                new Chart(ctxLiquidity, {
+                    type: 'line',
+                    data: {
+                        labels: ['M','T','W','T','F','S','S'],
+                        datasets: [{
+                            data: [120, 132, 125, 142, 138, 150, 142],
+                            borderColor: '#0ea5e9',
+                            backgroundColor: (context) => {
+                                const ctx = context.chart.ctx;
+                                const gradient = ctx.createLinearGradient(0, 0, 0, 200);
+                                // Adjusted for light mode compatibility (more opaque/vibrant)
+                                gradient.addColorStop(0, 'rgba(14, 165, 233, 0.4)');
+                                gradient.addColorStop(1, 'rgba(14, 165, 233, 0)');
+                                return gradient;
+                            },
+                            borderWidth: 2,
+                            tension: 0.4,
+                            pointRadius: 0
+                        }]
+                    },
+                    options: {
+                        responsive: true,
+                        maintainAspectRatio: false,
+                        plugins: { legend: { display: false } },
+                        scales: { x: { display: false }, y: { display: false } }
+                    }
+                });
+            }
 
             // 2. Sparklines for Rates
             createSparkline('sparkline-usd', [83.4, 83.5, 83.45, 83.55, 83.60], '#10b981');
@@ -1062,7 +1513,9 @@
         }
 
         function createSparkline(id, data, color) {
-            const ctx = document.getElementById(id).getContext('2d');
+            const el = document.getElementById(id);
+            if(!el) return;
+            const ctx = el.getContext('2d');
             new Chart(ctx, {
                 type: 'line',
                 data: {
@@ -1088,23 +1541,27 @@
 
         function toggleModal(modalId) {
             const modal = document.getElementById(modalId);
-            const overlay = modal;
+            if(!modal) return console.warn("Modal not found: " + modalId);
+            
             const card = modal.firstElementChild;
 
             if (modal.classList.contains('hidden')) {
                 // Open
                 modal.classList.remove('hidden', 'pointer-events-none');
-                // Small delay to allow display:block to apply before transition
                 setTimeout(() => {
                     modal.classList.remove('opacity-0');
-                    card.classList.remove('scale-95');
-                    card.classList.add('scale-100');
+                    if(card) {
+                        card.classList.remove('scale-95');
+                        card.classList.add('scale-100');
+                    }
                 }, 10);
             } else {
                 // Close
                 modal.classList.add('opacity-0');
-                card.classList.remove('scale-100');
-                card.classList.add('scale-95');
+                if(card) {
+                    card.classList.remove('scale-100');
+                    card.classList.add('scale-95');
+                }
                 setTimeout(() => {
                     modal.classList.add('hidden', 'pointer-events-none');
                 }, 300);
@@ -1126,7 +1583,9 @@
         function closeTransferModal() { toggleModal('transfer-modal'); }
         function prefillTransfer(name) {
             openTransferModal();
-            document.getElementById('transfer-beneficiary').value = name;
+            setTimeout(() => {
+                document.getElementById('transfer-beneficiary').value = name;
+            }, 100);
         }
         function submitTransfer() {
             const btn = event.currentTarget;
@@ -1134,7 +1593,6 @@
             setTimeout(() => {
                 closeTransferModal();
                 btn.innerHTML = 'Review & Send <i class="fa-solid fa-arrow-right"></i>';
-                // Show success toast (mock)
                 alert("Transfer initiated successfully!");
             }, 1500);
         }
@@ -1142,9 +1600,7 @@
         // -- Convert Modal Logic --
         function openConvertModal(currency) {
             toggleModal('convert-modal');
-            // Mock fetching current rate
             const rate = MockStore.rates[currency] || 83.60;
-            // Set rate in UI logic here if needed
         }
         function closeConvertModal() { toggleModal('convert-modal'); }
         function calculateConversion() {
@@ -1153,17 +1609,31 @@
             const result = amount * rate;
             document.getElementById('convert-to-amount').value = result.toLocaleString('en-IN', {maximumFractionDigits: 2});
             
-            // Calculate Savings
             const bankRate = 82.10;
             const bankTotal = amount * bankRate;
             const savings = result - bankTotal;
             document.getElementById('convert-savings').innerText = '₹ ' + savings.toLocaleString('en-IN', {maximumFractionDigits: 2});
         }
 
+        // -- Settings & Logout Logic --
+        function logout() {
+            if(confirm("Are you sure you want to log out of SettleX?")) {
+                // Simulate logout delay for realism
+                const btn = event.currentTarget;
+                const originalText = btn.innerHTML;
+                btn.innerHTML = '<i class="fa-solid fa-circle-notch fa-spin mr-2"></i> Logging Out...';
+                btn.classList.add('opacity-75', 'cursor-not-allowed');
+                
+                setTimeout(() => {
+                    // Redirect to login page
+                    window.location.href = 'login.html';
+                }, 800);
+            }
+        }
+
         // --- BACKEND HOOKS ---
         function updateDashboardRates() {
             if(typeof SettleXBackend === 'undefined') return;
-            // Update UI with real data from backend.js
             const usd = SettleXBackend.getQuote(1, 'USD', 'OUTFLOW')?.rates.settlex;
             if(usd) document.getElementById('rate-usd').innerText = usd.toFixed(2);
             document.getElementById('last-updated-time').innerText = new Date().toLocaleTimeString();
@@ -1173,28 +1643,28 @@
         function initChatbotWidget() {
             const container = document.getElementById('atlas-widget-container');
             container.innerHTML = `
-                <div id="atlas-window" class="fixed bottom-20 right-6 w-[350px] bg-dark-900 border border-slate-700 rounded-2xl shadow-2xl hidden flex-col z-50 overflow-hidden transform transition-all duration-300 origin-bottom-right scale-95 opacity-0" style="height: 500px;">
-                     <div class="bg-slate-800 p-4 flex justify-between items-center border-b border-slate-700">
+                <div id="atlas-window" class="fixed bottom-20 right-6 w-[350px] bg-white border border-slate-200 rounded-2xl shadow-2xl hidden flex-col z-50 overflow-hidden transform transition-all duration-300 origin-bottom-right scale-95 opacity-0" style="height: 500px;">
+                     <div class="bg-slate-50 p-4 flex justify-between items-center border-b border-slate-200">
                         <div class="flex items-center gap-2">
                              <div class="w-8 h-8 rounded-full bg-brand-600 flex items-center justify-center text-white text-xs"><i class="fa-solid fa-robot"></i></div>
                              <div>
-                                 <span class="font-bold text-white text-sm block">Atlas AI</span>
-                                 <span class="text-[10px] text-green-400 flex items-center gap-1"><span class="w-1.5 h-1.5 bg-green-500 rounded-full animate-pulse"></span> Online</span>
+                                 <span class="font-bold text-slate-900 text-sm block">Atlas AI</span>
+                                 <span class="text-[10px] text-green-600 flex items-center gap-1"><span class="w-1.5 h-1.5 bg-green-500 rounded-full animate-pulse"></span> Online</span>
                              </div>
                         </div>
-                        <button onclick="toggleAtlas()" class="text-slate-400 hover:text-white"><i class="fa-solid fa-xmark"></i></button>
+                        <button onclick="toggleAtlas()" class="text-slate-400 hover:text-slate-800"><i class="fa-solid fa-xmark"></i></button>
                      </div>
-                     <div id="atlas-messages" class="flex-1 p-4 overflow-y-auto space-y-4 bg-dark-950 scroll-smooth">
+                     <div id="atlas-messages" class="flex-1 p-4 overflow-y-auto space-y-4 bg-slate-50 scroll-smooth">
                         <div class="flex gap-3">
-                            <div class="w-8 h-8 rounded-full bg-slate-800 flex items-center justify-center shrink-0 text-slate-400 text-xs border border-slate-700"><i class="fa-solid fa-robot"></i></div>
-                            <div class="bg-slate-800 border border-slate-700 p-3 rounded-2xl rounded-tl-none text-sm text-slate-300 shadow-sm leading-relaxed">
+                            <div class="w-8 h-8 rounded-full bg-slate-100 flex items-center justify-center shrink-0 text-slate-500 text-xs border border-slate-200"><i class="fa-solid fa-robot"></i></div>
+                            <div class="bg-white border border-slate-200 p-3 rounded-2xl rounded-tl-none text-sm text-slate-600 shadow-sm leading-relaxed">
                                 Welcome back. I'm monitoring <strong>USD/INR</strong> volatility. Would you like a forecast?
                             </div>
                         </div>
                      </div>
-                     <div class="p-3 bg-slate-800 border-t border-slate-700 flex gap-2">
-                        <input type="text" id="atlas-input" class="flex-1 bg-dark-950 border border-slate-700 rounded-lg px-3 py-2 text-sm text-white focus:border-brand-500 focus:outline-none placeholder-slate-600" placeholder="Type query..." onkeypress="handleAtlasEnter(event)">
-                        <button onclick="handleAtlasSubmit()" class="w-10 h-10 bg-brand-600 text-white rounded-lg hover:bg-brand-500 flex items-center justify-center transition active:scale-95"><i class="fa-solid fa-paper-plane"></i></button>
+                     <div class="p-3 bg-slate-50 border-t border-slate-200 flex gap-2">
+                        <input type="text" id="atlas-input" class="flex-1 bg-white border border-slate-200 rounded-lg px-3 py-2 text-sm text-slate-900 focus:border-brand-500 focus:outline-none placeholder-slate-400" placeholder="Type query..." onkeypress="handleAtlasEnter(event)">
+                        <button onclick="handleAtlasSubmit()" class="w-10 h-10 bg-brand-600 text-white rounded-lg hover:bg-brand-700 flex items-center justify-center transition active:scale-95"><i class="fa-solid fa-paper-plane"></i></button>
                      </div>
                 </div>
             `;
@@ -1226,13 +1696,12 @@
             addMsg(msg, 'user');
             inp.value = '';
 
-            // Loading indicator
             const loadingId = 'loading-' + Date.now();
             const msgBox = document.getElementById('atlas-messages');
             const loadingDiv = document.createElement('div');
             loadingDiv.id = loadingId;
             loadingDiv.className = 'flex gap-3';
-            loadingDiv.innerHTML = `<div class="w-8 h-8 rounded-full bg-slate-800 flex items-center justify-center shrink-0 text-slate-400 text-xs border border-slate-700"><i class="fa-solid fa-robot"></i></div><div class="bg-slate-800 border border-slate-700 p-3 rounded-2xl rounded-tl-none text-sm text-slate-400 shadow-sm"><i class="fa-solid fa-ellipsis fa-fade"></i></div>`;
+            loadingDiv.innerHTML = `<div class="w-8 h-8 rounded-full bg-slate-100 flex items-center justify-center shrink-0 text-slate-500 text-xs border border-slate-200"><i class="fa-solid fa-robot"></i></div><div class="bg-white border border-slate-200 p-3 rounded-2xl rounded-tl-none text-sm text-slate-400 shadow-sm"><i class="fa-solid fa-ellipsis fa-fade"></i></div>`;
             msgBox.appendChild(loadingDiv);
             msgBox.scrollTop = msgBox.scrollHeight;
 
@@ -1252,10 +1721,10 @@
             const div = document.createElement('div');
             div.className = type === 'bot' ? 'flex gap-3 animate-fade-in' : 'flex gap-3 justify-end animate-fade-in';
             
-            const formatted = text.replace(/\*\*(.*?)\*\*/g, '<strong class="text-white">$1</strong>');
+            const formatted = text.replace(/\*\*(.*?)\*\*/g, '<strong class="text-slate-800">$1</strong>');
 
             div.innerHTML = type === 'bot' 
-                ? `<div class="w-8 h-8 rounded-full bg-slate-800 flex items-center justify-center shrink-0 text-slate-400 text-xs border border-slate-700"><i class="fa-solid fa-robot"></i></div><div class="bg-slate-800 border border-slate-700 p-3 rounded-2xl rounded-tl-none text-sm text-slate-300 shadow-sm max-w-[85%] leading-relaxed">${formatted}</div>`
+                ? `<div class="w-8 h-8 rounded-full bg-slate-100 flex items-center justify-center shrink-0 text-slate-500 text-xs border border-slate-200"><i class="fa-solid fa-robot"></i></div><div class="bg-white border border-slate-200 p-3 rounded-2xl rounded-tl-none text-sm text-slate-600 shadow-sm max-w-[85%] leading-relaxed">${formatted}</div>`
                 : `<div class="bg-brand-600 text-white p-3 rounded-2xl rounded-tr-none text-sm shadow-sm max-w-[85%] leading-relaxed">${formatted}</div>`;
             box.appendChild(div);
             box.scrollTop = box.scrollHeight;

@@ -42,10 +42,11 @@
                             900: '#0c4a6e',
                             950: '#082f49',
                         },
-                        dark: {
-                            800: '#1e293b',
-                            900: '#0f172a',
-                            950: '#020617',
+                        trade: {
+                            up: '#10b981',   
+                            down: '#ef4444', 
+                            warn: '#f59e0b', 
+                            info: '#3b82f6' 
                         }
                     },
                     animation: {
@@ -54,6 +55,7 @@
                         'fade-in': 'fadeIn 0.3s ease-out forwards',
                         'flip': 'flip 0.6s cubic-bezier(0.455, 0.030, 0.515, 0.955) both',
                         'float': 'float 6s ease-in-out infinite',
+                        'width-expand': 'widthExpand 1s ease-out forwards',
                     },
                     keyframes: {
                         slideIn: {
@@ -67,6 +69,10 @@
                         float: {
                             '0%, 100%': { transform: 'translateY(0)' },
                             '50%': { transform: 'translateY(-10px)' },
+                        },
+                        widthExpand: {
+                            '0%': { width: '0%' },
+                            '100%': { width: '100%' }
                         }
                     },
                     backgroundImage: {
@@ -74,30 +80,40 @@
                         'card-gradient-2': 'linear-gradient(135deg, #8b5cf6 0%, #6d28d9 100%)',
                         'card-gradient-3': 'linear-gradient(135deg, #10b981 0%, #059669 100%)',
                         'card-gradient-4': 'linear-gradient(135deg, #f59e0b 0%, #d97706 100%)',
+                    },
+                    boxShadow: {
+                        'glass': '0 8px 32px 0 rgba(0, 0, 0, 0.05)',
+                        'card-hover': '0 15px 30px -5px rgba(0, 0, 0, 0.15)',
                     }
                 }
             }
         }
     </script>
     <style>
-        /* Base */
+        /* Base Styles - Light Theme */
         body {
-            background-color: #020617;
-            color: #cbd5e1;
+            background-color: #f8fafc; /* slate-50 */
+            color: #0f172a; /* slate-900 */
         }
 
-        /* Glassmorphism */
+        /* Light Mode Scrollbar */
+        ::-webkit-scrollbar { width: 6px; height: 6px; }
+        ::-webkit-scrollbar-track { background: #f1f5f9; }
+        ::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 4px; }
+        ::-webkit-scrollbar-thumb:hover { background: #94a3b8; }
+
+        /* Glassmorphism Utilities - Light Mode */
         .glass-panel {
-            background: rgba(15, 23, 42, 0.6);
+            background: rgba(255, 255, 255, 0.9);
             backdrop-filter: blur(12px);
             -webkit-backdrop-filter: blur(12px);
-            border: 1px solid rgba(255, 255, 255, 0.08);
-            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+            border: 1px solid rgba(226, 232, 240, 0.8);
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05), 0 2px 4px -1px rgba(0, 0, 0, 0.03);
         }
 
         /* Card Patterns */
         .card-pattern {
-            background-image: radial-gradient(rgba(255, 255, 255, 0.1) 1px, transparent 1px);
+            background-image: radial-gradient(rgba(255, 255, 255, 0.15) 1px, transparent 1px);
             background-size: 20px 20px;
         }
         
@@ -106,6 +122,7 @@
             border-radius: 6px;
             position: relative;
             overflow: hidden;
+            box-shadow: inset 0 1px 2px rgba(255,255,255,0.2), 0 1px 2px rgba(0,0,0,0.1);
         }
         .chip-sim::before {
             content: '';
@@ -114,7 +131,7 @@
             left: 0;
             width: 100%;
             height: 1px;
-            background: rgba(0,0,0,0.2);
+            background: rgba(0,0,0,0.1);
         }
         .chip-sim::after {
             content: '';
@@ -123,16 +140,47 @@
             top: 0;
             width: 1px;
             height: 100%;
-            background: rgba(0,0,0,0.2);
-            box-shadow: 14px 0 0 rgba(0,0,0,0.2);
+            background: rgba(0,0,0,0.1);
+            box-shadow: 14px 0 0 rgba(0,0,0,0.1);
         }
 
         /* Grid */
         .bg-grid {
             background-size: 40px 40px;
             background-image: 
-                linear-gradient(to right, rgba(255, 255, 255, 0.03) 1px, transparent 1px),
-                linear-gradient(to bottom, rgba(255, 255, 255, 0.03) 1px, transparent 1px);
+                linear-gradient(to right, rgba(0, 0, 0, 0.03) 1px, transparent 1px),
+                linear-gradient(to bottom, rgba(0, 0, 0, 0.03) 1px, transparent 1px);
+        }
+
+        /* Stepper Styles (Wizard) */
+        .step-circle {
+            width: 2.5rem;
+            height: 2.5rem;
+            border-radius: 9999px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 700;
+            font-size: 0.875rem;
+            transition: all 0.3s ease;
+            position: relative;
+            z-index: 10;
+        }
+        .step-active {
+            background-color: #0ea5e9;
+            color: white;
+            box-shadow: 0 0 0 4px rgba(14, 165, 233, 0.2);
+            border: 2px solid #0ea5e9;
+        }
+        .step-inactive {
+            background-color: #ffffff;
+            color: #94a3b8;
+            border: 2px solid #e2e8f0;
+        }
+        .step-completed {
+            background-color: #10b981;
+            color: white;
+            border: 2px solid #10b981;
         }
 
         /* Utilities */
@@ -154,82 +202,95 @@
             transition: opacity 0.2s;
             pointer-events: none;
             border: 1px solid #334155;
+            white-space: nowrap;
         }
         .group:hover .copy-tooltip { opacity: 1; }
     </style>
 </head>
 <body class="font-sans h-screen flex overflow-hidden selection:bg-brand-500 selection:text-white">
 
-    <!-- 1. SIDEBAR (Consistent) -->
-    <aside class="w-20 lg:w-72 bg-dark-900 border-r border-slate-800 flex flex-col flex-shrink-0 transition-all duration-300 z-50">
-        <!-- Logo -->
-        <div class="h-20 flex items-center px-0 lg:px-6 justify-center lg:justify-start border-b border-slate-800 cursor-pointer group" onclick="window.location.href='client-dashboard.html'">
-            <div class="w-10 h-10 bg-gradient-to-br from-brand-500 to-brand-700 rounded-xl flex items-center justify-center text-white font-bold text-xl shadow-lg shadow-brand-500/20 flex-shrink-0 transition-transform group-hover:scale-105">S</div>
+    <!-- 1. PROFESSIONAL SIDEBAR (Light Theme) -->
+    <aside class="w-20 lg:w-72 bg-white border-r border-slate-200 flex flex-col flex-shrink-0 transition-all duration-300 z-50">
+        
+        <!-- Logo Area -->
+        <div class="h-20 flex items-center px-0 lg:px-6 justify-center lg:justify-start border-b border-slate-200 relative group cursor-pointer" onclick="window.location.href='client-dashboard.html'">
+            <div class="w-10 h-10 bg-gradient-to-br from-brand-500 to-brand-700 rounded-xl flex items-center justify-center text-white font-bold text-xl shadow-lg shadow-brand-500/20 flex-shrink-0 transition-transform group-hover:scale-105">
+                S
+            </div>
             <div class="hidden lg:block ml-3">
-                <h1 class="text-xl font-display font-bold text-white tracking-tight">Settle<span class="text-brand-400">X</span></h1>
-                <p class="text-[10px] text-slate-500 font-mono uppercase tracking-wider group-hover:text-brand-400 transition-colors">Treasury OS v2.4</p>
+                <h1 class="text-xl font-display font-bold text-slate-900 tracking-tight">Settle<span class="text-brand-600">X</span></h1>
+                <p class="text-[10px] text-slate-500 font-mono uppercase tracking-wider group-hover:text-brand-600 transition-colors">Treasury OS v2.4</p>
             </div>
         </div>
 
-        <!-- Nav -->
+        <!-- Main Navigation -->
         <nav class="flex-1 overflow-y-auto py-6 px-3 space-y-1">
-            <a href="client-dashboard.html" class="flex items-center gap-3 px-3 py-3 text-slate-400 hover:text-white hover:bg-slate-800 rounded-xl transition-all group">
-                <i class="fa-solid fa-border-all w-6 text-center group-hover:text-brand-400 transition-colors"></i>
+            
+            <!-- Dashboard -->
+            <a href="client-dashboard.html" class="flex items-center gap-3 px-3 py-3 text-slate-500 hover:text-slate-900 hover:bg-slate-50 rounded-xl transition-all group">
+                <i class="fa-solid fa-border-all w-6 text-center group-hover:text-brand-600 transition-colors"></i>
                 <span class="hidden lg:block font-medium">Command Center</span>
             </a>
 
             <div class="hidden lg:block px-3 mt-6 mb-2 flex items-center justify-between">
-                <p class="text-[10px] font-bold text-slate-500 uppercase tracking-widest">Global Money</p>
-                <i class="fa-solid fa-globe text-[10px] text-slate-600"></i>
+                <p class="text-[10px] font-bold text-slate-400 uppercase tracking-widest">Global Money</p>
+                <i class="fa-solid fa-globe text-[10px] text-slate-400"></i>
             </div>
 
-            <a href="inflow-decision-gate.html" class="flex items-center gap-3 px-3 py-3 text-slate-400 hover:text-white hover:bg-slate-800 rounded-xl transition-all group">
-                <i class="fa-solid fa-inbox w-6 text-center group-hover:text-green-400 transition-colors"></i>
+            <!-- Inflow -->
+            <a href="inflow-decision-gate.html" class="flex items-center gap-3 px-3 py-3 text-slate-500 hover:text-slate-900 hover:bg-slate-50 rounded-xl transition-all group">
+                <i class="fa-solid fa-inbox w-6 text-center group-hover:text-green-600 transition-colors"></i>
                 <span class="hidden lg:block font-medium">Inflow (Collections)</span>
                 <span class="hidden lg:flex ml-auto bg-brand-500 text-white text-[10px] font-bold px-2 py-0.5 rounded-full shadow-lg shadow-brand-500/40 animate-pulse-slow">3</span>
             </a>
 
-            <a href="outflow-transfer.html" class="flex items-center gap-3 px-3 py-3 text-slate-400 hover:text-white hover:bg-slate-800 rounded-xl transition-all group">
-                <i class="fa-solid fa-paper-plane w-6 text-center group-hover:text-red-400 transition-colors"></i>
+            <!-- Outflow -->
+            <a href="outflow-transfer.html" class="flex items-center gap-3 px-3 py-3 text-slate-500 hover:text-slate-900 hover:bg-slate-50 rounded-xl transition-all group">
+                <i class="fa-solid fa-paper-plane w-6 text-center group-hover:text-red-500 transition-colors"></i>
                 <span class="hidden lg:block font-medium">Outflow (Payments)</span>
             </a>
 
-            <!-- Active: Virtual Accounts -->
-            <a href="#" class="flex items-center gap-3 px-3 py-3 bg-brand-900/30 text-white rounded-xl border border-brand-500/30 shadow-sm group relative overflow-hidden">
-                <div class="absolute inset-0 bg-brand-500/10 rounded-xl blur opacity-0 group-hover:opacity-100 transition-opacity"></div>
+            <!-- Virtual Accounts (Active) -->
+            <a href="#" class="flex items-center gap-3 px-3 py-3 bg-brand-50 text-brand-900 rounded-xl border border-brand-200 shadow-sm group relative overflow-hidden">
+                <div class="absolute inset-0 bg-brand-100 rounded-xl blur opacity-0 group-hover:opacity-100 transition-opacity"></div>
                 <div class="absolute left-0 top-0 bottom-0 w-1 bg-brand-500 rounded-l-xl"></div>
-                <i class="fa-solid fa-wallet w-6 text-center text-purple-400 text-lg group-hover:scale-110 transition-transform"></i>
+                <i class="fa-solid fa-wallet w-6 text-center text-purple-600 text-lg group-hover:scale-110 transition-transform"></i>
                 <span class="hidden lg:block font-medium tracking-wide">Virtual Accounts</span>
             </a>
 
             <div class="hidden lg:block px-3 mt-6 mb-2 flex items-center justify-between">
-                <p class="text-[10px] font-bold text-slate-500 uppercase tracking-widest">Compliance</p>
-                <i class="fa-solid fa-shield-halved text-[10px] text-slate-600"></i>
+                <p class="text-[10px] font-bold text-slate-400 uppercase tracking-widest">Compliance</p>
+                <i class="fa-solid fa-shield-halved text-[10px] text-slate-400"></i>
             </div>
 
-            <a href="transaction-history.html" class="flex items-center gap-3 px-3 py-3 text-slate-400 hover:text-white hover:bg-slate-800 rounded-xl transition-all group">
-                <i class="fa-solid fa-book-open w-6 text-center group-hover:text-amber-400 transition-colors"></i>
+            <!-- Ledger -->
+            <a href="transaction-history.html" class="flex items-center gap-3 px-3 py-3 text-slate-500 hover:text-slate-900 hover:bg-slate-50 rounded-xl transition-all group">
+                <i class="fa-solid fa-book-open w-6 text-center group-hover:text-amber-500 transition-colors"></i>
                 <span class="hidden lg:block font-medium">Digital Ledger</span>
             </a>
 
-            <a href="compliance-vault.html" class="flex items-center gap-3 px-3 py-3 text-slate-400 hover:text-white hover:bg-slate-800 rounded-xl transition-all group">
-                <i class="fa-solid fa-file-shield w-6 text-center group-hover:text-blue-400 transition-colors"></i>
+            <!-- Docs -->
+            <a href="compliance-vault.html" class="flex items-center gap-3 px-3 py-3 text-slate-500 hover:text-slate-900 hover:bg-slate-50 rounded-xl transition-all group">
+                <i class="fa-solid fa-file-shield w-6 text-center group-hover:text-blue-500 transition-colors"></i>
                 <span class="hidden lg:block font-medium">BoE & e-FIRA Vault</span>
             </a>
         </nav>
         
         <!-- Profile -->
-        <div class="p-4 border-t border-slate-800 bg-dark-900/50">
-            <div class="flex items-center gap-3 cursor-pointer hover:bg-slate-800 p-2 rounded-xl transition-colors group">
+        <div class="p-4 border-t border-slate-200 bg-slate-50/50">
+            <div class="flex items-center gap-3 cursor-pointer hover:bg-slate-100 p-2 rounded-xl transition-colors group" onclick="toggleModal('settings-modal')">
                 <div class="relative">
-                    <div class="w-10 h-10 rounded-full bg-slate-700 flex items-center justify-center border border-slate-600 group-hover:border-brand-500 transition-colors">
-                        <span class="font-bold text-white group-hover:text-brand-200">TE</span>
+                    <div class="w-10 h-10 rounded-full bg-slate-200 flex items-center justify-center border border-slate-300 group-hover:border-brand-300 transition-colors">
+                        <span class="font-bold text-slate-700 group-hover:text-brand-600">TE</span>
                     </div>
-                    <div class="absolute -bottom-1 -right-1 w-3 h-3 bg-green-500 border-2 border-dark-900 rounded-full animate-pulse"></div>
+                    <div class="absolute -bottom-1 -right-1 w-3 h-3 bg-green-500 border-2 border-white rounded-full animate-pulse"></div>
                 </div>
                 <div class="hidden lg:block min-w-0">
-                    <p class="text-sm font-bold text-white truncate group-hover:text-brand-400 transition-colors">Tex Exports Pvt Ltd</p>
+                    <p class="text-sm font-bold text-slate-900 truncate group-hover:text-brand-700 transition-colors">Tex Exports Pvt Ltd</p>
                     <p class="text-[10px] text-slate-500 font-mono truncate">ID: IND-TN-8821</p>
+                </div>
+                <div class="hidden lg:block ml-auto text-slate-400 group-hover:text-slate-600 transition-colors">
+                    <i class="fa-solid fa-gear text-xs"></i>
                 </div>
             </div>
         </div>
@@ -239,24 +300,32 @@
     <main class="flex-1 flex flex-col h-screen relative overflow-hidden bg-grid">
         
         <!-- Header -->
-        <header class="h-16 bg-dark-900/80 backdrop-blur-md border-b border-slate-800 flex items-center justify-between px-6 z-40 sticky top-0">
+        <header class="h-16 bg-white/80 backdrop-blur-md border-b border-slate-200 flex items-center justify-between px-6 z-40 sticky top-0 transition-all duration-300">
             <div class="flex items-center gap-4">
-                <h2 class="text-lg font-bold text-white flex items-center gap-2">
-                    <i class="fa-solid fa-globe text-purple-500"></i> Global Collections
+                <h2 class="text-lg font-bold text-slate-900 flex items-center gap-2">
+                    <i class="fa-solid fa-globe text-purple-600"></i> Global Collections
                 </h2>
-                <div class="h-4 w-px bg-slate-700 hidden md:block"></div>
-                <div class="hidden md:flex items-center gap-2 px-3 py-1.5 bg-purple-900/20 rounded-lg border border-purple-500/20">
+                <div class="h-4 w-px bg-slate-300 hidden md:block"></div>
+                <div class="hidden md:flex items-center gap-2 px-3 py-1.5 bg-purple-50 rounded-lg border border-purple-200">
                     <span class="w-2 h-2 rounded-full bg-green-500 animate-pulse"></span>
-                    <span class="text-xs font-mono text-purple-300">DBS CONNECTED</span>
+                    <span class="text-xs font-mono text-purple-700 font-bold">DBS BANK CONNECTED</span>
                 </div>
             </div>
             
             <div class="flex items-center gap-4">
-                <button class="px-4 py-2 bg-brand-600 hover:bg-brand-500 text-white text-xs font-bold rounded-lg shadow-lg shadow-brand-500/20 transition transform active:scale-95 flex items-center gap-2" onclick="openAddAccountModal()">
+                <button class="px-4 py-2 bg-brand-600 hover:bg-brand-700 text-white text-xs font-bold rounded-lg shadow-lg shadow-brand-500/20 transition transform active:scale-95 flex items-center gap-2" onclick="openWizard()">
                     <i class="fa-solid fa-plus"></i> Open New Currency
                 </button>
-                <div class="h-6 w-px bg-slate-700"></div>
-                <button class="relative p-2 text-slate-400 hover:text-white transition-colors hover:bg-slate-800 rounded-lg" onclick="toggleAtlas()">
+                <div class="h-6 w-px bg-slate-300 hidden md:block"></div>
+                
+                <!-- Notifications -->
+                <button class="relative p-2 text-slate-500 hover:text-slate-900 transition-colors hover:bg-slate-100 rounded-lg" onclick="toggleNotificationPanel()">
+                    <i class="fa-regular fa-bell"></i>
+                    <span class="absolute top-1.5 right-1.5 w-2 h-2 bg-red-500 rounded-full border border-white animate-ping"></span>
+                    <span class="absolute top-1.5 right-1.5 w-2 h-2 bg-red-500 rounded-full border border-white"></span>
+                </button>
+
+                <button class="relative p-2 text-slate-500 hover:text-slate-900 transition-colors hover:bg-slate-100 rounded-lg" onclick="toggleAtlas()" title="Ask Atlas AI">
                     <i class="fa-solid fa-headset"></i>
                 </button>
             </div>
@@ -269,30 +338,30 @@
             <div class="mb-10">
                 <div class="flex justify-between items-center mb-6">
                     <div>
-                        <h3 class="text-xl font-display font-bold text-white">Your Virtual Accounts</h3>
-                        <p class="text-slate-400 text-sm">Share these details with international buyers to collect payments locally.</p>
+                        <h3 class="text-xl font-display font-bold text-slate-900">Your Virtual Accounts</h3>
+                        <p class="text-slate-500 text-sm">Share these details with international buyers to collect payments locally.</p>
                     </div>
                     <div class="flex gap-2">
-                        <button class="p-2 bg-slate-800 hover:bg-slate-700 rounded-lg text-slate-400 hover:text-white transition"><i class="fa-solid fa-chevron-left"></i></button>
-                        <button class="p-2 bg-slate-800 hover:bg-slate-700 rounded-lg text-slate-400 hover:text-white transition"><i class="fa-solid fa-chevron-right"></i></button>
+                        <button class="p-2 bg-white border border-slate-200 hover:bg-slate-50 rounded-lg text-slate-500 hover:text-slate-900 transition shadow-sm"><i class="fa-solid fa-chevron-left"></i></button>
+                        <button class="p-2 bg-white border border-slate-200 hover:bg-slate-50 rounded-lg text-slate-500 hover:text-slate-900 transition shadow-sm"><i class="fa-solid fa-chevron-right"></i></button>
                     </div>
                 </div>
 
                 <!-- CARDS SCROLL -->
-                <div class="flex gap-6 overflow-x-auto pb-8 custom-scrollbar snap-x">
+                <div class="flex gap-6 overflow-x-auto pb-8 custom-scrollbar snap-x px-1">
                     
                     <!-- Card 1: USD (DBS Singapore) -->
-                    <div class="min-w-[340px] h-[200px] bg-card-gradient-1 rounded-2xl p-6 relative overflow-hidden shadow-2xl transform hover:-translate-y-2 transition-transform duration-300 group cursor-pointer snap-center" onclick="selectAccount('USD')">
-                        <div class="card-pattern absolute inset-0 opacity-30"></div>
+                    <div class="min-w-[340px] h-[200px] bg-card-gradient-1 rounded-2xl p-6 relative overflow-hidden shadow-card-hover transform hover:-translate-y-2 transition-transform duration-300 group cursor-pointer snap-center ring-4 ring-transparent hover:ring-brand-200" onclick="selectAccount('USD')">
+                        <div class="card-pattern absolute inset-0 opacity-20"></div>
                         <div class="relative z-10 flex flex-col h-full justify-between">
                             <div class="flex justify-between items-start">
                                 <div class="flex items-center gap-2">
-                                    <div class="w-8 h-8 bg-white/20 rounded-full flex items-center justify-center backdrop-blur-sm">
+                                    <div class="w-8 h-8 bg-white/20 rounded-full flex items-center justify-center backdrop-blur-sm border border-white/10">
                                         <i class="fa-solid fa-dollar-sign text-white"></i>
                                     </div>
                                     <span class="font-bold text-white tracking-wide">USD Collection</span>
                                 </div>
-                                <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/c/cf/DBS_Bank_logo.svg/2560px-DBS_Bank_logo.svg.png" class="h-6 brightness-0 invert opacity-80">
+                                <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/c/cf/DBS_Bank_logo.svg/2560px-DBS_Bank_logo.svg.png" class="h-6 brightness-0 invert opacity-90">
                             </div>
                             
                             <div class="flex gap-3">
@@ -303,30 +372,30 @@
                             <div>
                                 <div class="flex justify-between items-end">
                                     <div>
-                                        <p class="text-[10px] text-white/70 uppercase font-bold tracking-wider mb-1">Account Number</p>
-                                        <p class="font-mono text-lg text-white font-bold tracking-widest flex gap-2 items-center group/copy" onclick="copyText('8821-9923-1102')">
+                                        <p class="text-[10px] text-white/80 uppercase font-bold tracking-wider mb-1">Account Number</p>
+                                        <p class="font-mono text-lg text-white font-bold tracking-widest flex gap-2 items-center group/copy" onclick="event.stopPropagation(); copyText('8821-9923-1102')">
                                             8821 9923 1102
-                                            <i class="fa-regular fa-copy text-xs opacity-0 group-hover/copy:opacity-100 transition-opacity"></i>
+                                            <i class="fa-regular fa-copy text-xs opacity-0 group-hover/copy:opacity-100 transition-opacity cursor-pointer hover:text-brand-100"></i>
                                         </p>
                                     </div>
-                                    <p class="text-2xl font-bold text-white">$ 84,500.00</p>
+                                    <p class="text-2xl font-bold text-white" id="card-bal-USD">$ 84,500.00</p>
                                 </div>
                             </div>
                         </div>
                     </div>
 
                     <!-- Card 2: SGD (DBS Singapore) -->
-                    <div class="min-w-[340px] h-[200px] bg-card-gradient-2 rounded-2xl p-6 relative overflow-hidden shadow-2xl transform hover:-translate-y-2 transition-transform duration-300 group cursor-pointer snap-center opacity-80 hover:opacity-100" onclick="selectAccount('SGD')">
-                        <div class="card-pattern absolute inset-0 opacity-30"></div>
+                    <div class="min-w-[340px] h-[200px] bg-card-gradient-2 rounded-2xl p-6 relative overflow-hidden shadow-card-hover transform hover:-translate-y-2 transition-transform duration-300 group cursor-pointer snap-center ring-4 ring-transparent hover:ring-purple-200" onclick="selectAccount('SGD')">
+                        <div class="card-pattern absolute inset-0 opacity-20"></div>
                         <div class="relative z-10 flex flex-col h-full justify-between">
                             <div class="flex justify-between items-start">
                                 <div class="flex items-center gap-2">
-                                    <div class="w-8 h-8 bg-white/20 rounded-full flex items-center justify-center backdrop-blur-sm">
+                                    <div class="w-8 h-8 bg-white/20 rounded-full flex items-center justify-center backdrop-blur-sm border border-white/10">
                                         <span class="font-bold text-white">S$</span>
                                     </div>
                                     <span class="font-bold text-white tracking-wide">SGD Collection</span>
                                 </div>
-                                <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/c/cf/DBS_Bank_logo.svg/2560px-DBS_Bank_logo.svg.png" class="h-6 brightness-0 invert opacity-80">
+                                <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/c/cf/DBS_Bank_logo.svg/2560px-DBS_Bank_logo.svg.png" class="h-6 brightness-0 invert opacity-90">
                             </div>
                             
                             <div class="flex gap-3">
@@ -337,30 +406,30 @@
                             <div>
                                 <div class="flex justify-between items-end">
                                     <div>
-                                        <p class="text-[10px] text-white/70 uppercase font-bold tracking-wider mb-1">Account Number</p>
-                                        <p class="font-mono text-lg text-white font-bold tracking-widest flex gap-2 items-center group/copy" onclick="copyText('8821-9923-5501')">
+                                        <p class="text-[10px] text-white/80 uppercase font-bold tracking-wider mb-1">Account Number</p>
+                                        <p class="font-mono text-lg text-white font-bold tracking-widest flex gap-2 items-center group/copy" onclick="event.stopPropagation(); copyText('8821-9923-5501')">
                                             8821 9923 5501
-                                            <i class="fa-regular fa-copy text-xs opacity-0 group-hover/copy:opacity-100 transition-opacity"></i>
+                                            <i class="fa-regular fa-copy text-xs opacity-0 group-hover/copy:opacity-100 transition-opacity cursor-pointer hover:text-purple-100"></i>
                                         </p>
                                     </div>
-                                    <p class="text-2xl font-bold text-white">S$ 1,200.00</p>
+                                    <p class="text-2xl font-bold text-white" id="card-bal-SGD">S$ 1,200.00</p>
                                 </div>
                             </div>
                         </div>
                     </div>
 
                     <!-- Card 3: EUR (DBS Frankfurt) -->
-                    <div class="min-w-[340px] h-[200px] bg-card-gradient-3 rounded-2xl p-6 relative overflow-hidden shadow-2xl transform hover:-translate-y-2 transition-transform duration-300 group cursor-pointer snap-center opacity-80 hover:opacity-100" onclick="selectAccount('EUR')">
-                        <div class="card-pattern absolute inset-0 opacity-30"></div>
+                    <div class="min-w-[340px] h-[200px] bg-card-gradient-3 rounded-2xl p-6 relative overflow-hidden shadow-card-hover transform hover:-translate-y-2 transition-transform duration-300 group cursor-pointer snap-center ring-4 ring-transparent hover:ring-green-200" onclick="selectAccount('EUR')">
+                        <div class="card-pattern absolute inset-0 opacity-20"></div>
                         <div class="relative z-10 flex flex-col h-full justify-between">
                             <div class="flex justify-between items-start">
                                 <div class="flex items-center gap-2">
-                                    <div class="w-8 h-8 bg-white/20 rounded-full flex items-center justify-center backdrop-blur-sm">
+                                    <div class="w-8 h-8 bg-white/20 rounded-full flex items-center justify-center backdrop-blur-sm border border-white/10">
                                         <i class="fa-solid fa-euro-sign text-white"></i>
                                     </div>
                                     <span class="font-bold text-white tracking-wide">EUR Collection</span>
                                 </div>
-                                <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/c/cf/DBS_Bank_logo.svg/2560px-DBS_Bank_logo.svg.png" class="h-6 brightness-0 invert opacity-80">
+                                <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/c/cf/DBS_Bank_logo.svg/2560px-DBS_Bank_logo.svg.png" class="h-6 brightness-0 invert opacity-90">
                             </div>
                             
                             <div class="flex gap-3">
@@ -371,25 +440,25 @@
                             <div>
                                 <div class="flex justify-between items-end">
                                     <div>
-                                        <p class="text-[10px] text-white/70 uppercase font-bold tracking-wider mb-1">IBAN</p>
-                                        <p class="font-mono text-sm text-white font-bold tracking-widest flex gap-2 items-center group/copy" onclick="copyText('DE89 3704 0044 0532 0130 00')">
+                                        <p class="text-[10px] text-white/80 uppercase font-bold tracking-wider mb-1">IBAN</p>
+                                        <p class="font-mono text-sm text-white font-bold tracking-widest flex gap-2 items-center group/copy" onclick="event.stopPropagation(); copyText('DE89 3704 0044 0532 0130 00')">
                                             DE89 3704 ... 0130 00
-                                            <i class="fa-regular fa-copy text-xs opacity-0 group-hover/copy:opacity-100 transition-opacity"></i>
+                                            <i class="fa-regular fa-copy text-xs opacity-0 group-hover/copy:opacity-100 transition-opacity cursor-pointer hover:text-green-100"></i>
                                         </p>
                                     </div>
-                                    <p class="text-2xl font-bold text-white">€ 0.00</p>
+                                    <p class="text-2xl font-bold text-white" id="card-bal-EUR">€ 0.00</p>
                                 </div>
                             </div>
                         </div>
                     </div>
 
                     <!-- Add New Card Placeholder -->
-                    <div class="min-w-[340px] h-[200px] border-2 border-dashed border-slate-700 rounded-2xl p-6 flex flex-col items-center justify-center cursor-pointer hover:border-brand-500 hover:bg-slate-800/50 transition-all group snap-center" onclick="openAddAccountModal()">
-                        <div class="w-12 h-12 bg-slate-800 rounded-full flex items-center justify-center mb-3 group-hover:bg-brand-600 transition-colors">
-                            <i class="fa-solid fa-plus text-slate-400 group-hover:text-white"></i>
+                    <div class="min-w-[340px] h-[200px] border-2 border-dashed border-slate-300 rounded-2xl p-6 flex flex-col items-center justify-center cursor-pointer hover:border-brand-500 hover:bg-slate-50 transition-all group snap-center" onclick="openWizard()">
+                        <div class="w-12 h-12 bg-slate-100 rounded-full flex items-center justify-center mb-3 group-hover:bg-brand-100 transition-colors">
+                            <i class="fa-solid fa-plus text-slate-400 group-hover:text-brand-600"></i>
                         </div>
-                        <p class="font-bold text-slate-400 group-hover:text-white">Add Currency</p>
-                        <p class="text-xs text-slate-500 mt-1">GBP, JPY, AUD available</p>
+                        <p class="font-bold text-slate-500 group-hover:text-brand-700">Add Currency</p>
+                        <p class="text-xs text-slate-400 mt-1">GBP, JPY, AUD available</p>
                     </div>
 
                 </div>
@@ -400,79 +469,96 @@
                 
                 <!-- Left: Account Details (Sticky) -->
                 <div class="lg:col-span-1 space-y-6">
-                    <div class="glass-panel p-6 rounded-2xl border border-brand-500/30 relative overflow-hidden" id="account-details-panel">
-                        <div class="absolute top-0 right-0 w-20 h-20 bg-brand-500/10 rounded-bl-full"></div>
+                    <div class="glass-panel p-6 rounded-2xl relative overflow-hidden transition-all duration-300" id="account-details-panel">
+                        <div class="absolute top-0 right-0 w-20 h-20 bg-brand-50 rounded-bl-full"></div>
                         
-                        <div class="flex items-center gap-3 mb-6">
-                            <img src="https://flagcdn.com/w40/us.png" id="detail-flag" class="w-8 h-6 rounded shadow-sm object-cover">
+                        <div class="flex items-center gap-3 mb-6 relative z-10">
+                            <img src="https://flagcdn.com/w40/us.png" id="detail-flag" class="w-10 h-8 rounded shadow-sm object-cover border border-slate-200">
                             <div>
-                                <h4 class="font-bold text-white" id="detail-currency">United States Dollar</h4>
-                                <p class="text-xs text-slate-400">DBS Singapore • Branch 081</p>
+                                <h4 class="font-bold text-slate-900" id="detail-currency">United States Dollar</h4>
+                                <p class="text-xs text-slate-500">DBS Singapore • Branch 081</p>
                             </div>
                         </div>
 
-                        <div class="space-y-4">
-                            <div class="bg-slate-800/50 p-3 rounded-xl border border-slate-700 group cursor-pointer" onclick="copyText('Tex Exports Pvt Ltd')">
+                        <div class="space-y-4 relative z-10">
+                            <div class="bg-slate-50 p-3 rounded-xl border border-slate-200 group cursor-pointer hover:border-brand-300 transition-colors" onclick="copyText('Tex Exports Pvt Ltd')">
                                 <p class="text-[10px] text-slate-500 uppercase font-bold mb-1">Account Holder Name</p>
                                 <div class="flex justify-between items-center">
-                                    <p class="text-sm font-bold text-white">Tex Exports Pvt Ltd</p>
-                                    <i class="fa-regular fa-copy text-slate-500 text-xs group-hover:text-white transition"></i>
+                                    <p class="text-sm font-bold text-slate-900">Tex Exports Pvt Ltd</p>
+                                    <i class="fa-regular fa-copy text-slate-400 text-xs group-hover:text-brand-600 transition"></i>
                                 </div>
                             </div>
 
-                            <div class="bg-slate-800/50 p-3 rounded-xl border border-slate-700 group cursor-pointer" onclick="copyText('DBSSSGSG')">
+                            <div class="bg-slate-50 p-3 rounded-xl border border-slate-200 group cursor-pointer hover:border-brand-300 transition-colors" onclick="copyText('DBSSSGSG')">
                                 <p class="text-[10px] text-slate-500 uppercase font-bold mb-1">SWIFT / BIC Code</p>
                                 <div class="flex justify-between items-center">
-                                    <p class="text-sm font-mono font-bold text-white">DBSSSGSG</p>
-                                    <i class="fa-regular fa-copy text-slate-500 text-xs group-hover:text-white transition"></i>
+                                    <p class="text-sm font-mono font-bold text-slate-900">DBSSSGSG</p>
+                                    <i class="fa-regular fa-copy text-slate-400 text-xs group-hover:text-brand-600 transition"></i>
                                 </div>
                             </div>
 
-                            <div class="bg-slate-800/50 p-3 rounded-xl border border-slate-700 group cursor-pointer" onclick="copyText('882199231102')">
+                            <div class="bg-slate-50 p-3 rounded-xl border border-slate-200 group cursor-pointer hover:border-brand-300 transition-colors" onclick="copyText('882199231102')">
                                 <p class="text-[10px] text-slate-500 uppercase font-bold mb-1">Account Number</p>
                                 <div class="flex justify-between items-center">
-                                    <p class="text-sm font-mono font-bold text-white" id="detail-account-num">8821 9923 1102</p>
-                                    <i class="fa-regular fa-copy text-slate-500 text-xs group-hover:text-white transition"></i>
+                                    <p class="text-sm font-mono font-bold text-slate-900" id="detail-account-num">8821 9923 1102</p>
+                                    <i class="fa-regular fa-copy text-slate-400 text-xs group-hover:text-brand-600 transition"></i>
                                 </div>
                             </div>
 
-                            <div class="bg-slate-800/50 p-3 rounded-xl border border-slate-700 group cursor-pointer" onclick="copyText('12 Marina Boulevard, Singapore')">
+                            <div class="bg-slate-50 p-3 rounded-xl border border-slate-200 group cursor-pointer hover:border-brand-300 transition-colors" onclick="copyText('12 Marina Boulevard, Singapore')">
                                 <p class="text-[10px] text-slate-500 uppercase font-bold mb-1">Bank Address</p>
                                 <div class="flex justify-between items-center">
-                                    <p class="text-sm font-bold text-white truncate">12 Marina Boulevard, Singapore</p>
-                                    <i class="fa-regular fa-copy text-slate-500 text-xs group-hover:text-white transition"></i>
+                                    <p class="text-sm font-bold text-slate-900 truncate">12 Marina Boulevard, Singapore</p>
+                                    <i class="fa-regular fa-copy text-slate-400 text-xs group-hover:text-brand-600 transition"></i>
                                 </div>
                             </div>
                         </div>
 
-                        <div class="mt-6 pt-4 border-t border-slate-700 flex gap-3">
-                            <button class="flex-1 py-2 text-xs font-bold bg-white text-brand-900 rounded-lg hover:bg-slate-200 transition" onclick="shareDetails()">
-                                <i class="fa-solid fa-share-nodes mr-1"></i> Share
+                        <!-- Action Buttons -->
+                        <div class="mt-6 pt-4 border-t border-slate-100 grid grid-cols-2 gap-3">
+                            <button class="py-2 text-xs font-bold bg-white border border-slate-200 text-slate-700 rounded-lg hover:bg-slate-50 transition shadow-sm" onclick="downloadStatement()">
+                                <i class="fa-solid fa-file-invoice mr-1"></i> Statement
                             </button>
-                            <button class="flex-1 py-2 text-xs font-bold border border-slate-600 text-slate-300 rounded-lg hover:bg-slate-800 transition" onclick="downloadStatement()">
-                                <i class="fa-solid fa-download mr-1"></i> Statement
+                            <button class="py-2 text-xs font-bold bg-slate-900 text-white rounded-lg hover:bg-slate-800 transition shadow-md" onclick="simulateInflow()">
+                                <i class="fa-solid fa-arrow-down mr-1"></i> Receive (Sim)
+                            </button>
+                            <button class="col-span-2 py-2 text-xs font-bold bg-purple-50 text-purple-700 border border-purple-100 rounded-lg hover:bg-purple-100 transition" onclick="toggleModal('auto-sweep-modal')">
+                                <i class="fa-solid fa-robot mr-1"></i> Configure Auto-Sweep
                             </button>
                         </div>
                     </div>
                 </div>
 
-                <!-- Right: Transaction History -->
-                <div class="lg:col-span-2">
-                    <div class="glass-panel rounded-2xl overflow-hidden min-h-[500px] flex flex-col">
-                        <div class="p-6 border-b border-slate-800 flex justify-between items-center bg-dark-900/50">
-                            <h4 class="font-bold text-white">Transaction History</h4>
+                <!-- Right: Chart & History -->
+                <div class="lg:col-span-2 space-y-6">
+                    
+                    <!-- Balance Chart -->
+                    <div class="glass-panel p-6 rounded-2xl relative">
+                        <div class="flex justify-between items-center mb-4">
+                            <h4 class="font-bold text-slate-900 text-sm">Balance History (30 Days)</h4>
+                            <span class="text-xs text-green-600 font-bold bg-green-50 px-2 py-1 rounded-full">+12.5% vs Last Month</span>
+                        </div>
+                        <div class="h-48 w-full">
+                            <canvas id="balanceHistoryChart"></canvas>
+                        </div>
+                    </div>
+
+                    <!-- Transaction History List -->
+                    <div class="glass-panel rounded-2xl overflow-hidden min-h-[300px] flex flex-col">
+                        <div class="p-6 border-b border-slate-200 flex justify-between items-center bg-white">
+                            <h4 class="font-bold text-slate-900">Transaction History</h4>
                             <div class="flex gap-2">
                                 <div class="relative">
-                                    <i class="fa-solid fa-search absolute left-3 top-2.5 text-slate-500 text-xs"></i>
-                                    <input type="text" class="bg-slate-800 border border-slate-700 rounded-lg pl-8 pr-4 py-1.5 text-xs text-white focus:outline-none focus:border-brand-500" placeholder="Search...">
+                                    <i class="fa-solid fa-search absolute left-3 top-2.5 text-slate-400 text-xs"></i>
+                                    <input type="text" class="bg-slate-50 border border-slate-200 rounded-lg pl-8 pr-4 py-1.5 text-xs text-slate-900 focus:outline-none focus:border-brand-500 placeholder-slate-400" placeholder="Search..." oninput="filterHistory(this.value)">
                                 </div>
-                                <button class="p-1.5 bg-slate-800 hover:bg-slate-700 rounded-lg text-slate-400 hover:text-white transition"><i class="fa-solid fa-filter"></i></button>
+                                <button class="p-1.5 bg-white border border-slate-200 hover:bg-slate-50 rounded-lg text-slate-500 hover:text-slate-900 transition"><i class="fa-solid fa-filter"></i></button>
                             </div>
                         </div>
 
-                        <div class="flex-1 overflow-y-auto custom-scrollbar">
+                        <div class="flex-1 overflow-y-auto custom-scrollbar bg-white">
                             <table class="w-full text-sm text-left">
-                                <thead class="text-xs text-slate-500 uppercase bg-slate-800/50 sticky top-0 backdrop-blur-md">
+                                <thead class="text-xs text-slate-500 uppercase bg-slate-50 sticky top-0 z-10">
                                     <tr>
                                         <th class="px-6 py-3 font-semibold">Date</th>
                                         <th class="px-6 py-3 font-semibold">Description</th>
@@ -480,7 +566,7 @@
                                         <th class="px-6 py-3 font-semibold text-right">Amount</th>
                                     </tr>
                                 </thead>
-                                <tbody class="divide-y divide-slate-800" id="txn-history-body">
+                                <tbody class="divide-y divide-slate-100" id="txn-history-body">
                                     <!-- Populated via JS -->
                                 </tbody>
                             </table>
@@ -493,63 +579,194 @@
         </div>
     </main>
 
-    <!-- MODALS -->
+    <!-- === MODALS === -->
 
-    <!-- Add Account Modal -->
-    <div id="add-account-modal" class="fixed inset-0 bg-black/80 backdrop-blur-sm hidden items-center justify-center z-50 transition-opacity opacity-0 pointer-events-none">
-        <div class="bg-dark-900 border border-slate-700 rounded-2xl w-full max-w-md shadow-2xl transform scale-95 transition-transform duration-300">
-            <div class="p-6">
-                <div class="flex justify-between items-center mb-6">
-                    <h3 class="font-bold text-white text-lg">Open Collection Account</h3>
-                    <button onclick="closeAddAccountModal()" class="text-slate-400 hover:text-white"><i class="fa-solid fa-xmark"></i></button>
+    <!-- 1. ADD ACCOUNT WIZARD (New Feature) -->
+    <div id="wizard-modal" class="fixed inset-0 bg-slate-900/20 backdrop-blur-sm hidden items-center justify-center z-50 transition-opacity opacity-0 pointer-events-none">
+        <div class="bg-white border border-slate-200 rounded-2xl w-full max-w-lg shadow-2xl transform scale-95 transition-transform duration-300 m-4 flex flex-col max-h-[90vh]">
+            <!-- Wizard Header -->
+            <div class="p-5 border-b border-slate-200 bg-white rounded-t-2xl flex justify-between items-center">
+                <div>
+                    <h3 class="font-bold text-slate-900 text-lg">Request Global Account</h3>
+                    <p class="text-xs text-slate-500">Step <span id="wiz-step-num">1</span> of 3</p>
                 </div>
-
-                <div class="space-y-4">
-                    <label class="block text-xs font-bold text-slate-400 uppercase tracking-wider mb-2">Select Currency</label>
+                <button onclick="closeWizard()" class="text-slate-400 hover:text-slate-800"><i class="fa-solid fa-xmark"></i></button>
+            </div>
+            
+            <!-- Wizard Body -->
+            <div class="p-6 overflow-y-auto custom-scrollbar">
+                
+                <!-- Step 1: Selection -->
+                <div id="wiz-step-1" class="space-y-4 animate-fade-in">
+                    <label class="block text-xs font-bold text-slate-500 uppercase tracking-wider mb-2">Select Currency</label>
                     <div class="grid grid-cols-2 gap-3">
-                        <div class="border border-slate-700 rounded-xl p-4 cursor-pointer hover:border-brand-500 hover:bg-slate-800 transition-colors flex items-center gap-3 group" onclick="selectNewCurrency(this)">
+                        <div class="border border-slate-200 rounded-xl p-4 cursor-pointer hover:border-brand-500 hover:bg-slate-50 transition-colors flex items-center gap-3 group" onclick="selectWizardCurrency(this, 'GBP')">
                             <img src="https://flagcdn.com/w40/gb.png" class="w-8 rounded shadow-sm">
                             <div>
-                                <p class="font-bold text-white text-sm">GBP</p>
-                                <p class="text-[10px] text-slate-500">British Pound</p>
+                                <p class="font-bold text-slate-900 text-sm">GBP</p>
+                                <p class="text-[10px] text-slate-500">United Kingdom</p>
                             </div>
-                            <i class="fa-regular fa-circle ml-auto text-slate-600 group-hover:text-brand-500"></i>
+                            <i class="fa-regular fa-circle ml-auto text-slate-400 group-hover:text-brand-500 select-indicator"></i>
                         </div>
-                        <div class="border border-slate-700 rounded-xl p-4 cursor-pointer hover:border-brand-500 hover:bg-slate-800 transition-colors flex items-center gap-3 group" onclick="selectNewCurrency(this)">
+                        <div class="border border-slate-200 rounded-xl p-4 cursor-pointer hover:border-brand-500 hover:bg-slate-50 transition-colors flex items-center gap-3 group" onclick="selectWizardCurrency(this, 'JPY')">
                             <img src="https://flagcdn.com/w40/jp.png" class="w-8 rounded shadow-sm">
                             <div>
-                                <p class="font-bold text-white text-sm">JPY</p>
-                                <p class="text-[10px] text-slate-500">Japanese Yen</p>
+                                <p class="font-bold text-slate-900 text-sm">JPY</p>
+                                <p class="text-[10px] text-slate-500">Japan</p>
                             </div>
-                            <i class="fa-regular fa-circle ml-auto text-slate-600 group-hover:text-brand-500"></i>
+                            <i class="fa-regular fa-circle ml-auto text-slate-400 group-hover:text-brand-500 select-indicator"></i>
                         </div>
-                        <div class="border border-slate-700 rounded-xl p-4 cursor-pointer hover:border-brand-500 hover:bg-slate-800 transition-colors flex items-center gap-3 group" onclick="selectNewCurrency(this)">
+                        <div class="border border-slate-200 rounded-xl p-4 cursor-pointer hover:border-brand-500 hover:bg-slate-50 transition-colors flex items-center gap-3 group" onclick="selectWizardCurrency(this, 'AUD')">
                             <img src="https://flagcdn.com/w40/au.png" class="w-8 rounded shadow-sm">
                             <div>
-                                <p class="font-bold text-white text-sm">AUD</p>
-                                <p class="text-[10px] text-slate-500">Australian Dollar</p>
+                                <p class="font-bold text-slate-900 text-sm">AUD</p>
+                                <p class="text-[10px] text-slate-500">Australia</p>
                             </div>
-                            <i class="fa-regular fa-circle ml-auto text-slate-600 group-hover:text-brand-500"></i>
+                            <i class="fa-regular fa-circle ml-auto text-slate-400 group-hover:text-brand-500 select-indicator"></i>
                         </div>
-                        <div class="border border-slate-700 rounded-xl p-4 cursor-pointer hover:border-brand-500 hover:bg-slate-800 transition-colors flex items-center gap-3 group" onclick="selectNewCurrency(this)">
+                        <div class="border border-slate-200 rounded-xl p-4 cursor-pointer hover:border-brand-500 hover:bg-slate-50 transition-colors flex items-center gap-3 group" onclick="selectWizardCurrency(this, 'CAD')">
                             <img src="https://flagcdn.com/w40/ca.png" class="w-8 rounded shadow-sm">
                             <div>
-                                <p class="font-bold text-white text-sm">CAD</p>
-                                <p class="text-[10px] text-slate-500">Canadian Dollar</p>
+                                <p class="font-bold text-slate-900 text-sm">CAD</p>
+                                <p class="text-[10px] text-slate-500">Canada</p>
                             </div>
-                            <i class="fa-regular fa-circle ml-auto text-slate-600 group-hover:text-brand-500"></i>
+                            <i class="fa-regular fa-circle ml-auto text-slate-400 group-hover:text-brand-500 select-indicator"></i>
                         </div>
                     </div>
                 </div>
 
-                <div class="mt-6 p-4 bg-blue-900/20 border border-blue-500/20 rounded-xl flex gap-3">
-                    <i class="fa-solid fa-circle-info text-blue-400 mt-0.5"></i>
-                    <p class="text-xs text-blue-200">New accounts are activated instantly. You will receive unique account details under your entity name.</p>
+                <!-- Step 2: Purpose -->
+                <div id="wiz-step-2" class="space-y-4 hidden animate-fade-in">
+                    <label class="block text-xs font-bold text-slate-500 uppercase tracking-wider mb-2">Primary Usage</label>
+                    <select class="w-full bg-white border border-slate-300 rounded-lg px-4 py-2.5 text-slate-900 focus:border-brand-500 focus:outline-none">
+                        <option>B2B Collections</option>
+                        <option>Marketplace Payouts (Amazon/Stripe)</option>
+                        <option>Inter-company Transfers</option>
+                    </select>
+                    
+                    <label class="block text-xs font-bold text-slate-500 uppercase tracking-wider mb-2 mt-4">Estimated Monthly Volume</label>
+                    <div class="flex items-center gap-4">
+                        <input type="range" class="w-full h-2 bg-slate-200 rounded-lg appearance-none cursor-pointer" min="0" max="100000" step="1000" oninput="document.getElementById('vol-display').innerText = '$' + parseInt(this.value).toLocaleString()">
+                        <span class="text-sm font-bold text-brand-600 font-mono" id="vol-display">$50,000</span>
+                    </div>
                 </div>
 
-                <button class="w-full mt-6 py-3 bg-brand-600 hover:bg-brand-500 text-white rounded-xl font-bold shadow-lg transition active:scale-95" onclick="submitAddAccount()">
-                    Create Account
-                </button>
+                <!-- Step 3: Review -->
+                <div id="wiz-step-3" class="hidden animate-fade-in text-center">
+                    <div class="w-16 h-16 bg-green-100 rounded-full flex items-center justify-center mx-auto mb-4">
+                        <i class="fa-solid fa-check text-2xl text-green-600"></i>
+                    </div>
+                    <h3 class="text-lg font-bold text-slate-900">Ready to Activate</h3>
+                    <p class="text-slate-500 text-sm mt-2">Your <span id="wiz-final-currency" class="font-bold text-slate-900">GBP</span> account will be issued by <span class="font-bold text-slate-900">DBS London</span>.</p>
+                    <div class="mt-6 p-4 bg-slate-50 rounded-xl border border-slate-200 text-left text-xs text-slate-500">
+                        <p class="mb-1"><i class="fa-solid fa-circle-check text-green-500 mr-2"></i> KYC Verified (Tex Exports Pvt Ltd)</p>
+                        <p><i class="fa-solid fa-circle-check text-green-500 mr-2"></i> Compliance Check Passed</p>
+                    </div>
+                </div>
+
+            </div>
+
+            <!-- Wizard Footer -->
+            <div class="p-5 border-t border-slate-200 bg-slate-50 rounded-b-2xl flex justify-between">
+                <button id="wiz-back-btn" class="px-4 py-2 text-sm font-bold text-slate-500 hover:text-slate-900 hidden" onclick="wizPrev()">Back</button>
+                <div class="flex-1"></div> <!-- Spacer -->
+                <button id="wiz-next-btn" class="px-6 py-2 bg-brand-600 hover:bg-brand-700 text-white text-sm font-bold rounded-lg shadow-lg transition active:scale-95" onclick="wizNext()">Next Step</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- 2. AUTO-SWEEP MODAL (New Feature) -->
+    <div id="auto-sweep-modal" class="fixed inset-0 bg-slate-900/20 backdrop-blur-sm hidden items-center justify-center z-50 transition-opacity opacity-0 pointer-events-none">
+        <div class="bg-white border border-slate-200 rounded-2xl w-full max-w-lg shadow-2xl transform scale-95 transition-transform duration-300 m-4">
+            <div class="p-5 border-b border-slate-200 flex justify-between items-center bg-white rounded-t-2xl">
+                <h3 class="font-bold text-slate-900 text-lg"><i class="fa-solid fa-robot text-purple-600 mr-2"></i> Auto-Sweep Rules</h3>
+                <button onclick="toggleModal('auto-sweep-modal')" class="text-slate-400 hover:text-slate-800"><i class="fa-solid fa-xmark"></i></button>
+            </div>
+            <div class="p-6 space-y-6">
+                <p class="text-sm text-slate-500">Automatically convert incoming foreign currency to your base currency (USD) to minimize FX exposure.</p>
+                
+                <div class="bg-slate-50 border border-slate-200 rounded-xl p-4">
+                    <div class="flex items-center justify-between mb-3">
+                        <span class="font-bold text-slate-900">SGD &rarr; USD Sweep</span>
+                        <label class="relative inline-flex items-center cursor-pointer">
+                            <input type="checkbox" value="" class="sr-only peer">
+                            <div class="w-9 h-5 bg-slate-200 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-4 after:w-4 after:transition-all peer-checked:bg-purple-600"></div>
+                        </label>
+                    </div>
+                    <div class="space-y-2">
+                        <div class="flex items-center gap-2 text-sm">
+                            <span class="text-slate-500">Trigger:</span>
+                            <select class="bg-white border border-slate-300 rounded px-2 py-1 text-xs text-slate-900 focus:outline-none">
+                                <option>Balance > 5,000</option>
+                                <option>Balance > 10,000</option>
+                                <option>End of Day</option>
+                            </select>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="bg-slate-50 border border-slate-200 rounded-xl p-4 opacity-50">
+                    <div class="flex items-center justify-between">
+                        <span class="font-bold text-slate-900">EUR &rarr; USD Sweep</span>
+                        <label class="relative inline-flex items-center cursor-pointer">
+                            <input type="checkbox" value="" class="sr-only peer" disabled>
+                            <div class="w-9 h-5 bg-slate-200 rounded-full after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:rounded-full after:h-4 after:w-4"></div>
+                        </label>
+                    </div>
+                    <p class="text-xs text-slate-400 mt-1">Enable EUR account to configure.</p>
+                </div>
+            </div>
+            <div class="p-5 border-t border-slate-200 flex justify-end">
+                <button onclick="toggleModal('auto-sweep-modal')" class="px-4 py-2 bg-slate-900 text-white text-sm font-bold rounded-lg hover:bg-slate-800 transition">Save Configuration</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- 3. NOTIFICATION PANEL -->
+    <div id="notification-panel" class="fixed inset-y-0 right-0 w-80 bg-white border-l border-slate-200 shadow-2xl transform translate-x-full transition-transform duration-300 z-50 flex flex-col">
+        <div class="p-4 border-b border-slate-200 flex justify-between items-center bg-white/95 backdrop-blur">
+            <h3 class="font-bold text-slate-900 text-sm"><i class="fa-regular fa-bell mr-2"></i> Notifications</h3>
+            <button onclick="toggleNotificationPanel()" class="text-slate-400 hover:text-slate-900"><i class="fa-solid fa-xmark"></i></button>
+        </div>
+        <div class="flex-1 overflow-y-auto p-4 space-y-3">
+            <div class="bg-slate-50 p-3 rounded-xl border-l-2 border-brand-500 relative group cursor-pointer hover:bg-slate-100 transition-colors">
+                <div class="flex justify-between items-start">
+                    <h4 class="text-xs font-bold text-slate-900">Funds Received</h4>
+                    <span class="text-[10px] text-slate-500">2m ago</span>
+                </div>
+                <p class="text-xs text-slate-600 mt-1">Zara Intl sent <strong>$12,500</strong> via PayNow.</p>
+            </div>
+        </div>
+        <div class="p-4 border-t border-slate-200">
+            <button class="w-full py-2 text-xs font-bold text-slate-500 hover:text-slate-900 border border-slate-200 rounded-lg hover:bg-slate-50 transition">Mark All Read</button>
+        </div>
+    </div>
+
+    <!-- 4. SETTINGS MODAL -->
+    <div id="settings-modal" class="fixed inset-0 bg-slate-900/20 backdrop-blur-sm hidden items-center justify-center z-50 transition-opacity opacity-0 pointer-events-none">
+        <div class="bg-white border border-slate-200 rounded-2xl w-full max-w-lg shadow-2xl transform scale-95 transition-transform duration-300 m-4 flex flex-col max-h-[90vh]">
+            <div class="p-5 border-b border-slate-200 flex justify-between items-center bg-white rounded-t-2xl">
+                <h3 class="font-bold text-slate-900 text-lg"><i class="fa-solid fa-gear text-slate-500 mr-2"></i> Account Settings</h3>
+                <button onclick="toggleModal('settings-modal')" class="text-slate-400 hover:text-slate-800"><i class="fa-solid fa-xmark"></i></button>
+            </div>
+            <div class="flex-1 overflow-y-auto p-6 space-y-6">
+                <div>
+                    <h4 class="text-xs font-bold text-brand-600 uppercase tracking-wider mb-4 border-b border-slate-200 pb-2">Profile</h4>
+                    <div class="grid grid-cols-2 gap-4">
+                        <div>
+                            <label class="block text-xs text-slate-500 mb-1">Company</label>
+                            <input type="text" value="Tex Exports Pvt Ltd" class="w-full bg-slate-50 border border-slate-300 rounded-lg px-3 py-2 text-sm text-slate-900" disabled>
+                        </div>
+                        <div>
+                            <label class="block text-xs text-slate-500 mb-1">Default Currency</label>
+                            <input type="text" value="USD" class="w-full bg-slate-50 border border-slate-300 rounded-lg px-3 py-2 text-sm text-slate-900" disabled>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="p-5 border-t border-slate-200 bg-slate-50 rounded-b-2xl flex justify-end gap-3">
+                 <button onclick="toggleModal('settings-modal')" class="px-4 py-2 text-sm text-slate-500 hover:text-slate-900">Close</button>
+                 <button onclick="toggleModal('settings-modal')" class="px-4 py-2 bg-white text-slate-900 border border-slate-300 font-bold rounded-lg text-sm hover:bg-slate-100">Save</button>
             </div>
         </div>
     </div>
@@ -570,13 +787,15 @@
                 number: '8821 9923 1102',
                 swift: 'DBSSSGSG',
                 address: '12 Marina Boulevard, Singapore',
+                balance: 84500.00,
                 transactions: [
                     { date: 'Today', desc: 'Zara International Ltd', method: 'PayNow', amount: 12500, type: 'in' },
                     { date: 'Yesterday', desc: 'FedEx Global Refund', method: 'ACH', amount: 450, type: 'in' },
                     { date: 'Oct 24', desc: 'Transfer to INR Account', method: 'GIFT Rail', amount: -5000, type: 'out' },
                     { date: 'Oct 22', desc: 'H&M Sourcing Payment', method: 'SWIFT', amount: 18200, type: 'in' },
                     { date: 'Oct 20', desc: 'AWS Cloud Services', method: 'Direct Debit', amount: -210, type: 'out' },
-                ]
+                ],
+                chartData: [82000, 81500, 83000, 82800, 84500]
             },
             'SGD': {
                 flag: 'https://flagcdn.com/w40/sg.png',
@@ -585,10 +804,12 @@
                 number: '8821 9923 5501',
                 swift: 'DBSSSGSG',
                 address: '12 Marina Boulevard, Singapore',
+                balance: 1200.00,
                 transactions: [
                     { date: 'Today', desc: 'Local Office Expenses', method: 'FAST', amount: -450, type: 'out' },
                     { date: 'Oct 25', desc: 'Lazada Seller Payout', method: 'PayNow', amount: 2300, type: 'in' },
-                ]
+                ],
+                chartData: [1500, 1800, 1600, 2300, 1200]
             },
             'EUR': {
                 flag: 'https://flagcdn.com/w40/eu.png',
@@ -597,19 +818,34 @@
                 number: 'DE89 3704 ... 0130 00',
                 swift: 'DBSDEFF',
                 address: 'Bockenheimer Landstraße, Frankfurt',
-                transactions: []
+                balance: 0.00,
+                transactions: [],
+                chartData: [0, 0, 0, 0, 0]
             }
         };
 
+        let currentCurrency = 'USD';
+        let balanceChart = null;
+        let wizardState = { step: 1, currency: null };
+
         // --- Logic ---
         document.addEventListener('DOMContentLoaded', () => {
-            selectAccount('USD'); // Default load
+            selectAccount('USD'); 
             initChatbotWidget();
+            initBalanceChart();
         });
 
+        // --- Account Selection Logic ---
         function selectAccount(currency) {
+            currentCurrency = currency;
             const data = AccountsData[currency];
             if(!data) return;
+
+            // UI Feedback
+            document.querySelectorAll('.snap-center').forEach(el => {
+                el.classList.remove('ring-4', 'ring-brand-200', 'ring-purple-200', 'ring-green-200');
+            });
+            // (In a real app, we'd reference the clicked element directly)
 
             // Animate Panel Change
             const panel = document.getElementById('account-details-panel');
@@ -621,11 +857,14 @@
                 document.getElementById('detail-currency').innerText = data.name;
                 document.getElementById('detail-account-num').innerText = data.number;
                 
-                // Reset Animation
-                panel.classList.remove('opacity-50', 'scale-95');
-                
                 // Update History
                 renderHistory(data.transactions, currency);
+                
+                // Update Chart
+                updateBalanceChart(data.chartData);
+
+                // Reset Animation
+                panel.classList.remove('opacity-50', 'scale-95');
             }, 150);
         }
 
@@ -637,10 +876,10 @@
                 tbody.innerHTML = `
                     <tr>
                         <td colspan="4" class="px-6 py-12 text-center text-slate-500">
-                            <div class="w-12 h-12 bg-slate-800 rounded-full flex items-center justify-center mx-auto mb-3">
-                                <i class="fa-solid fa-ghost text-xl"></i>
+                            <div class="w-12 h-12 bg-slate-100 rounded-full flex items-center justify-center mx-auto mb-3">
+                                <i class="fa-solid fa-ghost text-xl text-slate-400"></i>
                             </div>
-                            No transactions yet
+                            No transactions yet for ${currency}
                         </td>
                     </tr>`;
                 return;
@@ -648,19 +887,19 @@
 
             txns.forEach((t, i) => {
                 const isPos = t.type === 'in';
-                const color = isPos ? 'text-green-400' : 'text-slate-300';
+                const color = isPos ? 'text-green-600' : 'text-slate-600';
                 const prefix = isPos ? '+ ' : '- ';
                 const row = document.createElement('tr');
-                row.className = 'hover:bg-white/5 transition-colors border-b border-slate-800/50 group animate-fade-in';
+                row.className = 'hover:bg-slate-50 transition-colors border-b border-slate-100 group animate-fade-in';
                 row.style.animationDelay = `${i * 0.05}s`;
                 
                 row.innerHTML = `
-                    <td class="px-6 py-4 text-slate-400 text-xs font-mono">${t.date}</td>
+                    <td class="px-6 py-4 text-slate-500 text-xs font-mono">${t.date}</td>
                     <td class="px-6 py-4">
-                        <p class="font-bold text-slate-200 text-sm">${t.desc}</p>
+                        <p class="font-bold text-slate-700 text-sm">${t.desc}</p>
                     </td>
                     <td class="px-6 py-4">
-                        <span class="bg-slate-800 text-slate-400 border border-slate-700 text-[10px] px-2 py-1 rounded font-bold">${t.method}</span>
+                        <span class="bg-white border border-slate-200 text-slate-500 text-[10px] px-2 py-1 rounded font-bold">${t.method}</span>
                     </td>
                     <td class="px-6 py-4 text-right font-mono ${color} font-bold text-sm">
                         ${prefix}${currency} ${Math.abs(t.amount).toLocaleString()}
@@ -670,11 +909,16 @@
             });
         }
 
+        function filterHistory(term) {
+            const data = AccountsData[currentCurrency].transactions;
+            const filtered = data.filter(t => t.desc.toLowerCase().includes(term.toLowerCase()));
+            renderHistory(filtered, currentCurrency);
+        }
+
         function copyText(text) {
             navigator.clipboard.writeText(text).then(() => {
-                // Show toast
                 const toast = document.createElement('div');
-                toast.className = 'fixed top-6 left-1/2 -translate-x-1/2 bg-slate-800 text-white px-4 py-2 rounded-lg shadow-lg text-xs font-bold z-50 animate-fade-in flex items-center gap-2';
+                toast.className = 'fixed top-6 left-1/2 -translate-x-1/2 bg-slate-900 text-white px-4 py-2 rounded-lg shadow-lg text-xs font-bold z-50 animate-fade-in flex items-center gap-2';
                 toast.innerHTML = '<i class="fa-solid fa-check text-green-400"></i> Copied to clipboard';
                 document.body.appendChild(toast);
                 setTimeout(() => toast.remove(), 2000);
@@ -687,98 +931,217 @@
             setTimeout(() => {
                 btn.innerHTML = '<i class="fa-solid fa-check mr-1"></i> Downloaded';
                 setTimeout(() => {
-                    btn.innerHTML = '<i class="fa-solid fa-download mr-1"></i> Statement';
+                    btn.innerHTML = '<i class="fa-solid fa-file-invoice mr-1"></i> Statement';
                 }, 2000);
             }, 1500);
         }
 
-        // --- Add Account Modal ---
-        function openAddAccountModal() {
-            const modal = document.getElementById('add-account-modal');
-            modal.classList.remove('hidden', 'pointer-events-none');
-            setTimeout(() => {
-                modal.classList.remove('opacity-0');
-                modal.firstElementChild.classList.remove('scale-95');
-                modal.firstElementChild.classList.add('scale-100');
-            }, 10);
+        // --- Wizard Logic ---
+        function openWizard() {
+            wizardState.step = 1;
+            updateWizardUI();
+            toggleModal('wizard-modal');
         }
-
-        function closeAddAccountModal() {
-            const modal = document.getElementById('add-account-modal');
-            modal.classList.add('opacity-0');
-            modal.firstElementChild.classList.remove('scale-100');
-            modal.firstElementChild.classList.add('scale-95');
-            setTimeout(() => {
-                modal.classList.add('hidden', 'pointer-events-none');
-            }, 300);
-        }
-
-        function selectNewCurrency(el) {
-            // Remove active class from others
-            el.parentElement.querySelectorAll('div').forEach(d => {
-                d.classList.remove('border-brand-500', 'bg-slate-800');
-                d.classList.add('border-slate-700');
-                d.querySelector('i').classList.remove('fa-solid', 'fa-circle-check', 'text-brand-500');
-                d.querySelector('i').classList.add('fa-regular', 'fa-circle', 'text-slate-600');
+        function closeWizard() { toggleModal('wizard-modal'); }
+        
+        function selectWizardCurrency(el, cur) {
+            wizardState.currency = cur;
+            // Visual feedback
+            document.querySelectorAll('.select-indicator').forEach(i => {
+                i.classList.remove('fa-solid', 'fa-circle-check', 'text-brand-600');
+                i.classList.add('fa-regular', 'fa-circle', 'text-slate-400');
             });
+            const icon = el.querySelector('.select-indicator');
+            icon.classList.remove('fa-regular', 'fa-circle', 'text-slate-400');
+            icon.classList.add('fa-solid', 'fa-circle-check', 'text-brand-600');
+        }
+
+        function wizNext() {
+            if(wizardState.step === 1 && !wizardState.currency) return alert("Select a currency first");
+            if(wizardState.step === 3) {
+                // Submit
+                const btn = document.getElementById('wiz-next-btn');
+                btn.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> Activating...';
+                setTimeout(() => {
+                    closeWizard();
+                    btn.innerHTML = 'Next Step';
+                    // Show success toast (mock)
+                    const toast = document.createElement('div');
+                    toast.className = 'fixed top-6 right-6 bg-slate-900 text-white px-6 py-4 rounded-xl shadow-2xl flex items-center gap-3 z-50 animate-slide-in';
+                    toast.innerHTML = `<div class="w-8 h-8 bg-green-500/20 text-green-500 rounded-full flex items-center justify-center flex-shrink-0"><i class="fa-solid fa-check"></i></div><div><h4 class="font-bold text-sm">Account Activated</h4><p class="text-xs text-slate-400">Your ${wizardState.currency} account is live.</p></div>`;
+                    document.body.appendChild(toast);
+                    setTimeout(() => toast.remove(), 4000);
+                }, 1500);
+                return;
+            }
+            wizardState.step++;
+            updateWizardUI();
+        }
+
+        function wizPrev() {
+            if(wizardState.step > 1) {
+                wizardState.step--;
+                updateWizardUI();
+            }
+        }
+
+        function updateWizardUI() {
+            const s = wizardState.step;
+            document.getElementById('wiz-step-num').innerText = s;
             
-            // Add active class
-            el.classList.remove('border-slate-700');
-            el.classList.add('border-brand-500', 'bg-slate-800');
-            const icon = el.querySelector('i');
-            icon.classList.remove('fa-regular', 'fa-circle', 'text-slate-600');
-            icon.classList.add('fa-solid', 'fa-circle-check', 'text-brand-500');
+            ['1','2','3'].forEach(i => document.getElementById(`wiz-step-${i}`).classList.add('hidden'));
+            document.getElementById(`wiz-step-${s}`).classList.remove('hidden');
+
+            document.getElementById('wiz-back-btn').classList.toggle('hidden', s === 1);
+            
+            const nextBtn = document.getElementById('wiz-next-btn');
+            if(s === 3) {
+                nextBtn.innerText = 'Activate Account';
+                nextBtn.classList.replace('bg-brand-600', 'bg-green-600');
+                nextBtn.classList.replace('hover:bg-brand-700', 'hover:bg-green-700');
+                document.getElementById('wiz-final-currency').innerText = wizardState.currency;
+            } else {
+                nextBtn.innerText = 'Next Step';
+                nextBtn.classList.replace('bg-green-600', 'bg-brand-600');
+                nextBtn.classList.replace('hover:bg-green-700', 'hover:bg-brand-700');
+            }
         }
 
-        function submitAddAccount() {
+        // --- Simulator Logic ---
+        function simulateInflow() {
+            const amt = Math.floor(Math.random() * 5000) + 1000;
+            const newTxn = {
+                date: 'Just now', 
+                desc: 'Simulated Inflow (Demo)', 
+                method: 'SWIFT', 
+                amount: amt, 
+                type: 'in' 
+            };
+            
+            AccountsData[currentCurrency].transactions.unshift(newTxn);
+            AccountsData[currentCurrency].balance += amt;
+            
+            // Update UI
+            document.getElementById(`card-bal-${currentCurrency}`).innerText = `${currentCurrency === 'USD' ? '$' : (currentCurrency === 'EUR' ? '€' : 'S$')} ${AccountsData[currentCurrency].balance.toLocaleString()}`;
+            
+            renderHistory(AccountsData[currentCurrency].transactions, currentCurrency);
+            
+            // Show feedback
             const btn = event.currentTarget;
-            btn.innerHTML = '<i class="fa-solid fa-circle-notch fa-spin"></i> Activating...';
+            btn.innerHTML = '<i class="fa-solid fa-check"></i> Received';
+            btn.classList.add('bg-green-600', 'text-white');
             setTimeout(() => {
-                closeAddAccountModal();
-                btn.innerHTML = 'Create Account';
-                // Show success toast
-                const toast = document.createElement('div');
-                toast.className = 'fixed top-6 right-6 bg-dark-900 border border-slate-700 text-white px-6 py-4 rounded-xl shadow-2xl flex items-center gap-3 z-50 animate-slide-in';
-                toast.innerHTML = `
-                    <div class="w-8 h-8 bg-green-500/20 text-green-500 rounded-full flex items-center justify-center flex-shrink-0">
-                        <i class="fa-solid fa-check"></i>
-                    </div>
-                    <div>
-                        <h4 class="font-bold text-sm">Success</h4>
-                        <p class="text-xs text-slate-400">New currency account activated.</p>
-                    </div>
-                `;
-                document.body.appendChild(toast);
-                setTimeout(() => toast.remove(), 3000);
-            }, 1500);
+                btn.innerHTML = '<i class="fa-solid fa-arrow-down mr-1"></i> Receive (Sim)';
+                btn.classList.remove('bg-green-600', 'text-white');
+            }, 2000);
         }
 
-        // --- ATLAS CHATBOT (Embedded) ---
+        // --- Chart.js ---
+        function initBalanceChart() {
+            const ctx = document.getElementById('balanceHistoryChart').getContext('2d');
+            balanceChart = new Chart(ctx, {
+                type: 'line',
+                data: {
+                    labels: ['Week 1', 'Week 2', 'Week 3', 'Week 4', 'Current'],
+                    datasets: [{
+                        data: [0,0,0,0,0], // Init empty
+                        borderColor: '#0ea5e9',
+                        backgroundColor: (context) => {
+                            const ctx = context.chart.ctx;
+                            const gradient = ctx.createLinearGradient(0, 0, 0, 200);
+                            gradient.addColorStop(0, 'rgba(14, 165, 233, 0.4)');
+                            gradient.addColorStop(1, 'rgba(14, 165, 233, 0)');
+                            return gradient;
+                        },
+                        borderWidth: 2,
+                        tension: 0.4,
+                        fill: true,
+                        pointRadius: 0
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: { legend: { display: false } },
+                    scales: { 
+                        x: { grid: { display: false }, ticks: { color: '#64748b' } }, 
+                        y: { display: false } 
+                    }
+                }
+            });
+        }
+
+        function updateBalanceChart(data) {
+            if(balanceChart) {
+                balanceChart.data.datasets[0].data = data;
+                balanceChart.update();
+            }
+        }
+
+        // --- Modal & Panel Logic ---
+        function toggleModal(modalId) {
+            const modal = document.getElementById(modalId);
+            if(!modal) return;
+            const card = modal.firstElementChild;
+
+            if (modal.classList.contains('hidden')) {
+                // Open
+                modal.classList.remove('hidden', 'pointer-events-none');
+                setTimeout(() => {
+                    modal.classList.remove('opacity-0');
+                    if(card) {
+                        card.classList.remove('scale-95');
+                        card.classList.add('scale-100');
+                    }
+                }, 10);
+            } else {
+                // Close
+                modal.classList.add('opacity-0');
+                if(card) {
+                    card.classList.remove('scale-100');
+                    card.classList.add('scale-95');
+                }
+                setTimeout(() => {
+                    modal.classList.add('hidden', 'pointer-events-none');
+                }, 300);
+            }
+        }
+
+        function toggleNotificationPanel() {
+            const panel = document.getElementById('notification-panel');
+            if (panel.classList.contains('translate-x-full')) {
+                panel.classList.remove('translate-x-full');
+            } else {
+                panel.classList.add('translate-x-full');
+            }
+        }
+
+        // --- ATLAS CHATBOT ---
         function initChatbotWidget() {
             const container = document.getElementById('atlas-widget-container');
             container.innerHTML = `
-                <div id="atlas-window" class="fixed bottom-20 right-6 w-[350px] bg-dark-900 border border-slate-700 rounded-2xl shadow-2xl hidden flex-col z-50 overflow-hidden transform transition-all duration-300 origin-bottom-right scale-95 opacity-0" style="height: 500px;">
-                     <div class="bg-slate-800 p-4 flex justify-between items-center border-b border-slate-700">
+                <div id="atlas-window" class="fixed bottom-20 right-6 w-[350px] bg-white border border-slate-200 rounded-2xl shadow-2xl hidden flex-col z-50 overflow-hidden transform transition-all duration-300 origin-bottom-right scale-95 opacity-0" style="height: 500px;">
+                     <div class="bg-slate-50 p-4 flex justify-between items-center border-b border-slate-200">
                         <div class="flex items-center gap-2">
                              <div class="w-8 h-8 rounded-full bg-brand-600 flex items-center justify-center text-white text-xs"><i class="fa-solid fa-robot"></i></div>
                              <div>
-                                 <span class="font-bold text-white text-sm block">Atlas AI</span>
-                                 <span class="text-[10px] text-green-400 flex items-center gap-1"><span class="w-1.5 h-1.5 bg-green-500 rounded-full animate-pulse"></span> Online</span>
+                                 <span class="font-bold text-slate-900 text-sm block">Atlas AI</span>
+                                 <span class="text-[10px] text-green-600 flex items-center gap-1"><span class="w-1.5 h-1.5 bg-green-500 rounded-full animate-pulse"></span> Online</span>
                              </div>
                         </div>
-                        <button onclick="toggleAtlas()" class="text-slate-400 hover:text-white"><i class="fa-solid fa-xmark"></i></button>
+                        <button onclick="toggleAtlas()" class="text-slate-400 hover:text-slate-800"><i class="fa-solid fa-xmark"></i></button>
                      </div>
-                     <div id="atlas-messages" class="flex-1 p-4 overflow-y-auto space-y-4 bg-dark-950 scroll-smooth">
+                     <div id="atlas-messages" class="flex-1 p-4 overflow-y-auto space-y-4 bg-slate-50 scroll-smooth">
                         <div class="flex gap-3">
-                            <div class="w-8 h-8 rounded-full bg-slate-800 flex items-center justify-center shrink-0 text-slate-400 text-xs border border-slate-700"><i class="fa-solid fa-robot"></i></div>
-                            <div class="bg-slate-800 border border-slate-700 p-3 rounded-2xl rounded-tl-none text-sm text-slate-300 shadow-sm leading-relaxed">
-                                I can generate Account Confirmation Letters for your buyers. Which currency do you need?
+                            <div class="w-8 h-8 rounded-full bg-slate-100 flex items-center justify-center shrink-0 text-slate-500 text-xs border border-slate-200"><i class="fa-solid fa-robot"></i></div>
+                            <div class="bg-white border border-slate-200 p-3 rounded-2xl rounded-tl-none text-sm text-slate-600 shadow-sm leading-relaxed">
+                                I can help you with FIRC downloads or setting up new virtual IBANs. What do you need?
                             </div>
                         </div>
                      </div>
-                     <div class="p-3 bg-slate-800 border-t border-slate-700 flex gap-2">
-                        <input type="text" id="atlas-input" class="flex-1 bg-dark-950 border border-slate-700 rounded-lg px-3 py-2 text-sm text-white focus:border-brand-500 focus:outline-none placeholder-slate-600" placeholder="Type query..." onkeypress="handleAtlasEnter(event)">
-                        <button onclick="handleAtlasSubmit()" class="w-10 h-10 bg-brand-600 text-white rounded-lg hover:bg-brand-500 flex items-center justify-center transition active:scale-95"><i class="fa-solid fa-paper-plane"></i></button>
+                     <div class="p-3 bg-slate-50 border-t border-slate-200 flex gap-2">
+                        <input type="text" id="atlas-input" class="flex-1 bg-white border border-slate-200 rounded-lg px-3 py-2 text-sm text-slate-900 focus:border-brand-500 focus:outline-none placeholder-slate-400" placeholder="Type query..." onkeypress="handleAtlasEnter(event)">
+                        <button onclick="handleAtlasSubmit()" class="w-10 h-10 bg-brand-600 text-white rounded-lg hover:bg-brand-700 flex items-center justify-center transition active:scale-95"><i class="fa-solid fa-paper-plane"></i></button>
                      </div>
                 </div>
             `;
@@ -815,7 +1178,7 @@
             const loadingDiv = document.createElement('div');
             loadingDiv.id = loadingId;
             loadingDiv.className = 'flex gap-3';
-            loadingDiv.innerHTML = `<div class="w-8 h-8 rounded-full bg-slate-800 flex items-center justify-center shrink-0 text-slate-400 text-xs border border-slate-700"><i class="fa-solid fa-robot"></i></div><div class="bg-slate-800 border border-slate-700 p-3 rounded-2xl rounded-tl-none text-sm text-slate-400 shadow-sm"><i class="fa-solid fa-ellipsis fa-fade"></i></div>`;
+            loadingDiv.innerHTML = `<div class="w-8 h-8 rounded-full bg-slate-100 flex items-center justify-center shrink-0 text-slate-500 text-xs border border-slate-200"><i class="fa-solid fa-robot"></i></div><div class="bg-white border border-slate-200 p-3 rounded-2xl rounded-tl-none text-sm text-slate-400 shadow-sm"><i class="fa-solid fa-ellipsis fa-fade"></i></div>`;
             msgBox.appendChild(loadingDiv);
             msgBox.scrollTop = msgBox.scrollHeight;
 
@@ -835,10 +1198,10 @@
             const div = document.createElement('div');
             div.className = type === 'bot' ? 'flex gap-3 animate-fade-in' : 'flex gap-3 justify-end animate-fade-in';
             
-            const formatted = text.replace(/\*\*(.*?)\*\*/g, '<strong class="text-white">$1</strong>');
+            const formatted = text.replace(/\*\*(.*?)\*\*/g, '<strong class="text-slate-900">$1</strong>');
 
             div.innerHTML = type === 'bot' 
-                ? `<div class="w-8 h-8 rounded-full bg-slate-800 flex items-center justify-center shrink-0 text-slate-400 text-xs border border-slate-700"><i class="fa-solid fa-robot"></i></div><div class="bg-slate-800 border border-slate-700 p-3 rounded-2xl rounded-tl-none text-sm text-slate-300 shadow-sm max-w-[85%] leading-relaxed">${formatted}</div>`
+                ? `<div class="w-8 h-8 rounded-full bg-slate-100 flex items-center justify-center shrink-0 text-slate-500 text-xs border border-slate-200"><i class="fa-solid fa-robot"></i></div><div class="bg-white border border-slate-200 p-3 rounded-2xl rounded-tl-none text-sm text-slate-600 shadow-sm max-w-[85%] leading-relaxed">${formatted}</div>`
                 : `<div class="bg-brand-600 text-white p-3 rounded-2xl rounded-tr-none text-sm shadow-sm max-w-[85%] leading-relaxed">${formatted}</div>`;
             box.appendChild(div);
             box.scrollTop = box.scrollHeight;

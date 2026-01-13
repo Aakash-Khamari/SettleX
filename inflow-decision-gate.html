@@ -42,11 +42,6 @@
                             900: '#0c4a6e',
                             950: '#082f49',
                         },
-                        dark: {
-                            800: '#1e293b',
-                            900: '#0f172a',
-                            950: '#020617',
-                        },
                         // Semantic Colors for Trade
                         trade: {
                             profit: '#10b981', // Green
@@ -62,6 +57,7 @@
                         'flash': 'flash 1s ease-in-out',
                         'spin-slow': 'spin 3s linear infinite',
                         'bounce-subtle': 'bounceSubtle 2s infinite',
+                        'expand': 'expandHeight 0.3s ease-out forwards',
                     },
                     keyframes: {
                         slideIn: {
@@ -79,33 +75,44 @@
                         bounceSubtle: {
                             '0%, 100%': { transform: 'translateY(-2px)' },
                             '50%': { transform: 'translateY(2px)' },
+                        },
+                        expandHeight: {
+                            '0%': { maxHeight: '0', opacity: '0' },
+                            '100%': { maxHeight: '500px', opacity: '1' }
                         }
                     },
                     boxShadow: {
-                        'neon': '0 0 10px rgba(14, 165, 233, 0.5), 0 0 20px rgba(14, 165, 233, 0.3)',
-                        'glass': '0 8px 32px 0 rgba(0, 0, 0, 0.37)',
+                        'neon': '0 0 10px rgba(14, 165, 233, 0.2), 0 0 20px rgba(14, 165, 233, 0.1)',
+                        'glass': '0 8px 32px 0 rgba(0, 0, 0, 0.05)',
+                        'card-hover': '0 15px 30px -5px rgba(0, 0, 0, 0.1)',
                     }
                 }
             }
         }
     </script>
     <style>
-        /* Base Styles */
+        /* Base Styles - Light Theme */
         body {
-            background-color: #020617; /* dark-950 */
-            color: #cbd5e1; /* slate-300 */
+            background-color: #f8fafc; /* slate-50 */
+            color: #0f172a; /* slate-900 */
         }
 
-        /* Glassmorphism Utilities */
+        /* Light Mode Scrollbar */
+        ::-webkit-scrollbar { width: 6px; height: 6px; }
+        ::-webkit-scrollbar-track { background: #f1f5f9; }
+        ::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 4px; }
+        ::-webkit-scrollbar-thumb:hover { background: #94a3b8; }
+        
+        /* Glassmorphism Utilities - Tuned for Light Mode */
         .glass-panel {
-            background: rgba(15, 23, 42, 0.7);
-            backdrop-filter: blur(16px);
-            -webkit-backdrop-filter: blur(16px);
-            border: 1px solid rgba(255, 255, 255, 0.08);
-            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+            background: rgba(255, 255, 255, 0.9);
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+            border: 1px solid rgba(226, 232, 240, 0.8);
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05), 0 2px 4px -1px rgba(0, 0, 0, 0.03);
         }
 
-        /* Range Slider Styling */
+        /* Range Slider Styling - Light Mode */
         input[type=range] {
             -webkit-appearance: none; 
             width: 100%; 
@@ -122,7 +129,7 @@
             background: #0ea5e9;
             cursor: pointer;
             margin-top: -10px; 
-            box-shadow: 0 0 10px rgba(14, 165, 233, 0.5);
+            box-shadow: 0 2px 6px rgba(14, 165, 233, 0.4);
             border: 2px solid #ffffff;
             transition: transform 0.1s ease;
         }
@@ -133,42 +140,59 @@
             width: 100%;
             height: 4px;
             cursor: pointer;
-            background: #334155;
+            background: #e2e8f0;
             border-radius: 2px;
         }
         
-        /* Custom Scrollbar */
-        ::-webkit-scrollbar { width: 6px; height: 6px; }
-        ::-webkit-scrollbar-track { background: #0f172a; }
-        ::-webkit-scrollbar-thumb { background: #334155; border-radius: 4px; }
-        ::-webkit-scrollbar-thumb:hover { background: #475569; }
-        
-        /* Grid Pattern Background */
+        /* Grid Pattern Background - Subtle Gray */
         .bg-grid {
             background-size: 40px 40px;
             background-image: 
-                linear-gradient(to right, rgba(255, 255, 255, 0.03) 1px, transparent 1px),
-                linear-gradient(to bottom, rgba(255, 255, 255, 0.03) 1px, transparent 1px);
+                linear-gradient(to right, rgba(0, 0, 0, 0.03) 1px, transparent 1px),
+                linear-gradient(to bottom, rgba(0, 0, 0, 0.03) 1px, transparent 1px);
         }
 
         /* Utilities */
         .no-scrollbar::-webkit-scrollbar { display: none; }
         .no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
+        
+        /* Timeline Connector */
+        .timeline-connector {
+            position: absolute;
+            left: 15px;
+            top: 30px;
+            bottom: -20px;
+            width: 2px;
+            background-color: #e2e8f0;
+            z-index: 0;
+        }
+        
+        /* Expandable Section */
+        .analysis-panel {
+            overflow: hidden;
+            transition: max-height 0.3s ease-out, opacity 0.3s ease-out;
+            max-height: 0;
+            opacity: 0;
+        }
+        .analysis-panel.open {
+            max-height: 800px;
+            opacity: 1;
+        }
     </style>
 </head>
 <body class="font-sans h-screen flex overflow-hidden selection:bg-brand-500 selection:text-white">
 
-    <!-- 1. PROFESSIONAL SIDEBAR -->
-    <aside class="w-20 lg:w-72 bg-dark-900 border-r border-slate-800 flex flex-col flex-shrink-0 transition-all duration-300 z-50">
+    <!-- 1. PROFESSIONAL SIDEBAR (Light Theme) -->
+    <aside class="w-20 lg:w-72 bg-white border-r border-slate-200 flex flex-col flex-shrink-0 transition-all duration-300 z-50">
         
         <!-- Logo Area -->
-        <div class="h-20 flex items-center px-0 lg:px-6 justify-center lg:justify-start border-b border-slate-800 relative group cursor-pointer" onclick="window.location.href='client-dashboard.html'">
+        <div class="h-20 flex items-center px-0 lg:px-6 justify-center lg:justify-start border-b border-slate-200 relative group cursor-pointer" onclick="window.location.href='client-dashboard.html'">
             <div class="w-10 h-10 bg-gradient-to-br from-brand-500 to-brand-700 rounded-xl flex items-center justify-center text-white font-bold text-xl shadow-lg shadow-brand-500/20 flex-shrink-0 transition-transform group-hover:scale-105">
                 S
             </div>
             <div class="hidden lg:block ml-3">
-                <h1 class="text-xl font-display font-bold text-white tracking-tight">Settle<span class="text-brand-400">X</span></h1>
-                <p class="text-[10px] text-slate-500 font-mono uppercase tracking-wider group-hover:text-brand-400 transition-colors">Treasury OS v2.4</p>
+                <h1 class="text-xl font-display font-bold text-slate-900 tracking-tight">Settle<span class="text-brand-600">X</span></h1>
+                <p class="text-[10px] text-slate-500 font-mono uppercase tracking-wider group-hover:text-brand-600 transition-colors">Treasury OS v2.4</p>
             </div>
         </div>
 
@@ -176,69 +200,69 @@
         <nav class="flex-1 overflow-y-auto py-6 px-3 space-y-1">
             
             <!-- Dashboard -->
-            <a href="client-dashboard.html" class="flex items-center gap-3 px-3 py-3 text-slate-400 hover:text-white hover:bg-slate-800 rounded-xl transition-all group">
-                <i class="fa-solid fa-border-all w-6 text-center group-hover:text-brand-400 transition-colors"></i>
+            <a href="client-dashboard.html" class="flex items-center gap-3 px-3 py-3 text-slate-500 hover:text-slate-900 hover:bg-slate-50 rounded-xl transition-all group">
+                <i class="fa-solid fa-border-all w-6 text-center group-hover:text-brand-600 transition-colors"></i>
                 <span class="hidden lg:block font-medium">Command Center</span>
             </a>
 
             <div class="hidden lg:block px-3 mt-6 mb-2 flex items-center justify-between">
-                <p class="text-[10px] font-bold text-slate-500 uppercase tracking-widest">Global Money</p>
-                <i class="fa-solid fa-globe text-[10px] text-slate-600"></i>
+                <p class="text-[10px] font-bold text-slate-400 uppercase tracking-widest">Global Money</p>
+                <i class="fa-solid fa-globe text-[10px] text-slate-400"></i>
             </div>
 
             <!-- Inflow (Active) -->
-            <a href="#" class="flex items-center gap-3 px-3 py-3 bg-brand-900/30 text-white rounded-xl border border-brand-500/30 shadow-sm group relative overflow-hidden">
-                <div class="absolute inset-0 bg-brand-500/10 rounded-xl blur opacity-0 group-hover:opacity-100 transition-opacity"></div>
+            <a href="#" class="flex items-center gap-3 px-3 py-3 bg-brand-50 text-brand-900 rounded-xl border border-brand-200 shadow-sm group relative overflow-hidden">
+                <div class="absolute inset-0 bg-brand-100 rounded-xl blur opacity-0 group-hover:opacity-100 transition-opacity"></div>
                 <div class="absolute left-0 top-0 bottom-0 w-1 bg-brand-500 rounded-l-xl"></div>
-                <i class="fa-solid fa-inbox w-6 text-center text-green-400 text-lg group-hover:scale-110 transition-transform"></i>
+                <i class="fa-solid fa-inbox w-6 text-center text-green-600 text-lg group-hover:scale-110 transition-transform"></i>
                 <span class="hidden lg:block font-medium tracking-wide">Inflow (Collections)</span>
-                <span class="hidden lg:flex ml-auto bg-brand-500 text-white text-[10px] font-bold px-2 py-0.5 rounded-full shadow-lg shadow-brand-500/40 animate-pulse-slow" id="sidebar-badge">3</span>
+                <span class="hidden lg:flex ml-auto bg-brand-600 text-white text-[10px] font-bold px-2 py-0.5 rounded-full shadow-md shadow-brand-500/20 animate-pulse-slow" id="sidebar-badge">3</span>
             </a>
 
             <!-- Outflow -->
-            <a href="outflow-transfer.html" class="flex items-center gap-3 px-3 py-3 text-slate-400 hover:text-white hover:bg-slate-800 rounded-xl transition-all group">
-                <i class="fa-solid fa-paper-plane w-6 text-center group-hover:text-red-400 transition-colors group-hover:translate-x-[2px]"></i>
+            <a href="outflow-transfer.html" class="flex items-center gap-3 px-3 py-3 text-slate-500 hover:text-slate-900 hover:bg-slate-50 rounded-xl transition-all group">
+                <i class="fa-solid fa-paper-plane w-6 text-center group-hover:text-red-500 transition-colors group-hover:translate-x-[2px]"></i>
                 <span class="hidden lg:block font-medium">Outflow (Payments)</span>
             </a>
 
             <!-- Virtual Accounts -->
-            <a href="virtual-accounts.html" class="flex items-center gap-3 px-3 py-3 text-slate-400 hover:text-white hover:bg-slate-800 rounded-xl transition-all group">
-                <i class="fa-solid fa-wallet w-6 text-center group-hover:text-purple-400 transition-colors"></i>
+            <a href="virtual-accounts.html" class="flex items-center gap-3 px-3 py-3 text-slate-500 hover:text-slate-900 hover:bg-slate-50 rounded-xl transition-all group">
+                <i class="fa-solid fa-wallet w-6 text-center group-hover:text-purple-500 transition-colors"></i>
                 <span class="hidden lg:block font-medium">Virtual Accounts</span>
             </a>
 
             <div class="hidden lg:block px-3 mt-6 mb-2 flex items-center justify-between">
-                <p class="text-[10px] font-bold text-slate-500 uppercase tracking-widest">Compliance</p>
-                <i class="fa-solid fa-shield-halved text-[10px] text-slate-600"></i>
+                <p class="text-[10px] font-bold text-slate-400 uppercase tracking-widest">Compliance</p>
+                <i class="fa-solid fa-shield-halved text-[10px] text-slate-400"></i>
             </div>
 
             <!-- Ledger -->
-            <a href="transaction-history.html" class="flex items-center gap-3 px-3 py-3 text-slate-400 hover:text-white hover:bg-slate-800 rounded-xl transition-all group">
-                <i class="fa-solid fa-book-open w-6 text-center group-hover:text-amber-400 transition-colors"></i>
+            <a href="transaction-history.html" class="flex items-center gap-3 px-3 py-3 text-slate-500 hover:text-slate-900 hover:bg-slate-50 rounded-xl transition-all group">
+                <i class="fa-solid fa-book-open w-6 text-center group-hover:text-amber-500 transition-colors"></i>
                 <span class="hidden lg:block font-medium">Digital Ledger</span>
             </a>
 
-            <!-- Docs Vault (FIXED: Added back to match dashboard) -->
-            <a href="compliance-vault.html" class="flex items-center gap-3 px-3 py-3 text-slate-400 hover:text-white hover:bg-slate-800 rounded-xl transition-all group">
-                <i class="fa-solid fa-file-shield w-6 text-center group-hover:text-blue-400 transition-colors"></i>
+            <!-- Docs Vault -->
+            <a href="compliance-vault.html" class="flex items-center gap-3 px-3 py-3 text-slate-500 hover:text-slate-900 hover:bg-slate-50 rounded-xl transition-all group">
+                <i class="fa-solid fa-file-shield w-6 text-center group-hover:text-blue-500 transition-colors"></i>
                 <span class="hidden lg:block font-medium">BoE & e-FIRA Vault</span>
             </a>
         </nav>
 
         <!-- User Profile Widget -->
-        <div class="p-4 border-t border-slate-800 bg-dark-900/50">
-            <div class="flex items-center gap-3 cursor-pointer hover:bg-slate-800 p-2 rounded-xl transition-colors group" onclick="alert('Profile Settings')">
+        <div class="p-4 border-t border-slate-200 bg-slate-50/50">
+            <div class="flex items-center gap-3 cursor-pointer hover:bg-slate-100 p-2 rounded-xl transition-colors group" onclick="toggleModal('settings-modal')">
                 <div class="relative">
-                    <div class="w-10 h-10 rounded-full bg-slate-700 flex items-center justify-center border border-slate-600 group-hover:border-brand-500 transition-colors">
-                        <span class="font-bold text-white group-hover:text-brand-200">TE</span>
+                    <div class="w-10 h-10 rounded-full bg-slate-200 flex items-center justify-center border border-slate-300 group-hover:border-brand-300 transition-colors">
+                        <span class="font-bold text-slate-700 group-hover:text-brand-600">TE</span>
                     </div>
-                    <div class="absolute -bottom-1 -right-1 w-3 h-3 bg-green-500 border-2 border-dark-900 rounded-full animate-pulse"></div>
+                    <div class="absolute -bottom-1 -right-1 w-3 h-3 bg-green-500 border-2 border-white rounded-full animate-pulse"></div>
                 </div>
                 <div class="hidden lg:block min-w-0">
-                    <p class="text-sm font-bold text-white truncate group-hover:text-brand-400 transition-colors">Tex Exports Pvt Ltd</p>
+                    <p class="text-sm font-bold text-slate-900 truncate group-hover:text-brand-700 transition-colors">Tex Exports Pvt Ltd</p>
                     <p class="text-[10px] text-slate-500 font-mono truncate">ID: IND-TN-8821</p>
                 </div>
-                <div class="hidden lg:block ml-auto text-slate-500 group-hover:text-white transition-colors">
+                <div class="hidden lg:block ml-auto text-slate-400 group-hover:text-slate-600 transition-colors">
                     <i class="fa-solid fa-gear text-xs"></i>
                 </div>
             </div>
@@ -249,40 +273,47 @@
     <main class="flex-1 flex flex-col h-screen relative overflow-hidden bg-grid">
         
         <!-- Header -->
-        <header class="h-16 bg-dark-900/80 backdrop-blur-md border-b border-slate-800 flex items-center justify-between px-6 z-40 sticky top-0 transition-all duration-300">
+        <header class="h-16 bg-white/80 backdrop-blur-md border-b border-slate-200 flex items-center justify-between px-6 z-40 sticky top-0 transition-all duration-300">
             
             <!-- Context -->
             <div class="flex items-center gap-4">
-                <h2 class="text-lg font-bold text-white flex items-center gap-2">
-                    <i class="fa-solid fa-bolt text-brand-500"></i> The Decision Gate
+                <h2 class="text-lg font-bold text-slate-900 flex items-center gap-2">
+                    <i class="fa-solid fa-bolt text-brand-600"></i> The Decision Gate
                 </h2>
-                <div class="h-4 w-px bg-slate-700 hidden md:block"></div>
-                <div class="hidden md:flex items-center gap-2 px-3 py-1.5 bg-green-900/20 rounded-lg border border-green-500/20 shadow-sm cursor-help hover:border-green-500/40 transition-colors">
+                <div class="h-4 w-px bg-slate-300 hidden md:block"></div>
+                <div class="hidden md:flex items-center gap-2 px-3 py-1.5 bg-green-50 rounded-lg border border-green-200 shadow-sm cursor-help hover:border-green-300 transition-colors">
                     <span class="w-2 h-2 rounded-full bg-green-500 animate-pulse"></span>
-                    <span class="text-xs font-mono text-green-400">GIFT CITY FCSS: ONLINE</span>
+                    <span class="text-xs font-mono text-green-700 font-bold">GIFT CITY FCSS: ONLINE</span>
                 </div>
             </div>
             
             <!-- Actions -->
             <div class="flex items-center gap-4">
                 <!-- Rate Ticker Widget -->
-                <div class="hidden lg:flex items-center gap-4 px-4 py-1.5 bg-slate-800/50 rounded-full border border-slate-700 hover:border-brand-500/30 transition-colors cursor-pointer" onclick="toggleAtlas()">
+                <div class="hidden lg:flex items-center gap-4 px-4 py-1.5 bg-slate-50 rounded-full border border-slate-200 hover:border-brand-300 transition-colors cursor-pointer shadow-sm hover:shadow-md" onclick="toggleModal('rate-forecast-modal')">
                     <div class="flex items-center gap-2 text-xs">
-                        <span class="text-slate-400">USD Wholesale:</span>
-                        <span class="font-mono text-white font-bold" id="live-rate-usd">83.60</span>
-                        <span class="text-green-400 flex items-center gap-1"><i class="fa-solid fa-arrow-up text-[10px]"></i> +0.05%</span>
+                        <span class="text-slate-500">USD Wholesale:</span>
+                        <span class="font-mono text-slate-900 font-bold" id="live-rate-usd">83.60</span>
+                        <span class="text-green-600 flex items-center gap-1 font-bold"><i class="fa-solid fa-arrow-up text-[10px]"></i> +0.05%</span>
                     </div>
-                    <div class="h-3 w-px bg-slate-600"></div>
+                    <div class="h-3 w-px bg-slate-300"></div>
                     <div class="flex items-center gap-2 text-xs">
-                        <span class="text-slate-400">Next Batch:</span>
-                        <span class="font-mono text-brand-400 font-bold">14:00 IST</span>
+                        <span class="text-slate-500">Next Batch:</span>
+                        <span class="font-mono text-brand-600 font-bold">14:00 IST</span>
                     </div>
                 </div>
 
-                <div class="h-6 w-px bg-slate-700"></div>
+                <div class="h-6 w-px bg-slate-300"></div>
+
+                <!-- Notifications -->
+                <button class="relative p-2 text-slate-500 hover:text-slate-900 transition-colors hover:bg-slate-100 rounded-lg" onclick="toggleNotificationPanel()">
+                    <i class="fa-regular fa-bell"></i>
+                    <span class="absolute top-1.5 right-1.5 w-2 h-2 bg-red-500 rounded-full border border-white animate-ping"></span>
+                    <span class="absolute top-1.5 right-1.5 w-2 h-2 bg-red-500 rounded-full border border-white"></span>
+                </button>
 
                 <!-- Support -->
-                <button class="relative p-2 text-slate-400 hover:text-white transition-colors hover:bg-slate-800 rounded-lg" onclick="toggleAtlas()" title="Ask Atlas AI">
+                <button class="relative p-2 text-slate-500 hover:text-slate-900 transition-colors hover:bg-slate-100 rounded-lg" onclick="toggleAtlas()" title="Ask Atlas AI">
                     <i class="fa-solid fa-headset"></i>
                 </button>
             </div>
@@ -294,14 +325,14 @@
             <!-- Intro Banner -->
             <div class="mb-8 flex justify-between items-end animate-slide-in">
                 <div>
-                    <h3 class="text-2xl font-display font-bold text-white mb-2">Pending Inflows</h3>
-                    <p class="text-slate-400 text-sm max-w-2xl leading-relaxed">
-                        Funds received at DBS Singapore. Decide to <strong class="text-brand-400">Convert (Sprinter Mode)</strong> for immediate INR or <strong class="text-purple-400">Park (Strategist Mode)</strong> in EEFC to hedge against future imports.
+                    <h3 class="text-2xl font-display font-bold text-slate-900 mb-2">Pending Inflows</h3>
+                    <p class="text-slate-500 text-sm max-w-2xl leading-relaxed">
+                        Funds received at DBS Singapore. Decide to <strong class="text-brand-600">Convert (Sprinter Mode)</strong> for immediate INR or <strong class="text-purple-600">Park (Strategist Mode)</strong> in EEFC to hedge against future imports.
                     </p>
                 </div>
                 <div class="text-right hidden md:block">
                     <p class="text-xs text-slate-500 uppercase tracking-wider font-bold mb-1">Total Pending Value</p>
-                    <p class="text-3xl font-mono font-bold text-white tracking-tight" id="total-pending-value">$ 34,900.00</p>
+                    <p class="text-3xl font-mono font-bold text-slate-900 tracking-tight" id="total-pending-value">$ 34,900.00</p>
                 </div>
             </div>
 
@@ -309,218 +340,264 @@
             <div class="space-y-6" id="decision-cards-container">
                 
                 <!-- Card 1: Zara International -->
-                <div class="glass-panel rounded-2xl p-0 overflow-hidden animate-slide-in relative group border border-slate-700 hover:border-brand-500/50 transition-all duration-300 hover:shadow-neon" id="card-txn-001">
+                <div class="glass-panel rounded-2xl p-0 overflow-hidden animate-slide-in relative group border border-slate-200 hover:border-brand-300 transition-all duration-300 hover:shadow-card-hover" id="card-txn-001">
                     <!-- Timer Progress Bar -->
-                    <div class="h-1 w-full bg-slate-800">
+                    <div class="h-1 w-full bg-slate-100">
                         <div class="h-full bg-brand-500 w-[100%] animate-[width_300s_linear_forwards]"></div>
                     </div>
                     
                     <div class="p-6 grid lg:grid-cols-12 gap-8">
                         
                         <!-- Left: Transaction Info (Col 4) -->
-                        <div class="lg:col-span-4 flex flex-col justify-between border-b lg:border-b-0 lg:border-r border-slate-800 pb-6 lg:pb-0 lg:pr-6">
+                        <div class="lg:col-span-4 flex flex-col justify-between border-b lg:border-b-0 lg:border-r border-slate-200 pb-6 lg:pb-0 lg:pr-6">
                             <div>
                                 <div class="flex items-center justify-between mb-4">
-                                    <span class="px-2 py-1 bg-green-500/10 text-green-400 border border-green-500/20 rounded text-[10px] font-bold uppercase tracking-wider flex items-center gap-1">
+                                    <span class="px-2 py-1 bg-green-50 text-green-700 border border-green-200 rounded text-[10px] font-bold uppercase tracking-wider flex items-center gap-1">
                                         <span class="w-1.5 h-1.5 bg-green-500 rounded-full animate-pulse"></span> Received: 10:42 AM
                                     </span>
-                                    <span class="text-slate-500 text-xs font-mono">#TXN-8821</span>
+                                    <span class="text-slate-400 text-xs font-mono">#TXN-8821</span>
                                 </div>
                                 <div class="flex items-center gap-4 mb-4">
-                                    <div class="w-12 h-12 bg-white text-slate-900 rounded-xl flex items-center justify-center font-bold text-lg shadow-lg">Z</div>
+                                    <div class="w-12 h-12 bg-slate-100 text-slate-700 rounded-xl flex items-center justify-center font-bold text-lg shadow-sm border border-slate-200">Z</div>
                                     <div>
-                                        <h4 class="text-lg font-bold text-white">Zara International Ltd</h4>
-                                        <p class="text-xs text-slate-400">Singapore • via PayNow Instant</p>
+                                        <h4 class="text-lg font-bold text-slate-900">Zara International Ltd</h4>
+                                        <p class="text-xs text-slate-500">Singapore • via PayNow Instant</p>
                                     </div>
                                 </div>
-                                <div class="bg-slate-800/50 rounded-lg p-3 border border-slate-700">
+                                <div class="bg-slate-50 rounded-lg p-3 border border-slate-200">
                                     <div class="flex justify-between text-xs mb-1">
-                                        <span class="text-slate-400">Invoice Match</span>
-                                        <span class="text-green-400 font-bold"><i class="fa-solid fa-check"></i> #INV-9921</span>
+                                        <span class="text-slate-500">Invoice Match</span>
+                                        <span class="text-green-600 font-bold"><i class="fa-solid fa-check"></i> #INV-9921</span>
                                     </div>
                                     <div class="flex justify-between text-xs">
-                                        <span class="text-slate-400">Goods Type</span>
-                                        <span class="text-white">Textile / Garments</span>
+                                        <span class="text-slate-500">Goods Type</span>
+                                        <span class="text-slate-900 font-medium">Textile / Garments</span>
                                     </div>
                                 </div>
                             </div>
                             <div class="mt-4 lg:mt-0">
                                 <p class="text-xs text-slate-500 uppercase tracking-wider font-bold mb-1">Incoming Amount</p>
-                                <p class="text-3xl font-mono font-bold text-white tracking-tight">$ 12,500.00</p>
+                                <p class="text-3xl font-mono font-bold text-slate-900 tracking-tight">$ 12,500.00</p>
                             </div>
                         </div>
 
                         <!-- Middle: Strategy Control (Col 5) -->
                         <div class="lg:col-span-5 flex flex-col justify-center px-2">
-                            <h5 class="text-sm font-bold text-slate-300 mb-4 flex items-center gap-2">
-                                <i class="fa-solid fa-chess-knight text-brand-400"></i> Choose Strategy
-                            </h5>
+                            <div class="flex justify-between items-center mb-3">
+                                <h5 class="text-sm font-bold text-slate-700 flex items-center gap-2">
+                                    <i class="fa-solid fa-chess-knight text-brand-600"></i> Choose Strategy
+                                </h5>
+                                <button onclick="toggleAnalysis('txn-001')" class="text-xs font-bold text-brand-600 hover:text-brand-800 transition flex items-center gap-1">
+                                    Analyze Scenarios <i class="fa-solid fa-chevron-down" id="icon-txn-001"></i>
+                                </button>
+                            </div>
                             
                             <!-- Slider Container -->
-                            <div class="bg-dark-950 rounded-xl p-5 border border-slate-700 shadow-inner">
+                            <div class="bg-white rounded-xl p-5 border border-slate-200 shadow-sm">
                                 <div class="flex justify-between mb-2 text-xs font-bold">
-                                    <span class="text-brand-400">Convert to INR</span>
-                                    <span class="text-purple-400">Park in EEFC</span>
+                                    <span class="text-brand-600">Convert to INR</span>
+                                    <span class="text-purple-600">Park in EEFC</span>
                                 </div>
                                 
-                                <input type="range" min="0" max="100" value="100" class="w-full h-2 bg-slate-700 rounded-lg appearance-none cursor-pointer mb-4" id="slider-txn-001" oninput="updateSplit('txn-001', this.value)">
+                                <input type="range" min="0" max="100" value="100" class="w-full h-2 bg-slate-200 rounded-lg appearance-none cursor-pointer mb-4" id="slider-txn-001" oninput="updateSplit('txn-001', this.value)">
                                 
                                 <div class="flex justify-between items-center">
-                                    <div class="text-center w-1/2 border-r border-slate-700 pr-2">
+                                    <div class="text-center w-1/2 border-r border-slate-200 pr-2">
                                         <p class="text-[10px] text-slate-500 uppercase">Convert Amount</p>
-                                        <p class="text-lg font-mono font-bold text-white" id="convert-val-txn-001">$ 12,500</p>
-                                        <p class="text-[10px] text-brand-400 font-mono">≈ ₹ <span id="inr-est-txn-001">10,45,000</span></p>
+                                        <p class="text-lg font-mono font-bold text-slate-900" id="convert-val-txn-001">$ 12,500</p>
+                                        <p class="text-[10px] text-brand-600 font-mono">≈ ₹ <span id="inr-est-txn-001">10,45,000</span></p>
                                     </div>
                                     <div class="text-center w-1/2 pl-2">
                                         <p class="text-[10px] text-slate-500 uppercase">Park Amount</p>
-                                        <p class="text-lg font-mono font-bold text-white" id="park-val-txn-001">$ 0</p>
-                                        <p class="text-[10px] text-purple-400 font-mono">Tax Free</p>
+                                        <p class="text-lg font-mono font-bold text-slate-900" id="park-val-txn-001">$ 0</p>
+                                        <p class="text-[10px] text-purple-600 font-mono">Tax Free (Retention)</p>
                                     </div>
                                 </div>
                             </div>
 
                             <div class="flex justify-center gap-2 mt-4">
-                                <button onclick="setPreset('txn-001', 100)" class="px-3 py-1.5 text-[10px] font-bold bg-slate-800 hover:bg-brand-900 text-slate-300 rounded-lg border border-slate-700 transition active:scale-95">Sprinter (100% INR)</button>
-                                <button onclick="setPreset('txn-001', 50)" class="px-3 py-1.5 text-[10px] font-bold bg-slate-800 hover:bg-brand-900 text-slate-300 rounded-lg border border-slate-700 transition active:scale-95">Split (50/50)</button>
-                                <button onclick="setPreset('txn-001', 0)" class="px-3 py-1.5 text-[10px] font-bold bg-slate-800 hover:bg-brand-900 text-slate-300 rounded-lg border border-slate-700 transition active:scale-95">Strategist (100% USD)</button>
+                                <button onclick="setPreset('txn-001', 100)" class="px-3 py-1.5 text-[10px] font-bold bg-white hover:bg-slate-50 text-slate-600 rounded-lg border border-slate-200 transition active:scale-95 shadow-sm">Sprinter (100% INR)</button>
+                                <button onclick="setPreset('txn-001', 50)" class="px-3 py-1.5 text-[10px] font-bold bg-white hover:bg-slate-50 text-slate-600 rounded-lg border border-slate-200 transition active:scale-95 shadow-sm">Split (50/50)</button>
+                                <button onclick="setPreset('txn-001', 0)" class="px-3 py-1.5 text-[10px] font-bold bg-white hover:bg-slate-50 text-slate-600 rounded-lg border border-slate-200 transition active:scale-95 shadow-sm">Strategist (100% USD)</button>
                             </div>
                         </div>
 
                         <!-- Right: Action (Col 3) -->
-                        <div class="lg:col-span-3 flex flex-col justify-center border-t lg:border-t-0 lg:border-l border-slate-800 pt-6 lg:pt-0 lg:pl-6">
-                            <div class="mb-4 bg-green-900/10 p-3 rounded-lg border border-green-500/20">
+                        <div class="lg:col-span-3 flex flex-col justify-center border-t lg:border-t-0 lg:border-l border-slate-200 pt-6 lg:pt-0 lg:pl-6">
+                            <div class="mb-4 bg-green-50 p-3 rounded-lg border border-green-200">
                                 <div class="flex justify-between text-xs mb-1">
-                                    <span class="text-slate-400">Wholesale Rate</span>
-                                    <span class="text-white font-mono font-bold">83.60</span>
+                                    <span class="text-slate-500">Wholesale Rate</span>
+                                    <span class="text-slate-900 font-mono font-bold">83.60</span>
                                 </div>
                                 <div class="flex justify-between text-xs">
-                                    <span class="text-slate-400">Savings vs Bank</span>
-                                    <span class="text-green-400 font-mono font-bold">₹ 18,750</span>
+                                    <span class="text-slate-500">Savings vs Bank</span>
+                                    <span class="text-green-600 font-mono font-bold">₹ 18,750</span>
                                 </div>
                             </div>
-                            <button onclick="executeDecision('txn-001')" class="w-full py-3 bg-brand-600 hover:bg-brand-500 text-white rounded-xl font-bold shadow-lg shadow-brand-500/30 transition-all transform active:scale-95 flex items-center justify-center gap-2 group/btn">
+                            <button onclick="executeDecision('txn-001')" class="w-full py-3 bg-brand-600 hover:bg-brand-700 text-white rounded-xl font-bold shadow-lg shadow-brand-500/30 transition-all transform active:scale-95 flex items-center justify-center gap-2 group/btn">
                                 Execute Decision <i class="fa-solid fa-arrow-right group-hover/btn:translate-x-1 transition-transform"></i>
                             </button>
                             <p class="text-[10px] text-center text-slate-500 mt-3 flex items-center justify-center gap-1">
-                                <i class="fa-solid fa-lock text-brand-500"></i> Rate locked for <span class="text-slate-300 font-mono" id="timer-txn-001">04:59</span>
+                                <i class="fa-solid fa-lock text-brand-600"></i> Rate locked for <span class="text-slate-900 font-mono" id="timer-txn-001">04:59</span>
                             </p>
+                        </div>
+                    </div>
+
+                    <!-- Hidden Analysis Panel -->
+                    <div id="analysis-txn-001" class="analysis-panel bg-slate-50 border-t border-slate-200">
+                        <div class="p-6 grid grid-cols-2 gap-8">
+                            <div>
+                                <h4 class="text-xs font-bold text-slate-500 uppercase mb-3">Forward Rate Projection (30 Days)</h4>
+                                <div class="h-32 w-full">
+                                    <canvas id="chart-txn-001"></canvas>
+                                </div>
+                            </div>
+                            <div class="space-y-3">
+                                <h4 class="text-xs font-bold text-slate-500 uppercase mb-3">Hedging Calculator</h4>
+                                <div class="flex justify-between text-sm p-2 bg-white rounded border border-slate-200">
+                                    <span class="text-slate-600">Spot Rate Today</span>
+                                    <span class="font-mono font-bold">83.60</span>
+                                </div>
+                                <div class="flex justify-between text-sm p-2 bg-white rounded border border-slate-200">
+                                    <span class="text-slate-600">Est. Rate (30D)</span>
+                                    <span class="font-mono font-bold text-green-600">83.85 (+0.25)</span>
+                                </div>
+                                <div class="flex justify-between text-sm p-2 bg-purple-50 rounded border border-purple-100">
+                                    <span class="text-purple-700 font-bold">Projected Gain (EEFC)</span>
+                                    <span class="font-mono font-bold text-purple-700">₹ 3,125.00</span>
+                                </div>
+                                <p class="text-[10px] text-slate-400 mt-2">*Based on IBU forward premiums. Not financial advice.</p>
+                            </div>
                         </div>
                     </div>
                 </div>
 
                 <!-- Card 2: H&M Sourcing -->
-                <div class="glass-panel rounded-2xl p-0 overflow-hidden animate-slide-in relative group border border-slate-700 hover:border-brand-500/50 transition-all duration-300 hover:shadow-neon" id="card-txn-002" style="animation-delay: 0.1s;">
+                <div class="glass-panel rounded-2xl p-0 overflow-hidden animate-slide-in relative group border border-slate-200 hover:border-brand-300 transition-all duration-300 hover:shadow-card-hover" id="card-txn-002" style="animation-delay: 0.1s;">
                     <!-- Timer Progress -->
-                    <div class="h-1 w-full bg-slate-800">
-                        <div class="h-full bg-yellow-500 w-[100%] animate-[width_600s_linear_forwards]"></div>
+                    <div class="h-1 w-full bg-slate-100">
+                        <div class="h-full bg-amber-500 w-[100%] animate-[width_600s_linear_forwards]"></div>
                     </div>
 
                     <div class="p-6 grid lg:grid-cols-12 gap-8">
                         <!-- Left -->
-                        <div class="lg:col-span-4 flex flex-col justify-between border-b lg:border-b-0 lg:border-r border-slate-800 pb-6 lg:pb-0 lg:pr-6">
+                        <div class="lg:col-span-4 flex flex-col justify-between border-b lg:border-b-0 lg:border-r border-slate-200 pb-6 lg:pb-0 lg:pr-6">
                             <div>
                                 <div class="flex items-center justify-between mb-4">
-                                    <span class="px-2 py-1 bg-yellow-500/10 text-yellow-400 border border-yellow-500/20 rounded text-[10px] font-bold uppercase tracking-wider flex items-center gap-1">
+                                    <span class="px-2 py-1 bg-amber-50 text-amber-700 border border-amber-200 rounded text-[10px] font-bold uppercase tracking-wider flex items-center gap-1">
                                         <i class="fa-regular fa-clock"></i> Received: 09:15 AM
                                     </span>
-                                    <span class="text-slate-500 text-xs font-mono">#TXN-8824</span>
+                                    <span class="text-slate-400 text-xs font-mono">#TXN-8824</span>
                                 </div>
                                 <div class="flex items-center gap-4 mb-4">
-                                    <div class="w-12 h-12 bg-white text-slate-900 rounded-xl flex items-center justify-center font-bold text-lg shadow-lg">H</div>
+                                    <div class="w-12 h-12 bg-slate-100 text-slate-700 rounded-xl flex items-center justify-center font-bold text-lg shadow-sm border border-slate-200">H</div>
                                     <div>
-                                        <h4 class="text-lg font-bold text-white">H&M Global Sourcing</h4>
-                                        <p class="text-xs text-slate-400">Sweden • via SWIFT gpi</p>
+                                        <h4 class="text-lg font-bold text-slate-900">H&M Global Sourcing</h4>
+                                        <p class="text-xs text-slate-500">Sweden • via SWIFT gpi</p>
                                     </div>
                                 </div>
-                                <div class="bg-slate-800/50 rounded-lg p-3 border border-slate-700">
+                                <div class="bg-slate-50 rounded-lg p-3 border border-slate-200">
                                     <div class="flex justify-between text-xs mb-1">
-                                        <span class="text-slate-400">Invoice Match</span>
-                                        <span class="text-green-400 font-bold"><i class="fa-solid fa-check"></i> #INV-9924</span>
+                                        <span class="text-slate-500">Invoice Match</span>
+                                        <span class="text-green-600 font-bold"><i class="fa-solid fa-check"></i> #INV-9924</span>
                                     </div>
                                     <div class="flex justify-between text-xs">
-                                        <span class="text-slate-400">Goods Type</span>
-                                        <span class="text-white">Apparel / Cotton</span>
+                                        <span class="text-slate-500">Goods Type</span>
+                                        <span class="text-slate-900 font-medium">Apparel / Cotton</span>
                                     </div>
                                 </div>
                             </div>
                             <div class="mt-4 lg:mt-0">
                                 <p class="text-xs text-slate-500 uppercase tracking-wider font-bold mb-1">Incoming Amount</p>
-                                <p class="text-3xl font-mono font-bold text-white tracking-tight">$ 18,200.00</p>
+                                <p class="text-3xl font-mono font-bold text-slate-900 tracking-tight">$ 18,200.00</p>
                             </div>
                         </div>
 
                         <!-- Middle -->
                         <div class="lg:col-span-5 flex flex-col justify-center px-2">
-                            <h5 class="text-sm font-bold text-slate-300 mb-4 flex items-center gap-2">
-                                <i class="fa-solid fa-chess-knight text-brand-400"></i> Choose Strategy
-                            </h5>
+                            <div class="flex justify-between items-center mb-3">
+                                <h5 class="text-sm font-bold text-slate-700 flex items-center gap-2">
+                                    <i class="fa-solid fa-chess-knight text-brand-600"></i> Choose Strategy
+                                </h5>
+                                <button onclick="toggleAnalysis('txn-002')" class="text-xs font-bold text-brand-600 hover:text-brand-800 transition flex items-center gap-1">
+                                    Analyze Scenarios <i class="fa-solid fa-chevron-down" id="icon-txn-002"></i>
+                                </button>
+                            </div>
                             
-                            <div class="bg-dark-950 rounded-xl p-5 border border-slate-700 shadow-inner">
+                            <div class="bg-white rounded-xl p-5 border border-slate-200 shadow-sm">
                                 <div class="flex justify-between mb-2 text-xs font-bold">
-                                    <span class="text-brand-400">Convert to INR</span>
-                                    <span class="text-purple-400">Park in EEFC</span>
+                                    <span class="text-brand-600">Convert to INR</span>
+                                    <span class="text-purple-600">Park in EEFC</span>
                                 </div>
-                                <input type="range" min="0" max="100" value="100" class="w-full h-2 bg-slate-700 rounded-lg appearance-none cursor-pointer mb-4" id="slider-txn-002" oninput="updateSplit('txn-002', this.value)">
+                                <input type="range" min="0" max="100" value="100" class="w-full h-2 bg-slate-200 rounded-lg appearance-none cursor-pointer mb-4" id="slider-txn-002" oninput="updateSplit('txn-002', this.value)">
                                 <div class="flex justify-between items-center">
-                                    <div class="text-center w-1/2 border-r border-slate-700 pr-2">
+                                    <div class="text-center w-1/2 border-r border-slate-200 pr-2">
                                         <p class="text-[10px] text-slate-500 uppercase">Convert</p>
-                                        <p class="text-lg font-mono font-bold text-white" id="convert-val-txn-002">$ 18,200</p>
-                                        <p class="text-[10px] text-brand-400 font-mono">≈ ₹ <span id="inr-est-txn-002">15,21,520</span></p>
+                                        <p class="text-lg font-mono font-bold text-slate-900" id="convert-val-txn-002">$ 18,200</p>
+                                        <p class="text-[10px] text-brand-600 font-mono">≈ ₹ <span id="inr-est-txn-002">15,21,520</span></p>
                                     </div>
                                     <div class="text-center w-1/2 pl-2">
                                         <p class="text-[10px] text-slate-500 uppercase">Park</p>
-                                        <p class="text-lg font-mono font-bold text-white" id="park-val-txn-002">$ 0</p>
-                                        <p class="text-[10px] text-purple-400 font-mono">Tax Free</p>
+                                        <p class="text-lg font-mono font-bold text-slate-900" id="park-val-txn-002">$ 0</p>
+                                        <p class="text-[10px] text-purple-600 font-mono">Tax Free</p>
                                     </div>
                                 </div>
                             </div>
                             <div class="flex justify-center gap-2 mt-4">
-                                <button onclick="setPreset('txn-002', 100)" class="px-3 py-1.5 text-[10px] font-bold bg-slate-800 hover:bg-brand-900 text-slate-300 rounded-lg border border-slate-700 transition active:scale-95">Sprinter</button>
-                                <button onclick="setPreset('txn-002', 50)" class="px-3 py-1.5 text-[10px] font-bold bg-slate-800 hover:bg-brand-900 text-slate-300 rounded-lg border border-slate-700 transition active:scale-95">Split</button>
-                                <button onclick="setPreset('txn-002', 0)" class="px-3 py-1.5 text-[10px] font-bold bg-slate-800 hover:bg-brand-900 text-slate-300 rounded-lg border border-slate-700 transition active:scale-95">Strategist</button>
+                                <button onclick="setPreset('txn-002', 100)" class="px-3 py-1.5 text-[10px] font-bold bg-white hover:bg-slate-50 text-slate-600 rounded-lg border border-slate-200 transition active:scale-95 shadow-sm">Sprinter</button>
+                                <button onclick="setPreset('txn-002', 50)" class="px-3 py-1.5 text-[10px] font-bold bg-white hover:bg-slate-50 text-slate-600 rounded-lg border border-slate-200 transition active:scale-95 shadow-sm">Split</button>
+                                <button onclick="setPreset('txn-002', 0)" class="px-3 py-1.5 text-[10px] font-bold bg-white hover:bg-slate-50 text-slate-600 rounded-lg border border-slate-200 transition active:scale-95 shadow-sm">Strategist</button>
                             </div>
                         </div>
 
                         <!-- Right -->
-                        <div class="lg:col-span-3 flex flex-col justify-center border-t lg:border-t-0 lg:border-l border-slate-800 pt-6 lg:pt-0 lg:pl-6">
-                            <div class="mb-4 bg-green-900/10 p-3 rounded-lg border border-green-500/20">
+                        <div class="lg:col-span-3 flex flex-col justify-center border-t lg:border-t-0 lg:border-l border-slate-200 pt-6 lg:pt-0 lg:pl-6">
+                            <div class="mb-4 bg-green-50 p-3 rounded-lg border border-green-200">
                                 <div class="flex justify-between text-xs mb-1">
-                                    <span class="text-slate-400">Wholesale Rate</span>
-                                    <span class="text-white font-mono font-bold">83.60</span>
+                                    <span class="text-slate-500">Wholesale Rate</span>
+                                    <span class="text-white font-mono font-bold text-slate-900">83.60</span>
                                 </div>
                                 <div class="flex justify-between text-xs">
-                                    <span class="text-slate-400">Savings vs Bank</span>
-                                    <span class="text-green-400 font-mono font-bold">₹ 27,300</span>
+                                    <span class="text-slate-500">Savings vs Bank</span>
+                                    <span class="text-green-600 font-mono font-bold">₹ 27,300</span>
                                 </div>
                             </div>
-                            <button onclick="executeDecision('txn-002')" class="w-full py-3 bg-brand-600 hover:bg-brand-500 text-white rounded-xl font-bold shadow-lg shadow-brand-500/30 transition-all transform active:scale-95 flex items-center justify-center gap-2 group/btn">
+                            <button onclick="executeDecision('txn-002')" class="w-full py-3 bg-brand-600 hover:bg-brand-700 text-white rounded-xl font-bold shadow-lg shadow-brand-500/30 transition-all transform active:scale-95 flex items-center justify-center gap-2 group/btn">
                                 Execute Decision <i class="fa-solid fa-arrow-right group-hover/btn:translate-x-1 transition-transform"></i>
                             </button>
                             <p class="text-[10px] text-center text-slate-500 mt-3 flex items-center justify-center gap-1">
-                                <i class="fa-solid fa-lock text-brand-500"></i> Rate locked for <span class="text-slate-300 font-mono" id="timer-txn-002">09:12</span>
+                                <i class="fa-solid fa-lock text-brand-600"></i> Rate locked for <span class="text-slate-900 font-mono" id="timer-txn-002">09:12</span>
                             </p>
+                        </div>
+                    </div>
+
+                    <!-- Hidden Analysis Panel (Mock content mostly, but adds depth) -->
+                    <div id="analysis-txn-002" class="analysis-panel bg-slate-50 border-t border-slate-200">
+                        <div class="p-6 text-center text-slate-500">
+                            <i class="fa-solid fa-chart-line text-2xl mb-2 text-slate-400"></i>
+                            <p class="text-sm">Advanced hedging analysis available for amounts > $50k.</p>
                         </div>
                     </div>
                 </div>
 
                 <!-- Card 3: FedEx (Small) -->
-                <div class="glass-panel rounded-2xl p-0 overflow-hidden animate-slide-in relative group border border-slate-700 hover:border-brand-500/50 transition-all duration-300 hover:shadow-neon" id="card-txn-003" style="animation-delay: 0.2s;">
+                <div class="glass-panel rounded-2xl p-0 overflow-hidden animate-slide-in relative group border border-slate-200 hover:border-brand-300 transition-all duration-300 hover:shadow-card-hover" id="card-txn-003" style="animation-delay: 0.2s;">
                     <div class="p-6 grid lg:grid-cols-12 gap-8">
-                        <div class="lg:col-span-4 flex flex-col justify-between border-b lg:border-b-0 lg:border-r border-slate-800 pb-6 lg:pb-0 lg:pr-6">
+                        <div class="lg:col-span-4 flex flex-col justify-between border-b lg:border-b-0 lg:border-r border-slate-200 pb-6 lg:pb-0 lg:pr-6">
                             <div class="flex items-center gap-4 mb-2">
-                                <div class="w-12 h-12 bg-white text-slate-900 rounded-xl flex items-center justify-center font-bold text-lg shadow-lg">F</div>
+                                <div class="w-12 h-12 bg-slate-100 text-slate-700 rounded-xl flex items-center justify-center font-bold text-lg shadow-sm border border-slate-200">F</div>
                                 <div>
-                                    <h4 class="text-lg font-bold text-white">FedEx Global</h4>
-                                    <p class="text-xs text-slate-400">Refund • #REF-2021</p>
+                                    <h4 class="text-lg font-bold text-slate-900">FedEx Global</h4>
+                                    <p class="text-xs text-slate-500">Refund • #REF-2021</p>
                                 </div>
                             </div>
-                            <p class="text-3xl font-mono font-bold text-white tracking-tight mt-2">$ 4,200.00</p>
+                            <p class="text-3xl font-mono font-bold text-slate-900 tracking-tight mt-2">$ 4,200.00</p>
                         </div>
                         <div class="lg:col-span-5 flex items-center justify-center px-2">
                             <div class="w-full">
-                                <div class="bg-dark-950 rounded-xl p-4 border border-slate-700 text-center">
+                                <div class="bg-white rounded-xl p-4 border border-slate-200 text-center shadow-sm">
                                     <p class="text-xs text-slate-500 mb-2 font-bold uppercase tracking-wider">Auto-Recommendation</p>
-                                    <div class="inline-flex items-center gap-2 bg-blue-900/30 text-blue-300 px-3 py-1.5 rounded-lg border border-blue-500/30 mb-2">
+                                    <div class="inline-flex items-center gap-2 bg-blue-50 text-blue-600 px-3 py-1.5 rounded-lg border border-blue-200 mb-2">
                                         <i class="fa-solid fa-robot"></i>
                                         <span class="text-sm font-bold">100% Convert Recommended</span>
                                     </div>
@@ -528,8 +605,8 @@
                                 </div>
                             </div>
                         </div>
-                        <div class="lg:col-span-3 flex flex-col justify-center border-t lg:border-t-0 lg:border-l border-slate-800 pt-6 lg:pt-0 lg:pl-6">
-                            <button onclick="executeDecision('txn-003')" class="w-full py-3 bg-brand-600 hover:bg-brand-500 text-white rounded-xl font-bold shadow-lg shadow-brand-500/30 transition-all transform active:scale-95 flex items-center justify-center gap-2">
+                        <div class="lg:col-span-3 flex flex-col justify-center border-t lg:border-t-0 lg:border-l border-slate-200 pt-6 lg:pt-0 lg:pl-6">
+                            <button onclick="executeDecision('txn-003')" class="w-full py-3 bg-brand-600 hover:bg-brand-700 text-white rounded-xl font-bold shadow-lg shadow-brand-500/30 transition-all transform active:scale-95 flex items-center justify-center gap-2">
                                 Convert All <i class="fa-solid fa-bolt"></i>
                             </button>
                         </div>
@@ -538,18 +615,52 @@
 
             </div>
 
+            <!-- History / Recently Cleared Section (Additive) -->
+            <div class="mt-12 animate-slide-in" style="animation-delay: 0.3s;">
+                <h4 class="text-sm font-bold text-slate-500 uppercase tracking-wider mb-4 border-b border-slate-200 pb-2">Recently Cleared Today</h4>
+                <div class="bg-white rounded-2xl border border-slate-200 overflow-hidden">
+                    <table class="w-full text-sm text-left">
+                        <thead class="bg-slate-50 text-xs text-slate-500 uppercase">
+                            <tr>
+                                <th class="px-6 py-3 font-semibold">Time</th>
+                                <th class="px-6 py-3 font-semibold">Client</th>
+                                <th class="px-6 py-3 font-semibold">Amount</th>
+                                <th class="px-6 py-3 font-semibold">Decision</th>
+                                <th class="px-6 py-3 font-semibold text-right">Status</th>
+                            </tr>
+                        </thead>
+                        <tbody class="divide-y divide-slate-100">
+                            <tr class="hover:bg-slate-50 transition">
+                                <td class="px-6 py-4 text-slate-500 font-mono">09:05 AM</td>
+                                <td class="px-6 py-4 font-bold text-slate-700">Uniqlo Japan</td>
+                                <td class="px-6 py-4 font-mono font-bold text-slate-900">$ 45,000</td>
+                                <td class="px-6 py-4"><span class="px-2 py-1 bg-purple-100 text-purple-700 rounded text-xs font-bold">100% EEFC Park</span></td>
+                                <td class="px-6 py-4 text-right"><span class="text-green-600 font-bold text-xs"><i class="fa-solid fa-check-circle"></i> Settled</span></td>
+                            </tr>
+                            <tr class="hover:bg-slate-50 transition">
+                                <td class="px-6 py-4 text-slate-500 font-mono">08:45 AM</td>
+                                <td class="px-6 py-4 font-bold text-slate-700">IKEA Supply</td>
+                                <td class="px-6 py-4 font-mono font-bold text-slate-900">€ 12,200</td>
+                                <td class="px-6 py-4"><span class="px-2 py-1 bg-brand-100 text-brand-700 rounded text-xs font-bold">100% Convert</span></td>
+                                <td class="px-6 py-4 text-right"><span class="text-green-600 font-bold text-xs"><i class="fa-solid fa-check-circle"></i> Settled</span></td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
             <!-- Empty State (Hidden by default) -->
             <div id="all-cleared-msg" class="hidden h-64 flex flex-col items-center justify-center animate-fade-in text-center p-8">
-                <div class="w-20 h-20 bg-green-500/10 rounded-full flex items-center justify-center mb-6 animate-bounce-subtle">
-                    <i class="fa-solid fa-check text-4xl text-green-500"></i>
+                <div class="w-20 h-20 bg-green-100 rounded-full flex items-center justify-center mb-6 animate-bounce-subtle">
+                    <i class="fa-solid fa-check text-4xl text-green-600"></i>
                 </div>
-                <h3 class="text-2xl font-bold text-white mb-2">All Caught Up!</h3>
-                <p class="text-slate-400 text-sm max-w-md mx-auto">No pending inflows requiring your decision. Your funds are processing on the GIFT City rail.</p>
+                <h3 class="text-2xl font-bold text-slate-900 mb-2">All Caught Up!</h3>
+                <p class="text-slate-500 text-sm max-w-md mx-auto">No pending inflows requiring your decision. Your funds are processing on the GIFT City rail.</p>
                 <div class="flex gap-4 mt-8">
-                    <button onclick="window.location.href='client-dashboard.html'" class="px-6 py-3 bg-slate-800 hover:bg-slate-700 text-white rounded-xl font-bold text-sm transition border border-slate-700 hover:border-slate-500">
+                    <button onclick="window.location.href='client-dashboard.html'" class="px-6 py-3 bg-white border border-slate-200 text-slate-700 hover:bg-slate-50 text-white rounded-xl font-bold text-sm transition">
                         Back to Dashboard
                     </button>
-                    <button onclick="window.location.href='transaction-history.html'" class="px-6 py-3 bg-brand-600 hover:bg-brand-500 text-white rounded-xl font-bold text-sm transition shadow-lg shadow-brand-500/20">
+                    <button onclick="window.location.href='transaction-history.html'" class="px-6 py-3 bg-brand-600 hover:bg-brand-700 text-white rounded-xl font-bold text-sm transition shadow-lg shadow-brand-500/20">
                         View Ledger
                     </button>
                 </div>
@@ -557,6 +668,118 @@
 
         </div>
     </main>
+
+    <!-- === MODALS === -->
+
+    <!-- 1. NOTIFICATION PANEL -->
+    <div id="notification-panel" class="fixed inset-y-0 right-0 w-80 bg-white border-l border-slate-200 shadow-2xl transform translate-x-full transition-transform duration-300 z-50 flex flex-col">
+        <div class="p-4 border-b border-slate-200 flex justify-between items-center bg-white/95 backdrop-blur">
+            <h3 class="font-bold text-slate-900 text-sm"><i class="fa-regular fa-bell mr-2"></i> Notifications</h3>
+            <button onclick="toggleNotificationPanel()" class="text-slate-400 hover:text-slate-900"><i class="fa-solid fa-xmark"></i></button>
+        </div>
+        <div class="flex-1 overflow-y-auto p-4 space-y-3">
+            <div class="bg-slate-50 p-3 rounded-xl border-l-2 border-brand-500 relative group cursor-pointer hover:bg-slate-100 transition-colors">
+                <div class="flex justify-between items-start">
+                    <h4 class="text-xs font-bold text-slate-900">Funds Received</h4>
+                    <span class="text-[10px] text-slate-500">2m ago</span>
+                </div>
+                <p class="text-xs text-slate-600 mt-1">Zara Intl sent <strong>$12,500</strong> via PayNow.</p>
+                <div class="mt-2">
+                    <button class="text-[10px] bg-brand-50 text-brand-600 px-2 py-1 rounded font-bold hover:bg-brand-100 transition">View</button>
+                </div>
+            </div>
+            <div class="bg-slate-50 p-3 rounded-xl border-l-2 border-green-500 relative group cursor-pointer hover:bg-slate-100 transition-colors">
+                <div class="flex justify-between items-start">
+                    <h4 class="text-xs font-bold text-slate-900">e-FIRA Generated</h4>
+                    <span class="text-[10px] text-slate-500">1h ago</span>
+                </div>
+                <p class="text-xs text-slate-600 mt-1">Document #FIRA-8821 is ready for download.</p>
+            </div>
+        </div>
+        <div class="p-4 border-t border-slate-200">
+            <button class="w-full py-2 text-xs font-bold text-slate-500 hover:text-slate-900 border border-slate-200 rounded-lg hover:bg-slate-50 transition">Mark All Read</button>
+        </div>
+    </div>
+
+    <!-- 2. SETTINGS MODAL -->
+    <div id="settings-modal" class="fixed inset-0 bg-slate-900/20 backdrop-blur-sm hidden items-center justify-center z-50 transition-opacity opacity-0 pointer-events-none">
+        <div class="bg-white border border-slate-200 rounded-2xl w-full max-w-lg shadow-2xl transform scale-95 transition-transform duration-300 m-4 flex flex-col max-h-[90vh]">
+            <div class="p-5 border-b border-slate-200 flex justify-between items-center bg-white rounded-t-2xl">
+                <h3 class="font-bold text-slate-900 text-lg"><i class="fa-solid fa-gear text-slate-500 mr-2"></i> Account Settings</h3>
+                <button onclick="toggleModal('settings-modal')" class="text-slate-400 hover:text-slate-800"><i class="fa-solid fa-xmark"></i></button>
+            </div>
+            <div class="flex-1 overflow-y-auto p-6 space-y-6">
+                <div>
+                    <h4 class="text-xs font-bold text-brand-600 uppercase tracking-wider mb-4 border-b border-slate-200 pb-2">Profile</h4>
+                    <div class="grid grid-cols-2 gap-4">
+                        <div>
+                            <label class="block text-xs text-slate-500 mb-1">Company</label>
+                            <input type="text" value="Tex Exports Pvt Ltd" class="w-full bg-slate-50 border border-slate-300 rounded-lg px-3 py-2 text-sm text-slate-900" disabled>
+                        </div>
+                        <div>
+                            <label class="block text-xs text-slate-500 mb-1">Default Currency</label>
+                            <input type="text" value="USD" class="w-full bg-slate-50 border border-slate-300 rounded-lg px-3 py-2 text-sm text-slate-900" disabled>
+                        </div>
+                    </div>
+                </div>
+                <div>
+                    <h4 class="text-xs font-bold text-brand-600 uppercase tracking-wider mb-4 border-b border-slate-200 pb-2">Inflow Logic</h4>
+                    <div class="space-y-3">
+                        <div class="flex items-center justify-between">
+                            <div>
+                                <p class="text-sm font-bold text-slate-900">Auto-Park > $50k</p>
+                                <p class="text-xs text-slate-500">Automatically move large inflows to EEFC</p>
+                            </div>
+                            <label class="relative inline-flex items-center cursor-pointer">
+                                <input type="checkbox" value="" class="sr-only peer" checked>
+                                <div class="w-11 h-6 bg-slate-200 peer-focus:outline-none peer-focus:ring-2 peer-focus:ring-brand-500 rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-brand-600"></div>
+                            </label>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="p-5 border-t border-slate-200 bg-slate-50 rounded-b-2xl flex justify-end gap-3">
+                 <button onclick="toggleModal('settings-modal')" class="px-4 py-2 text-sm text-slate-500 hover:text-slate-900">Close</button>
+                 <button onclick="toggleModal('settings-modal')" class="px-4 py-2 bg-white text-slate-900 border border-slate-300 font-bold rounded-lg text-sm hover:bg-slate-100">Save</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- 3. RATE FORECAST MODAL (Advanced) -->
+    <div id="rate-forecast-modal" class="fixed inset-0 bg-slate-900/20 backdrop-blur-sm hidden items-center justify-center z-50 transition-opacity opacity-0 pointer-events-none">
+        <div class="bg-white border border-slate-200 rounded-2xl w-full max-w-4xl shadow-2xl transform scale-95 transition-transform duration-300 m-4 flex flex-col max-h-[90vh]">
+            <div class="p-5 border-b border-slate-200 flex justify-between items-center bg-white rounded-t-2xl">
+                <div>
+                    <h3 class="font-bold text-slate-900 text-lg"><i class="fa-solid fa-chart-line text-brand-600 mr-2"></i> FX Rate Forecast</h3>
+                    <p class="text-xs text-slate-500 mt-1">AI-Driven Projection for USD/INR (IBU)</p>
+                </div>
+                <button onclick="toggleModal('rate-forecast-modal')" class="text-slate-400 hover:text-slate-800"><i class="fa-solid fa-xmark"></i></button>
+            </div>
+            <div class="p-6">
+                <div class="h-64 w-full bg-slate-50 rounded-xl mb-6 relative flex items-center justify-center border border-slate-200">
+                    <!-- Placeholder for big chart -->
+                    <canvas id="forecastChartMain"></canvas>
+                </div>
+                <div class="grid grid-cols-3 gap-6">
+                    <div class="bg-green-50 p-4 rounded-xl border border-green-100 text-center">
+                        <p class="text-xs text-slate-500 uppercase mb-1">Bull Case</p>
+                        <p class="text-xl font-bold text-green-700">84.10</p>
+                        <p class="text-[10px] text-green-600">+0.6% in 7D</p>
+                    </div>
+                    <div class="bg-slate-50 p-4 rounded-xl border border-slate-200 text-center">
+                        <p class="text-xs text-slate-500 uppercase mb-1">Base Case</p>
+                        <p class="text-xl font-bold text-slate-700">83.75</p>
+                        <p class="text-[10px] text-slate-500">Flat/Stable</p>
+                    </div>
+                    <div class="bg-red-50 p-4 rounded-xl border border-red-100 text-center">
+                        <p class="text-xs text-slate-500 uppercase mb-1">Bear Case</p>
+                        <p class="text-xl font-bold text-red-700">83.20</p>
+                        <p class="text-[10px] text-red-600">-0.4% in 7D</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
 
     <!-- ATLAS CHATBOT WIDGET -->
     <div id="atlas-widget-container"></div>
@@ -574,7 +797,8 @@
                     rate: 83.60, 
                     currency: 'USD',
                     client: 'Zara International Ltd',
-                    type: 'Textile / Garments'
+                    type: 'Textile / Garments',
+                    chartInitialized: false
                 },
                 'txn-002': { 
                     id: 'txn-002', 
@@ -582,7 +806,8 @@
                     rate: 83.60,
                     currency: 'USD',
                     client: 'H&M Global Sourcing',
-                    type: 'Apparel / Cotton'
+                    type: 'Apparel / Cotton',
+                    chartInitialized: false
                 },
                 'txn-003': { 
                     id: 'txn-003', 
@@ -590,7 +815,8 @@
                     rate: 83.60,
                     currency: 'USD',
                     client: 'FedEx Global',
-                    type: 'Refund'
+                    type: 'Refund',
+                    chartInitialized: false
                 }
             },
             totalPending: 34900,
@@ -621,12 +847,17 @@
             
             // 4. Initial UI Update
             updateTotalHeader();
+
+            // 5. Init Forecast Chart
+            initForecastChart();
         });
 
         // --- Helper Functions ---
 
         function updateLiveRates(rate) {
-            document.getElementById('live-rate-usd').innerText = rate.toFixed(2);
+            const el = document.getElementById('live-rate-usd');
+            if(el) el.innerText = rate.toFixed(2);
+            
             // Update internal state
             Object.keys(AppState.transactions).forEach(k => {
                 AppState.transactions[k].rate = rate;
@@ -666,6 +897,26 @@
             }
         }
 
+        function toggleAnalysis(id) {
+            const panel = document.getElementById(`analysis-${id}`);
+            const icon = document.getElementById(`icon-${id}`);
+            if(!panel) return;
+
+            if(panel.classList.contains('open')) {
+                panel.classList.remove('open');
+                if(icon) icon.style.transform = 'rotate(0deg)';
+            } else {
+                panel.classList.add('open');
+                if(icon) icon.style.transform = 'rotate(180deg)';
+                
+                // Initialize Chart specific to this transaction if not done
+                if(!AppState.transactions[id].chartInitialized) {
+                    initTxnChart(id);
+                    AppState.transactions[id].chartInitialized = true;
+                }
+            }
+        }
+
         function executeDecision(id) {
             const card = document.getElementById(`card-${id}`);
             if(!card) return;
@@ -685,10 +936,10 @@
             setTimeout(() => {
                 // UI Feedback: Success
                 btn.innerHTML = '<i class="fa-solid fa-check"></i> Decision Executed';
-                btn.classList.remove('bg-brand-600', 'hover:bg-brand-500');
-                btn.classList.add('bg-green-600');
+                btn.classList.remove('bg-brand-600', 'hover:bg-brand-700');
+                btn.classList.add('bg-green-600', 'hover:bg-green-700');
                 
-                // Show Toast Notification (Mock)
+                // Show Toast Notification
                 showToast(`Transaction ${id} processed successfully via DBS Golden Rail.`);
 
                 // Animate Removal
@@ -753,14 +1004,14 @@
                 if (--timer < 0) {
                     clearInterval(AppState.timers[elementId]);
                     display.textContent = "Expired";
-                    display.classList.add('text-red-500', 'font-bold');
+                    display.classList.add('text-red-600', 'font-bold');
                     // Disable button
                     const card = display.closest('.glass-panel');
                     const btn = card.querySelector('button[onclick^="executeDecision"]');
                     if(btn) {
                         btn.disabled = true;
-                        btn.classList.add('bg-slate-700', 'cursor-not-allowed');
-                        btn.classList.remove('bg-brand-600', 'hover:bg-brand-500');
+                        btn.classList.add('bg-slate-300', 'cursor-not-allowed', 'text-slate-500');
+                        btn.classList.remove('bg-brand-600', 'hover:bg-brand-700', 'text-white');
                         btn.innerHTML = 'Rate Expired - Refresh';
                     }
                 }
@@ -770,14 +1021,14 @@
         function showToast(message) {
             // Create toast element on the fly
             const toast = document.createElement('div');
-            toast.className = 'fixed top-6 right-6 bg-dark-900 border border-slate-700 text-white px-6 py-4 rounded-xl shadow-2xl flex items-center gap-3 z-50 animate-slide-in';
+            toast.className = 'fixed top-6 right-6 bg-white border border-slate-200 text-slate-900 px-6 py-4 rounded-xl shadow-2xl flex items-center gap-3 z-50 animate-slide-in';
             toast.innerHTML = `
-                <div class="w-8 h-8 bg-green-500/20 text-green-500 rounded-full flex items-center justify-center flex-shrink-0">
+                <div class="w-8 h-8 bg-green-100 text-green-600 rounded-full flex items-center justify-center flex-shrink-0">
                     <i class="fa-solid fa-check"></i>
                 </div>
                 <div>
                     <h4 class="font-bold text-sm">Success</h4>
-                    <p class="text-xs text-slate-400">${message}</p>
+                    <p class="text-xs text-slate-500">${message}</p>
                 </div>
             `;
             document.body.appendChild(toast);
@@ -789,32 +1040,143 @@
             }, 3000);
         }
 
+        // --- Modal Logic ---
+        function toggleModal(modalId) {
+            const modal = document.getElementById(modalId);
+            if(!modal) return;
+            const card = modal.firstElementChild;
+
+            if (modal.classList.contains('hidden')) {
+                // Open
+                modal.classList.remove('hidden', 'pointer-events-none');
+                setTimeout(() => {
+                    modal.classList.remove('opacity-0');
+                    if(card) {
+                        card.classList.remove('scale-95');
+                        card.classList.add('scale-100');
+                    }
+                }, 10);
+            } else {
+                // Close
+                modal.classList.add('opacity-0');
+                if(card) {
+                    card.classList.remove('scale-100');
+                    card.classList.add('scale-95');
+                }
+                setTimeout(() => {
+                    modal.classList.add('hidden', 'pointer-events-none');
+                }, 300);
+            }
+        }
+
+        function toggleNotificationPanel() {
+            const panel = document.getElementById('notification-panel');
+            if (panel.classList.contains('translate-x-full')) {
+                panel.classList.remove('translate-x-full');
+            } else {
+                panel.classList.add('translate-x-full');
+            }
+        }
+
+        // --- Chart.js Implementations ---
+        
+        function initTxnChart(id) {
+            const ctx = document.getElementById(`chart-${id}`);
+            if(!ctx) return;
+            
+            new Chart(ctx, {
+                type: 'line',
+                data: {
+                    labels: ['Today', '+7d', '+14d', '+30d'],
+                    datasets: [{
+                        label: 'Projected Rate',
+                        data: [83.60, 83.65, 83.72, 83.85],
+                        borderColor: '#7c3aed', // Purple for Forward
+                        borderWidth: 2,
+                        fill: true,
+                        backgroundColor: 'rgba(124, 58, 237, 0.1)',
+                        tension: 0.4
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: { legend: { display: false } },
+                    scales: {
+                        y: { display: false },
+                        x: { grid: { display: false }, ticks: { color: '#64748b', font: { size: 10 } } }
+                    }
+                }
+            });
+        }
+
+        function initForecastChart() {
+            const ctx = document.getElementById('forecastChartMain');
+            if(!ctx) return;
+
+            new Chart(ctx, {
+                type: 'line',
+                data: {
+                    labels: ['Jan 1', 'Jan 5', 'Jan 10', 'Jan 15', 'Jan 20', 'Jan 25', 'Jan 30'],
+                    datasets: [
+                        {
+                            label: 'Bull Case',
+                            data: [83.6, 83.7, 83.8, 83.9, 84.0, 84.05, 84.1],
+                            borderColor: '#16a34a',
+                            borderDash: [5, 5],
+                            tension: 0.4
+                        },
+                        {
+                            label: 'Base Case',
+                            data: [83.6, 83.62, 83.65, 83.68, 83.7, 83.72, 83.75],
+                            borderColor: '#475569',
+                            borderWidth: 3,
+                            tension: 0.4
+                        },
+                        {
+                            label: 'Bear Case',
+                            data: [83.6, 83.5, 83.45, 83.4, 83.3, 83.25, 83.2],
+                            borderColor: '#dc2626',
+                            borderDash: [5, 5],
+                            tension: 0.4
+                        }
+                    ]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: { legend: { position: 'bottom' } },
+                    scales: { y: { grid: { color: '#f1f5f9' } }, x: { grid: { display: false } } }
+                }
+            });
+        }
+
         // --- ATLAS CHATBOT (Embedded Version) ---
         function initChatbotWidget() {
             const container = document.getElementById('atlas-widget-container');
             container.innerHTML = `
-                <div id="atlas-window" class="fixed bottom-20 right-6 w-[350px] bg-dark-900 border border-slate-700 rounded-2xl shadow-2xl hidden flex-col z-50 overflow-hidden transform transition-all duration-300 origin-bottom-right scale-95 opacity-0" style="height: 500px;">
-                     <div class="bg-slate-800 p-4 flex justify-between items-center border-b border-slate-700">
+                <div id="atlas-window" class="fixed bottom-20 right-6 w-[350px] bg-white border border-slate-200 rounded-2xl shadow-2xl hidden flex-col z-50 overflow-hidden transform transition-all duration-300 origin-bottom-right scale-95 opacity-0" style="height: 500px;">
+                     <div class="bg-slate-50 p-4 flex justify-between items-center border-b border-slate-200">
                         <div class="flex items-center gap-2">
                              <div class="w-8 h-8 rounded-full bg-brand-600 flex items-center justify-center text-white text-xs"><i class="fa-solid fa-robot"></i></div>
                              <div>
-                                 <span class="font-bold text-white text-sm block">Atlas AI</span>
-                                 <span class="text-[10px] text-green-400 flex items-center gap-1"><span class="w-1.5 h-1.5 bg-green-500 rounded-full animate-pulse"></span> Online</span>
+                                 <span class="font-bold text-slate-900 text-sm block">Atlas AI</span>
+                                 <span class="text-[10px] text-green-600 flex items-center gap-1"><span class="w-1.5 h-1.5 bg-green-500 rounded-full animate-pulse"></span> Online</span>
                              </div>
                         </div>
-                        <button onclick="toggleAtlas()" class="text-slate-400 hover:text-white"><i class="fa-solid fa-xmark"></i></button>
+                        <button onclick="toggleAtlas()" class="text-slate-400 hover:text-slate-800"><i class="fa-solid fa-xmark"></i></button>
                      </div>
-                     <div id="atlas-messages" class="flex-1 p-4 overflow-y-auto space-y-4 bg-dark-950 scroll-smooth">
+                     <div id="atlas-messages" class="flex-1 p-4 overflow-y-auto space-y-4 bg-slate-50 scroll-smooth">
                         <div class="flex gap-3">
-                            <div class="w-8 h-8 rounded-full bg-slate-800 flex items-center justify-center shrink-0 text-slate-400 text-xs border border-slate-700"><i class="fa-solid fa-robot"></i></div>
-                            <div class="bg-slate-800 border border-slate-700 p-3 rounded-2xl rounded-tl-none text-sm text-slate-300 shadow-sm leading-relaxed">
+                            <div class="w-8 h-8 rounded-full bg-slate-100 flex items-center justify-center shrink-0 text-slate-500 text-xs border border-slate-200"><i class="fa-solid fa-robot"></i></div>
+                            <div class="bg-white border border-slate-200 p-3 rounded-2xl rounded-tl-none text-sm text-slate-600 shadow-sm leading-relaxed">
                                 I see you have 3 pending inflows. Current market analysis suggests <strong>converting 60%</strong> of USD inflows today due to expected volatility in the Asian session.
                             </div>
                         </div>
                      </div>
-                     <div class="p-3 bg-slate-800 border-t border-slate-700 flex gap-2">
-                        <input type="text" id="atlas-input" class="flex-1 bg-dark-950 border border-slate-700 rounded-lg px-3 py-2 text-sm text-white focus:border-brand-500 focus:outline-none placeholder-slate-600" placeholder="Type query..." onkeypress="handleAtlasEnter(event)">
-                        <button onclick="handleAtlasSubmit()" class="w-10 h-10 bg-brand-600 text-white rounded-lg hover:bg-brand-500 flex items-center justify-center transition active:scale-95"><i class="fa-solid fa-paper-plane"></i></button>
+                     <div class="p-3 bg-slate-50 border-t border-slate-200 flex gap-2">
+                        <input type="text" id="atlas-input" class="flex-1 bg-white border border-slate-200 rounded-lg px-3 py-2 text-sm text-slate-900 focus:border-brand-500 focus:outline-none placeholder-slate-400" placeholder="Type query..." onkeypress="handleAtlasEnter(event)">
+                        <button onclick="handleAtlasSubmit()" class="w-10 h-10 bg-brand-600 text-white rounded-lg hover:bg-brand-700 flex items-center justify-center transition active:scale-95"><i class="fa-solid fa-paper-plane"></i></button>
                      </div>
                 </div>
             `;
@@ -852,7 +1214,7 @@
             const loadingDiv = document.createElement('div');
             loadingDiv.id = loadingId;
             loadingDiv.className = 'flex gap-3';
-            loadingDiv.innerHTML = `<div class="w-8 h-8 rounded-full bg-slate-800 flex items-center justify-center shrink-0 text-slate-400 text-xs border border-slate-700"><i class="fa-solid fa-robot"></i></div><div class="bg-slate-800 border border-slate-700 p-3 rounded-2xl rounded-tl-none text-sm text-slate-400 shadow-sm"><i class="fa-solid fa-ellipsis fa-fade"></i></div>`;
+            loadingDiv.innerHTML = `<div class="w-8 h-8 rounded-full bg-slate-100 flex items-center justify-center shrink-0 text-slate-500 text-xs border border-slate-200"><i class="fa-solid fa-robot"></i></div><div class="bg-white border border-slate-200 p-3 rounded-2xl rounded-tl-none text-sm text-slate-400 shadow-sm"><i class="fa-solid fa-ellipsis fa-fade"></i></div>`;
             msgBox.appendChild(loadingDiv);
             msgBox.scrollTop = msgBox.scrollHeight;
 
@@ -872,10 +1234,10 @@
             const div = document.createElement('div');
             div.className = type === 'bot' ? 'flex gap-3 animate-fade-in' : 'flex gap-3 justify-end animate-fade-in';
             
-            const formatted = text.replace(/\*\*(.*?)\*\*/g, '<strong class="text-white">$1</strong>');
+            const formatted = text.replace(/\*\*(.*?)\*\*/g, '<strong class="text-slate-800">$1</strong>');
 
             div.innerHTML = type === 'bot' 
-                ? `<div class="w-8 h-8 rounded-full bg-slate-800 flex items-center justify-center shrink-0 text-slate-400 text-xs border border-slate-700"><i class="fa-solid fa-robot"></i></div><div class="bg-slate-800 border border-slate-700 p-3 rounded-2xl rounded-tl-none text-sm text-slate-300 shadow-sm max-w-[85%] leading-relaxed">${formatted}</div>`
+                ? `<div class="w-8 h-8 rounded-full bg-slate-100 flex items-center justify-center shrink-0 text-slate-500 text-xs border border-slate-200"><i class="fa-solid fa-robot"></i></div><div class="bg-white border border-slate-200 p-3 rounded-2xl rounded-tl-none text-sm text-slate-600 shadow-sm max-w-[85%] leading-relaxed">${formatted}</div>`
                 : `<div class="bg-brand-600 text-white p-3 rounded-2xl rounded-tr-none text-sm shadow-sm max-w-[85%] leading-relaxed">${formatted}</div>`;
             box.appendChild(div);
             box.scrollTop = box.scrollHeight;

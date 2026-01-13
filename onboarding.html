@@ -67,6 +67,23 @@
             background-color: #f0f9ff;
             background-image: url("data:image/svg+xml,%3csvg width='100%25' height='100%25' xmlns='http://www.w3.org/2000/svg'%3e%3crect width='100%25' height='100%25' fill='none' rx='16' ry='16' stroke='%230EA5E9FF' stroke-width='2' stroke-dasharray='12%2c 12' stroke-dashoffset='0' stroke-linecap='square'/%3e%3c/svg%3e");
         }
+
+        /* Demo Mode Styles */
+        .demo-highlight {
+            animation: highlightPulse 1s ease-in-out;
+            border-color: #f59e0b !important;
+            background-color: #fffbeb !important; /* light yellow bg */
+        }
+        @keyframes highlightPulse {
+            0% { box-shadow: 0 0 0 0 rgba(245, 158, 11, 0.4); }
+            70% { box-shadow: 0 0 0 10px rgba(245, 158, 11, 0); }
+            100% { box-shadow: 0 0 0 0 rgba(245, 158, 11, 0); }
+        }
+        
+        /* Invisible Click Areas for Demo Triggers */
+        .demo-trigger-zone {
+            cursor: text;
+        }
     </style>
 </head>
 <body class="bg-slate-50 text-slate-900 min-h-screen flex flex-col font-sans">
@@ -204,7 +221,8 @@
                                 <label class="block text-sm font-bold text-slate-700">Official Work Email</label>
                                 <div class="relative">
                                     <i class="fa-solid fa-envelope absolute left-4 top-3.5 text-slate-400"></i>
-                                    <input type="email" id="email" class="w-full pl-11 pr-4 py-3 bg-slate-50 border border-slate-200 rounded-xl focus:outline-none focus:border-brand-500 focus:ring-1 focus:ring-brand-500 transition-all" placeholder="finance@company.com">
+                                    <!-- Magic Trigger on Email Focus -->
+                                    <input type="email" id="email" class="w-full pl-11 pr-4 py-3 bg-slate-50 border border-slate-200 rounded-xl focus:outline-none focus:border-brand-500 focus:ring-1 focus:ring-brand-500 transition-all demo-trigger-zone" placeholder="finance@company.com">
                                 </div>
                                 <button type="button" onclick="simulateOTP('email')" class="text-sm font-bold text-brand-600 hover:text-brand-800">Send Verification Code</button>
                                 
@@ -212,7 +230,8 @@
                                 <div id="email-otp-group" class="hidden space-y-2 pt-2">
                                     <label class="text-xs font-semibold text-slate-500">Enter Email OTP</label>
                                     <div class="flex gap-2">
-                                        <input type="text" class="w-full px-4 py-2 bg-white border border-slate-300 rounded-lg text-center tracking-widest font-mono font-bold" placeholder="123456" maxlength="6">
+                                        <!-- Magic Trigger on OTP Focus -->
+                                        <input type="text" id="email-otp-input" class="w-full px-4 py-2 bg-white border border-slate-300 rounded-lg text-center tracking-widest font-mono font-bold demo-trigger-zone" placeholder="123456" maxlength="6">
                                         <button type="button" onclick="verifyOTP('email')" class="px-4 py-2 bg-slate-900 text-white rounded-lg hover:bg-slate-800 text-xs font-bold">Verify</button>
                                     </div>
                                 </div>
@@ -234,7 +253,8 @@
                                 <div id="mobile-otp-group" class="hidden space-y-2 pt-2">
                                     <label class="text-xs font-semibold text-slate-500">Enter Mobile OTP</label>
                                     <div class="flex gap-2">
-                                        <input type="text" class="w-full px-4 py-2 bg-white border border-slate-300 rounded-lg text-center tracking-widest font-mono font-bold" placeholder="123456" maxlength="6">
+                                        <!-- Magic Trigger on OTP Focus -->
+                                        <input type="text" id="mobile-otp-input" class="w-full px-4 py-2 bg-white border border-slate-300 rounded-lg text-center tracking-widest font-mono font-bold demo-trigger-zone" placeholder="123456" maxlength="6">
                                         <button type="button" onclick="verifyOTP('mobile')" class="px-4 py-2 bg-slate-900 text-white rounded-lg hover:bg-slate-800 text-xs font-bold">Verify</button>
                                     </div>
                                 </div>
@@ -266,7 +286,8 @@
                             <div>
                                 <label class="block text-sm font-bold text-slate-700 mb-2">Company PAN *</label>
                                 <div class="relative">
-                                    <input type="text" id="pan-input" class="w-full px-4 py-3 bg-slate-50 border border-slate-200 rounded-xl focus:outline-none focus:border-brand-500 focus:ring-1 focus:ring-brand-500 uppercase font-mono tracking-wide" placeholder="ABCDE1234F" maxlength="10" onblur="validatePAN()">
+                                    <!-- Magic Trigger on PAN Focus -->
+                                    <input type="text" id="pan-input" class="w-full px-4 py-3 bg-slate-50 border border-slate-200 rounded-xl focus:outline-none focus:border-brand-500 focus:ring-1 focus:ring-brand-500 uppercase font-mono tracking-wide demo-trigger-zone" placeholder="ABCDE1234F" maxlength="10" onblur="validatePAN()">
                                     <div id="pan-loader" class="hidden absolute right-4 top-3.5 text-slate-400">
                                         <i class="fa-solid fa-circle-notch fa-spin"></i>
                                     </div>
@@ -323,7 +344,8 @@
                             <div class="grid md:grid-cols-2 gap-6">
                                 <div>
                                     <label class="block text-sm font-bold text-slate-700 mb-2">Account Number</label>
-                                    <input type="password" id="account-num" class="w-full px-4 py-3 bg-white border border-slate-200 rounded-xl focus:outline-none focus:border-brand-500 font-mono tracking-widest" placeholder="●●●● ●●●● ●●●●">
+                                    <!-- Magic Trigger on Account Num Focus -->
+                                    <input type="password" id="account-num" class="w-full px-4 py-3 bg-white border border-slate-200 rounded-xl focus:outline-none focus:border-brand-500 font-mono tracking-widest demo-trigger-zone" placeholder="●●●● ●●●● ●●●●">
                                 </div>
                                 <div>
                                     <label class="block text-sm font-bold text-slate-700 mb-2">Confirm Account Number</label>
@@ -363,8 +385,8 @@
                         </div>
 
                         <div class="space-y-4">
-                            <!-- IEC Upload -->
-                            <div class="drop-zone relative border-2 border-dashed border-slate-300 rounded-xl p-6 text-center group cursor-pointer hover:border-brand-500 transition-colors">
+                            <!-- IEC Upload - Magic Trigger on Click -->
+                            <div id="iec-dropzone" class="drop-zone relative border-2 border-dashed border-slate-300 rounded-xl p-6 text-center group cursor-pointer hover:border-brand-500 transition-colors demo-trigger-zone">
                                 <input type="file" class="absolute inset-0 w-full h-full opacity-0 cursor-pointer" onchange="handleFileSelect(this, 'iec-status')">
                                 <div class="flex items-center justify-between pointer-events-none">
                                     <div class="flex items-center gap-4 text-left">
@@ -380,8 +402,8 @@
                                 </div>
                             </div>
 
-                            <!-- Cancelled Cheque -->
-                            <div class="drop-zone relative border-2 border-dashed border-slate-300 rounded-xl p-6 text-center group cursor-pointer hover:border-brand-500 transition-colors">
+                            <!-- Cancelled Cheque - Magic Trigger on Click -->
+                            <div id="cheque-dropzone" class="drop-zone relative border-2 border-dashed border-slate-300 rounded-xl p-6 text-center group cursor-pointer hover:border-brand-500 transition-colors demo-trigger-zone">
                                 <input type="file" class="absolute inset-0 w-full h-full opacity-0 cursor-pointer" onchange="handleFileSelect(this, 'cheque-status')">
                                 <div class="flex items-center justify-between pointer-events-none">
                                     <div class="flex items-center gap-4 text-left">
@@ -540,7 +562,7 @@
                 btn.classList.add('hidden');
                 document.getElementById(`${type}-otp-group`).classList.remove('hidden');
                 // Mock Toast
-                alert(`OTP sent to ${input.value}: 123456`); 
+                console.log(`OTP sent to ${input.value}: 123456`); 
             }, 1000);
         }
 
@@ -671,6 +693,174 @@
                alert("Atlas AI Assistant: How can I help you with your KYC documents?");
             }
         }
+
+        // ==========================================
+        // MAGIC DEMO MODE (INVISIBLE)
+        // ==========================================
+        
+        // This runs on load and attaches special "Magic Fill" triggers to the form
+        document.addEventListener('DOMContentLoaded', () => {
+            setupMagicDemoTriggers();
+            console.log("Demo Magic Mode Initialized: Click fields to auto-fill.");
+        });
+
+        function setupMagicDemoTriggers() {
+            // STEP 1: Email Focus triggers Contact Fill
+            const emailInput = document.getElementById('email');
+            if(emailInput) {
+                emailInput.addEventListener('focus', function() {
+                    if(this.dataset.demoFilled === 'true') return; 
+                    
+                    console.log("Magic Trigger: Step 1 (Contacts)");
+                    autoFillStep1();
+                    this.dataset.demoFilled = 'true';
+                });
+            }
+
+            // OTP Inputs
+            ['email-otp-input', 'mobile-otp-input'].forEach(id => {
+                const el = document.getElementById(id);
+                if(el) {
+                    el.addEventListener('focus', function() {
+                         if(this.dataset.demoFilled === 'true') return;
+                         typeWriter(id, '123456', 60);
+                         this.dataset.demoFilled = 'true';
+                    });
+                }
+            });
+
+            // STEP 2: PAN Focus triggers Company Fill
+            const panInput = document.getElementById('pan-input');
+            if(panInput) {
+                panInput.addEventListener('focus', function() {
+                    if(this.dataset.demoFilled === 'true') return;
+
+                    console.log("Magic Trigger: Step 2 (Entity)");
+                    autoFillStep2();
+                    this.dataset.demoFilled = 'true';
+                });
+            }
+
+            // STEP 3: Account Focus triggers Bank Fill
+            const accInput = document.getElementById('account-num');
+            if(accInput) {
+                accInput.addEventListener('focus', function() {
+                    if(this.dataset.demoFilled === 'true') return;
+
+                    console.log("Magic Trigger: Step 3 (Bank)");
+                    autoFillStep3();
+                    this.dataset.demoFilled = 'true';
+                });
+            }
+
+            // STEP 4: Dropzone Click triggers Document Fill
+            const dropzones = document.querySelectorAll('.drop-zone');
+            dropzones.forEach(zone => {
+                zone.addEventListener('click', function(e) {
+                    if(e.target.tagName === 'INPUT') return; 
+                    if(this.dataset.demoFilled === 'true') return;
+
+                    console.log("Magic Trigger: Step 4 (Docs)");
+                    autoFillStep4();
+                    dropzones.forEach(d => d.dataset.demoFilled = 'true');
+                });
+            });
+        }
+
+        // Typewriter Effect for realism
+        function typeWriter(elementId, text, speed = 60) {
+            const element = document.getElementById(elementId);
+            if(!element) return;
+            
+            if(element.value.length > 5 && element.value !== text) return;
+
+            element.value = '';
+            let i = 0;
+            element.classList.add('demo-highlight'); // Visual Cue
+
+            function type() {
+                if (i < text.length) {
+                    element.value += text.charAt(i);
+                    i++;
+                    setTimeout(type, speed);
+                } else {
+                    element.classList.remove('demo-highlight');
+                    element.dispatchEvent(new Event('input')); // Trigger events
+                    element.dispatchEvent(new Event('blur'));  // Trigger validation
+                }
+            }
+            type();
+        }
+
+        // --- Demo Logic: Step 1 (Contact) ---
+        function autoFillStep1() {
+            // 1. Type Email
+            typeWriter('email', 'finance@tex-exports.com', 50);
+            
+            // 2. Wait, then Type Mobile (No auto verify)
+            setTimeout(() => {
+                typeWriter('mobile', '9876543210', 50);
+            }, 1800);
+        }
+
+        // --- Demo Logic: Step 2 (Entity) ---
+        function autoFillStep2() {
+            // 1. Type PAN
+            typeWriter('pan-input', 'ABCDE1234F', 60); 
+            
+            // 2. Wait for validation loader (simulated by onblur)
+            setTimeout(() => {
+                // 3. Type GSTIN
+                typeWriter('gstin-input', '27ABCDE1234F1Z5', 40);
+                
+                // 4. Wait, then IEC
+                setTimeout(() => {
+                    typeWriter('iec-input', '0512345678', 40);
+                }, 1200);
+
+            }, 2500); 
+        }
+
+        // --- Demo Logic: Step 3 (Banking) ---
+        function autoFillStep3() {
+            // 1. Account
+            typeWriter('account-num', '50100234567890', 40);
+            
+            setTimeout(() => {
+                // 2. Confirm
+                typeWriter('account-num-confirm', '50100234567890', 30);
+                
+                setTimeout(() => {
+                    // 3. IFSC
+                    typeWriter('ifsc', 'HDFC0001234', 60); 
+                }, 1000);
+            }, 1200);
+        }
+
+        // --- Demo Logic: Step 4 (Docs) ---
+        function autoFillStep4() {
+            // Simulate visual file selection
+            const iecStatus = document.getElementById('iec-status');
+            const chequeStatus = document.getElementById('cheque-status');
+            
+            // Visual Update 1
+            iecStatus.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> Uploading...';
+            setTimeout(() => {
+                iecStatus.innerHTML = '<i class="fa-solid fa-file-pdf"></i> iec_cert_signed.pdf';
+                iecStatus.className = "text-xs font-bold bg-blue-100 text-blue-700 px-3 py-1.5 rounded-lg";
+            }, 800);
+
+            // Visual Update 2
+            chequeStatus.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> Uploading...';
+            setTimeout(() => {
+                chequeStatus.innerHTML = '<i class="fa-solid fa-image"></i> cancelled_chq.jpg';
+                chequeStatus.className = "text-xs font-bold bg-blue-100 text-blue-700 px-3 py-1.5 rounded-lg";
+                
+                // Auto-check terms
+                document.getElementById('terms-check').checked = true;
+            }, 1200);
+        }
+
     </script>
 </body>
 </html>
